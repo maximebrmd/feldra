@@ -12,10 +12,10 @@ import {
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { applyClerk } from "../initializer/bin/apply-auth.mjs";
+import { applyClerk } from "../packages/feldra/bin/apply-auth.mjs";
 
 const root = resolve(import.meta.dirname, "..");
-const release = join(root, "initializer");
+const release = join(root, "packages/feldra");
 const target = join(release, "template");
 function run(args, cwd) {
   const env = { ...process.env };
@@ -50,6 +50,12 @@ const files = [
   "LICENSE",
   "THIRD_PARTY_NOTICES.md",
 ];
+function omitFromTemplate(path, name) {
+  return (
+    (path === "tests" && name === "initializer") ||
+    (path === "packages" && name === "feldra")
+  );
+}
 async function copy(path) {
   const entries = await readdir(join(root, path), {
     withFileTypes: true,
@@ -61,7 +67,7 @@ async function copy(path) {
   });
   if (entries) {
     for (const entry of entries) {
-      if (path === "tests" && entry.name === "initializer") {
+      if (omitFromTemplate(path, entry.name)) {
         continue;
       }
       if (
@@ -99,9 +105,6 @@ delete pkg.scripts["docs:translate"];
 delete pkg.scripts["docs:translations:check"];
 delete pkg.scripts["docs:build"];
 delete pkg.scripts["test:docs"];
-pkg.workspaces = pkg.workspaces.filter(
-  (workspace) => workspace !== "initializer"
-);
 delete pkg.devDependencies["@changesets/cli"];
 // These overrides belong to the repository-only Blume documentation app.
 delete pkg.overrides["@scalar/astro"];

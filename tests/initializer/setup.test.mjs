@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { collectSetup } from "../../initializer/bin/setup.mjs";
+import { collectSetup } from "../../packages/feldra/bin/setup.mjs";
 
 test("noninteractive defaults to Neon and derives a valid name from spaces", async () => {
   assert.deepEqual(

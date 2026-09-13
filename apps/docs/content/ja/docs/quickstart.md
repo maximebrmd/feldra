@@ -24,7 +24,7 @@ npm ci
 npm run initializer:pack
 ```
 
-このコマンドはソースを検証し、リポジトリのルートに `create-feldra-VERSION.tgz` を書き出します。以下の VERSION を `initializer/package.json` に記載されているバージョンに置き換えてください。
+このコマンドはソースを検証し、リポジトリのルートに `create-feldra-VERSION.tgz` を書き出します。以下の VERSION を `packages/feldra/package.json` に記載されているバージョンに置き換えてください。
 
 ```sh
 npm exec --yes --package="./create-feldra-VERSION.tgz" -- create-feldra my-new-saas

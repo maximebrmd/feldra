@@ -24,7 +24,7 @@ Der Initialisierer wurde noch nicht auf npm veröffentlicht. Baue zuerst das ver
 npm run initializer:pack
 ```
 
-Damit wird der Quellcode validiert und `create-feldra-VERSION.tgz` im Stammverzeichnis des Repositorys erstellt. Ersetze VERSION unten durch die Version aus `initializer/package.json`:
+Damit wird der Quellcode validiert und `create-feldra-VERSION.tgz` im Stammverzeichnis des Repositorys erstellt. Ersetze VERSION unten durch die Version aus `packages/feldra/package.json`:
 
 ```sh
 npm exec --yes --package="./create-feldra-VERSION.tgz" -- create-feldra my-new-saas

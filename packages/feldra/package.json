@@ -15,7 +15,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/maximebrmd/feldra.git",
-    "directory": "initializer"
+    "directory": "packages/feldra"
   },
   "license": "MIT",
   "author": "Maxime Bourmaud",

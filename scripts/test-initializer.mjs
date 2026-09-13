@@ -13,7 +13,7 @@ function run(command, args, cwd = root) {
 }
 run("npm", ["run", "initializer:pack"]);
 const version = JSON.parse(
-  await readFile(join(root, "initializer/package.json"), "utf8")
+  await readFile(join(root, "packages/feldra/package.json"), "utf8")
 ).version;
 const tarball = join(root, `create-feldra-${version}.tgz`);
 const listing = spawnSync("tar", ["-tzf", tarball], { encoding: "utf8" });
@@ -100,7 +100,7 @@ for (const { database, auth } of [
   assert.ok(!pkg.scripts["initializer:pack"]);
   assert.ok(!pkg.scripts.changeset);
   assert.ok(!pkg.scripts["release:version"]);
-  assert.ok(!lock.packages.initializer);
+  assert.ok(!lock.packages["packages/feldra"]);
   assert.ok(!lock.packages["apps/docs"]);
   assert.ok(!lock.packages["node_modules/astro"]);
   assert.ok(!pkg.scripts["docs:dev"]);

@@ -4,7 +4,7 @@ import { join, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
 const release = JSON.parse(
-  await readFile(join(root, "initializer/package.json"), "utf8")
+  await readFile(join(root, "packages/feldra/package.json"), "utf8")
 );
 const path = join(root, "package.json");
 const base = JSON.parse(await readFile(path, "utf8"));

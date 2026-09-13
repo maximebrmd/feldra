@@ -4,7 +4,7 @@ node_modules/
 !.env.example
 *.tsbuildinfo
 *.tgz
-initializer/template/
+packages/feldra/template/
 playwright-report/
 test-results/
 .turbo/

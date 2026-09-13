@@ -93,4 +93,4 @@ Run `npm run docs:dev` to open the Astro documentation site at http://localhost:
 
 ### Authentication choice
 
-The initializer now offers **Better Auth** (default, Resend emails) or **Clerk** (managed authentication and email), independently of Neon/Supabase. Use `--auth clerk --database supabase --yes` for an explicit noninteractive selection, or `--list-tools` to list choices. The Clerk variant installs only Clerk's auth dependencies and includes its own provider setup and fixtures. See [initializer options](initializer/README.md).
+The initializer now offers **Better Auth** (default, Resend emails) or **Clerk** (managed authentication and email), independently of Neon/Supabase. Use `--auth clerk --database supabase --yes` for an explicit noninteractive selection, or `--list-tools` to list choices. The Clerk variant installs only Clerk's auth dependencies and includes its own provider setup and fixtures. See [initializer options](packages/feldra/README.md).

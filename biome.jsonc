@@ -9,7 +9,7 @@
     "includes": [
       "!!node_modules",
       "!!.next",
-      "!!initializer/template",
+      "!!packages/feldra/template",
       "!!drizzle/meta",
       "!!.agents",
       "!!skills-lock.json",
@@ -34,7 +34,7 @@
     {
       "includes": [
         "scripts/**",
-        "initializer/bin/**",
+        "packages/feldra/bin/**",
         "tests/**",
         "packages/database/scripts/**"
       ],

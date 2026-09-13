@@ -22,13 +22,13 @@ Follow [provider setup](../docs/setup.md) to configure a local app, then run `np
 | `apps/web` | Next.js marketing and pricing pages |
 | `apps/app` | Next.js authentication, dashboard, APIs and billing webhooks |
 | `apps/docs` | Feldra's Blume/Astro documentation website |
-| `packages` | Shared auth, database, config, design system, email and payments |
-| `initializer/bin` | `create-feldra` CLI and provider selection |
-| `initializer/variants/clerk` | Clerk template overlay and generated dependency lockfile |
+| `packages` | Shared `@repo/*` packages; `packages/feldra` is the published `create-feldra` workspace |
+| `packages/feldra/bin` | `create-feldra` CLI and provider selection |
+| `packages/feldra/variants/clerk` | Clerk template overlay and generated dependency lockfile |
 | `scripts/pack-initializer.mjs` | Template allowlist, manifests and npm tarball packaging |
 | `tests` | Unit, initializer and database integration tests |
 
-The docs app, initializer workspace, Changesets and GitHub workflows are maintainer tooling and are excluded from generated projects. Do not edit generated `initializer/template`, `.blume`, `.next`, or `dist` output. Regenerate the Clerk variant lockfile through the pack script when its dependencies change.
+The docs app, `create-feldra` workspace, Changesets and GitHub workflows are maintainer tooling and are excluded from generated projects. Do not edit generated `packages/feldra/template`, `.blume`, `.next`, or `dist` output. Regenerate the Clerk variant lockfile through the pack script when its dependencies change.
 
 ## Checks
 
