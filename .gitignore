@@ -8,3 +8,9 @@ initializer/template/
 playwright-report/
 test-results/
 .turbo/
+
+# Astro documentation build output
+**/.astro/
+**/dist/
+
+**/.blume/

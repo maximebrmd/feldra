@@ -2,19 +2,26 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
   copyFile,
+  cp,
   mkdir,
+  mkdtemp,
   readdir,
   readFile,
   rm,
   writeFile,
 } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import { applyClerk } from "../initializer/bin/apply-auth.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const release = join(root, "initializer");
 const target = join(release, "template");
 function run(args, cwd) {
-  const result = spawnSync("npm", args, { cwd, stdio: "inherit" });
+  const env = { ...process.env };
+  delete env.npm_config_allow_scripts;
+  delete env.NPM_CONFIG_ALLOW_SCRIPTS;
+  const result = spawnSync("npm", args, { cwd, env, stdio: "inherit" });
   if (result.error || result.status !== 0) {
     throw new Error(`npm ${args.join(" ")} failed`);
   }
@@ -24,7 +31,8 @@ run(["run", "test:initializer"], root);
 await rm(target, { force: true, recursive: true });
 await mkdir(target);
 const files = [
-  "apps",
+  "apps/app",
+  "apps/web",
   "packages",
   "tests",
   "docs",
@@ -77,13 +85,34 @@ async function copy(path) {
 for (const path of files) {
   await copy(path);
 }
+await copyFile(join(release, "CHANGELOG.md"), join(target, "CHANGELOG.md"));
 const pkg = JSON.parse(await readFile(join(target, "package.json"), "utf8"));
 delete pkg.scripts["initializer:pack"];
 delete pkg.scripts["initializer:test"];
 delete pkg.scripts["test:initializer"];
+delete pkg.scripts.changeset;
+delete pkg.scripts["changeset:status"];
+delete pkg.scripts["release:version"];
+delete pkg.scripts["release:sync"];
+delete pkg.scripts["docs:dev"];
+delete pkg.scripts["docs:build"];
+delete pkg.scripts["test:docs"];
+pkg.workspaces = pkg.workspaces.filter(
+  (workspace) => workspace !== "initializer"
+);
+delete pkg.devDependencies["@changesets/cli"];
+// These overrides belong to the repository-only Blume documentation app.
+delete pkg.overrides["@scalar/astro"];
+delete pkg.overrides["@vercel/routing-utils"];
+delete pkg.overrides["lodash-es"];
 await writeFile(
   join(target, "package.json"),
   `${JSON.stringify(pkg, null, 2)}\n`
+);
+// Let npm prune release-only packages and links from the generated lockfile.
+run(
+  ["install", "--package-lock-only", "--ignore-scripts", "--no-fund"],
+  target
 );
 for (const app of ["app", "web"]) {
   await writeFile(
@@ -91,6 +120,39 @@ for (const app of ["app", "web"]) {
     '/// <reference types="next" />\n/// <reference types="next/image-types/global" />\n'
   );
 }
+// Resolve the Clerk dependency tree at release time, not during scaffolding.
+const variant = join(release, "variants/clerk");
+const staging = await mkdtemp(join(tmpdir(), "feldra-clerk-lock-"));
+try {
+  await cp(target, staging, { recursive: true });
+  await applyClerk(staging, variant, { lockfile: false });
+  run(
+    ["install", "--package-lock-only", "--ignore-scripts", "--no-fund"],
+    staging
+  );
+  await copyFile(
+    join(staging, "package-lock.json"),
+    join(variant, "package-lock.json")
+  );
+} finally {
+  await rm(staging, { force: true, recursive: true });
+}
+const variantHashes = {};
+async function hashVariant(path = "") {
+  for (const entry of await readdir(join(variant, path), {
+    withFileTypes: true,
+  })) {
+    const file = path ? `${path}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) {
+      await hashVariant(file);
+    } else {
+      variantHashes[file] = createHash("sha256")
+        .update(await readFile(join(variant, file)))
+        .digest("hex");
+    }
+  }
+}
+await hashVariant();
 const hashes = {};
 async function hash(path = "") {
   const entries = await readdir(join(target, path), { withFileTypes: true });
@@ -111,6 +173,6 @@ const version = JSON.parse(
 ).version;
 await writeFile(
   join(release, "template-manifest.json"),
-  `${JSON.stringify({ files: hashes, templateSha256: createHash("sha256").update(JSON.stringify(hashes)).digest("hex"), version }, null, 2)}\n`
+  `${JSON.stringify({ clerkFiles: variantHashes, files: hashes, templateSha256: createHash("sha256").update(JSON.stringify(hashes)).digest("hex"), version }, null, 2)}\n`
 );
 run(["pack", "--pack-destination", root], release);

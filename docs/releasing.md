@@ -1,25 +1,50 @@
-# Publishing create-saas-keel
+# Versioning and publishing create-saas-keel
 
-Publication is a separate, explicitly authorized action. Nothing has been published. `create-saas-keel` returned npm registry 404 on 2026-09-13; availability is not a reservation. Recheck immediately before publication; npm may still reject a name for policy or similarity reasons.
+Changesets manages the initializer version and `initializer/CHANGELOG.md`. The initializer is a workspace so the CLI can discover it. Apps and shared packages remain private and are not independently versioned or published. Changesets is maintainer tooling; generated SaaS projects do not include it, its scripts, or the initializer workspace.
 
-1. Review package metadata, MIT license, author, notices and release notes. Add repository/homepage/bugs URLs when this base has a real public repository; no invented URL is included.
-2. Update `initializer/package.json` and base `package.json` versions together, update lockfile with `npm install --package-lock-only`, update version examples and `CHANGELOG.md`.
-3. Run `npm ci` and `npm ci --prefix initializer`, then `npm run check`, `npm run test:initializer`, `npm run test:database`, and `npm run test:browser`. Browser tests install Chromium if missing. Docker is required for the latter two.
-4. Run `npm run initializer:pack`. This checks the base, stages a strict allowlist, records file hashes, and executes `npm pack` on the initializer. The `gitignore` file is renamed to `.gitignore` by the CLI because npm treats ignore files specially.
-5. Run `npm run initializer:test`. It packs the base, verifies apps, shared packages and turbo.json, then runs the **tarball** initializer for both Neon and Supabase in temporary directories with spaces, checks contents/naming/git/environment, checks overwrite refusal, then runs the generated project's checks and local database/browser tests. It also inspects tarball entries and rejects forbidden paths.
-6. Inspect `tar -tzf create-saas-keel-0.3.0.tgz`, `npm pack --dry-run ./initializer`, and the generated `initializer/template-manifest.json`. Only bin, bundled source, licenses, manifest and README belong in the release; no secrets, node_modules, Git history, agent skills or research sources.
-7. After explicit publication authorization only, authenticate to the intended npm account, confirm ownership/2FA, recheck `npm view create-saas-keel`, and publish the **tested tarball**:
+## Record a change
+
+Install the root lockfile with `npm ci`, then:
 
 ```sh
-npm publish ./create-saas-keel-0.3.0.tgz --access public
+npm run changeset
+npm run changeset:status
 ```
 
-8. Verify the public install from a clean directory with `npm create saas-keel@latest my-new-saas -- --yes`. Consider npm trusted publishing/provenance after a real public repository and CI identity exist. Keep the tarball, its SHA-256 and validation log attached to the release.
+Select `create-saas-keel`, choose patch/minor/major, and write a user-facing summary. This applies to changes in the bundled apps/packages as well as the initializer itself. Commit the file in `.changeset/` alongside the implementation. Documentation-only changes that do not need a release can omit a changeset. The CLI uses the standard workflow in the [Changesets guide](https://changesets.dev/guide/getting-started).
 
-Local equivalent before publication:
+## Prepare a version
 
 ```sh
-npm exec --yes --package="/absolute/path/create-saas-keel-0.3.0.tgz" -- create-saas-keel "./my new saas" --name my-new-saas --yes
+npm run release:version
 ```
 
-Do not edit the bundle after testing and publish it without repacking/retesting. The public `npm create` command becomes available only after successful publication.
+This consumes pending changesets, updates `initializer/package.json`, generates its changelog, synchronizes the private root package version, and refreshes the root npm lockfile. Internal private workspace versions remain unchanged. Review and commit these changes; the command does not commit, tag, push or publish. If lockfile refresh fails, fix the failure and run `npm run release:sync` to finish synchronization. Changesets v3 exits nonzero when no pending changesets remain, so do not rerun `release:version` for that recovery.
+
+Update version-specific examples in README files and validation reports before packaging. Run:
+
+```sh
+npm run initializer:test
+```
+
+This runs lint/types/unit tests and both app builds, packs a strict allowlist with `npm pack`, and scaffolds BOTH Neon and Supabase from that tarball in temporary paths containing spaces. It verifies npm installation, naming, Git, environment files, overwrite refusal and exclusion of release tooling, then runs generated-project checks and database/browser fixtures. Docker is required; browser tests install Chromium if missing.
+
+Inspect the tarball, `initializer/template-manifest.json`, and the test output. Record the tarball SHA-256 and validation results. The bundle includes the generated release changelog. It excludes real credentials, node_modules, Git history, agent files, release configuration and research. Never edit a tested bundle and publish it without repacking/retesting.
+
+## Publish only with authorization
+
+Nothing is automatically published. Do not use `changeset publish` here: publication must use the exact tested tarball, not the mutable initializer directory. After explicit authorization, authenticate to npm, recheck package-name availability/ownership and publish the artifact for the prepared version:
+
+```sh
+npm publish ./create-saas-keel-VERSION.tgz --access public
+```
+
+Replace VERSION with `initializer/package.json`'s version. The name returned registry 404 on 2026-09-13; that is not a reservation. Verify the public install in a clean directory after publication. There is no CI publication workflow or npm token configured.
+
+Before publication, use the tested local artifact:
+
+```sh
+npm exec --yes --package="/absolute/path/create-saas-keel-VERSION.tgz" -- create-saas-keel "./my new saas" --name my-new-saas
+```
+
+The public command `npm create saas-keel@latest my-new-saas` only works after publication. Provider credentials still need configuration in each generated project.

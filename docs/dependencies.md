@@ -18,3 +18,7 @@ Each workspace declares what it imports. Internal `@repo/*` dependencies link to
 Root tools: `turbo` orchestrates the workspace graph; `typescript` and `@types/*` typecheck it; `ultracite` and `@biomejs/biome` lint/format; `tsx` runs TypeScript fixture tests; `@playwright/test` exercises both production apps. Root fixture tests directly declare Better Auth, Stripe, Drizzle, pg and the workspace services they test. Each app declares `tailwindcss` and `@tailwindcss/postcss` for its build. The database package declares `drizzle-kit`, `tsx`, and `@types/pg` for migrations and types.
 
 The root narrow esbuild override fixes the older development-tool dependency inherited through drizzle-kit. Shared packages export TypeScript source; there is no extra bundler or package-generation system. See each package.json and the root lockfile for exact versions.
+
+Maintainer-only tooling: root `@changesets/cli` manages initializer versioning and changelogs. Packing removes it and the initializer workspace from the generated package and regenerates the lockfile with npm.
+
+Template documentation only: `apps/docs` uses pinned Blume 1.6.5 on Astro 7.3.2 for the actual upstream layout, theme, static pages, local search and syntax highlighting; `@astrojs/check` validates Astro templates; TypeScript 6.0.3 provides the compiler API required by that checker. The shared TypeScript version is pinned for compatibility. Docs dependencies are pruned from generated projects.

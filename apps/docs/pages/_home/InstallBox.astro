@@ -1,0 +1,29 @@
+---
+// The single-line install box (x.ai-style): a `$` prompt, the command, and a
+// copy button. Shared by the hero and the install CTA so they stay identical.
+// The copy button is wired to the page-level delegated `data-blume-copy-install`
+// handler in index.astro (which swaps the icon to a checkmark on copy).
+import Icon from "blume/components/Icon.astro";
+import { installCommand } from "./shared.ts";
+---
+
+<div
+  class="mx-auto flex w-full max-w-xs items-center gap-3 rounded-blume border border-border bg-background py-2 pr-2 pl-4"
+>
+  <span
+    aria-hidden="true"
+    class="select-none font-mono text-muted-foreground text-sm">$</span
+  >
+  <code class="flex-1 truncate text-left font-mono text-foreground text-sm"
+    >{installCommand}</code
+  >
+  <button
+    aria-label="Copy install command"
+    class="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+    data-blume-copy-install
+    data-command={installCommand}
+    type="button"
+  >
+    <Icon class="size-4" name="copy" size={16} />
+  </button>
+</div>

@@ -1,0 +1,85 @@
+---
+// Landing hero: latest-release badge, headline, install box, and doc/GitHub
+// links. The install box copy button uses the page-level delegated
+// `data-blume-copy-install` handler in index.astro.
+import data from "blume:data";
+import InstallBox from "./InstallBox.astro";
+import { glyph } from "./shared.ts";
+
+const { config } = data;
+const { repoUrl } = config;
+const docsHref = "/docs/introduction";
+const chevronRight = glyph("chevron-right");
+
+const latestVersion = "0.3.0";
+---
+
+<section class="text-center">
+  <a
+    class="inline-flex items-center px-3 py-1 text-muted-foreground text-xs transition-colors hover:text-foreground"
+    href="/docs/releases"
+  >
+    Latest update, v{latestVersion}
+  </a>
+  <h1
+    class="mx-auto mt-6 max-w-3xl text-balance font-medium text-4xl sm:text-5xl lg:text-6xl"
+  >
+    <span class="block">A complete foundation for</span>
+    <span class="block text-muted-foreground">your next SaaS.</span>
+  </h1>
+  <p class="mx-auto mt-6 max-w-xl text-balance text-lg text-muted-foreground">
+    Next.js, authentication, billing, and your choice of Postgres.
+    Start with a tested monorepo and make it yours. Free and open source.
+  </p>
+
+  <!-- Install command -->
+  <div class="mt-9"><InstallBox /></div>
+  <p class="mt-3 text-xs text-muted-foreground">Run from the repository. npm publication is still pending.</p>
+
+  <div class="mt-7 flex items-center justify-center gap-6 text-sm">
+    <a
+      class="inline-flex items-center gap-1 font-medium text-muted-foreground transition-colors hover:text-foreground"
+      href={docsHref}
+    >
+      Read the docs
+      <svg
+        class="size-3.5"
+        fill="none"
+        height="14"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="14"
+        xmlns="http://www.w3.org/2000/svg"
+        set:html={chevronRight}
+      ></svg>
+    </a>
+    {
+      repoUrl && (
+        <a
+          class="inline-flex items-center gap-1 font-medium text-muted-foreground transition-colors hover:text-foreground"
+          href={repoUrl}
+          rel="noreferrer"
+          target="_blank"
+        >
+          View the code
+          <svg
+            class="size-3.5"
+            fill="none"
+            height="14"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="14"
+            xmlns="http://www.w3.org/2000/svg"
+            set:html={chevronRight}
+          />
+        </a>
+      )
+    }
+  </div>
+</section>

@@ -1,7 +1,7 @@
 {
   "name": "create-saas-keel",
   "version": "0.3.0",
-  "description": "Create a next-forge-style SaaS monorepo with a Neon or Supabase database, Better Auth, Stripe and Resend.",
+  "description": "Create a Feldra SaaS monorepo with Neon or Supabase, Better Auth or Clerk, and Stripe.",
   "keywords": [
     "create",
     "nextjs",
@@ -23,7 +23,8 @@
     "template/",
     "template-manifest.json",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "variants/"
   ],
   "dependencies": {
     "@clack/prompts": "1.8.0"

@@ -1,0 +1,136 @@
+---
+import data from "blume:data";
+// Larger landing footer: a brand rail plus link columns generated from the docs
+// navigation, so it stays in sync with the sidebar.
+import Mark from "../../components/Mark.astro";
+
+const { config } = data;
+const { title, repoUrl, description } = config;
+const year = new Date().getFullYear();
+
+interface FooterLink {
+  href: string;
+  label: string;
+}
+interface FooterColumn {
+  links: FooterLink[];
+  title: string;
+}
+
+// Direct page children of a node list, as footer links.
+const pagesOf = (nodes: typeof data.navigation.sidebar): FooterLink[] =>
+  nodes.flatMap((node) =>
+    node.kind === "page" ? [{ href: node.route, label: node.label }] : []
+  );
+
+// Resolve the docs section root. Blume adds one top-level sidebar group per nav
+// tab ("Docs", "Changelog", "Example API", …). Scope the footer to the primary
+// docs tab (the first one) so only its sections drive the columns — this drops
+// the Changelog (release history) and the Example API reference (sample
+// content), which are separate tabs. Fall back to the whole sidebar when no
+// tabs are configured (sections live at the top level then). From the docs
+// group, descend through any single wrapping group until we reach the level
+// that holds the section sub-groups: the lead pages become a "Getting Started"
+// column and each section group ("Content", "Configuration", …) its own column.
+const sidebar = data.navigation?.sidebar ?? [];
+const primaryTabPath = data.navigation?.tabs?.[0]?.path;
+let roots = sidebar.filter(
+  (node) => node.kind === "group" && node.path === primaryTabPath
+);
+if (roots.length === 0) {
+  roots = sidebar.filter(
+    (node) => !(node.kind === "group" && node.label === "Changelog")
+  );
+}
+while (
+  roots.length === 1 &&
+  roots[0].kind === "group" &&
+  roots[0].children.some((child) => child.kind === "group")
+) {
+  roots = roots[0].children;
+}
+
+const columns: FooterColumn[] = [];
+const lead = pagesOf(roots);
+if (lead.length > 0) {
+  columns.push({ links: lead, title: "Getting Started" });
+}
+for (const node of roots) {
+  if (node.kind !== "group" || node.label === "Changelog") {
+    continue;
+  }
+  const links = pagesOf(node.children);
+  if (links.length > 0) {
+    columns.push({ links, title: node.label });
+  }
+}
+---
+
+<footer>
+  <div class="mx-auto max-w-[1400px] px-6 py-16 sm:py-20">
+    <div class="flex flex-col gap-12 lg:flex-row lg:gap-16">
+      <!-- Brand rail -->
+      <div class="lg:w-64 lg:shrink-0">
+        <a class="flex items-center gap-2 font-medium text-foreground" href="/">
+          <Mark />
+          {title}
+        </a>
+        <p
+          class="mt-4 max-w-xs text-balance text-muted-foreground text-sm leading-relaxed"
+        >
+          {description}
+        </p>
+        {
+          repoUrl && (
+            <a
+              class="mt-6 inline-flex items-center gap-1.5 text-muted-foreground text-sm transition-colors hover:text-foreground"
+              href={repoUrl}
+              rel="noreferrer"
+              target="_blank"
+            >
+              <svg
+                class="size-4"
+                fill="currentColor"
+                height="16"
+                viewBox="0 0 24 24"
+                width="16"
+              >
+                <path d="M12 .5C5.37.5 0 5.78 0 12.29c0 5.2 3.44 9.6 8.2 11.16.6.1.82-.25.82-.56v-2c-3.34.71-4.04-1.58-4.04-1.58-.55-1.36-1.33-1.73-1.33-1.73-1.09-.73.08-.72.08-.72 1.2.08 1.84 1.21 1.84 1.21 1.07 1.8 2.8 1.28 3.49.98.1-.76.42-1.28.76-1.58-2.67-.3-5.47-1.3-5.47-5.79 0-1.28.47-2.32 1.24-3.14-.13-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.2a11.6 11.6 0 0 1 6.01 0c2.29-1.52 3.3-1.2 3.3-1.2.66 1.65.25 2.87.12 3.17.77.82 1.23 1.86 1.23 3.14 0 4.5-2.8 5.48-5.48 5.77.43.36.81 1.08.81 2.18v3.23c0 .31.21.67.82.56A12.3 12.3 0 0 0 24 12.29C24 5.78 18.63.5 12 .5z" />
+              </svg>
+              GitHub
+            </a>
+          )
+        }
+        <p class="mt-8 text-muted-foreground text-xs">
+          © {year} {title}. MIT licensed.
+        </p>
+      </div>
+
+      <!-- Link columns, generated from the docs navigation -->
+      <nav
+        aria-label="Footer"
+        class="grid flex-1 grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 lg:grid-cols-5"
+      >
+        {
+          columns.map((column) => (
+            <div>
+              <p class="font-medium text-foreground text-sm">{column.title}</p>
+              <ul class="mt-4 space-y-3">
+                {column.links.map((link) => (
+                  <li>
+                    <a
+                      class="text-muted-foreground text-sm transition-colors hover:text-foreground"
+                      href={link.href}
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </nav>
+    </div>
+  </div>
+</footer>

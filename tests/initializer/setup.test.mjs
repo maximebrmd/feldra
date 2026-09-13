@@ -6,6 +6,7 @@ test("noninteractive defaults to Neon and derives a valid name from spaces", asy
   assert.deepEqual(
     await collectSetup({ directory: "./a project with spaces" }),
     {
+      auth: "better-auth",
       directory: "./a project with spaces",
       name: "a-project-with-spaces",
       preset: "neon",
@@ -22,6 +23,9 @@ test("interactive selector offers both databases and preserves Supabase selectio
         return true;
       },
       select: (prompt) => {
+        if (prompt.message.includes("authentication")) {
+          return "better-auth";
+        }
         assert.deepEqual(
           prompt.options.map((option) => option.value),
           ["neon", "supabase"]
@@ -33,6 +37,7 @@ test("interactive selector offers both databases and preserves Supabase selectio
     }
   );
   assert.deepEqual(setup, {
+    auth: "better-auth",
     directory: "./my SaaS",
     name: "custom-saas",
     preset: "supabase",
@@ -49,7 +54,7 @@ test("explicit Supabase works without prompting; legacy preset remains supported
 test("interactive cancellation stops setup", async () => {
   await assert.rejects(
     collectSetup(
-      { database: "neon", directory: "new", name: "new" },
+      { auth: "better-auth", database: "neon", directory: "new", name: "new" },
       { confirm: async () => false }
     ),
     /Canceled/u
@@ -65,4 +70,15 @@ test("unknown providers, conflicting flags and missing paths fail explicitly", a
     /must agree/u
   );
   await assert.rejects(collectSetup({}), /Provide a destination/u);
+});
+
+test("Clerk is explicit and unknown authentication choices fail before creating files", async () => {
+  assert.equal(
+    (await collectSetup({ auth: "clerk", directory: "new" })).auth,
+    "clerk"
+  );
+  await assert.rejects(
+    collectSetup({ auth: "unknown", directory: "new" }),
+    /Choose --auth/u
+  );
 });

@@ -1,6 +1,6 @@
 # Third-party notices
 
-Architecture was studied; product code was not copied from Eververse or Blume. Retain this file in derived projects. Dependencies retain their own licenses.
+Architecture was studied; product code was not copied from Eververse. The repository-only documentation app adapts Blume homepage components under MIT; see apps/docs/LICENSE.blume and apps/docs/README.md. Those components are excluded from generated SaaS projects. Retain this file in derived projects. Dependencies retain their own licenses.
 
 ## vercel/next-forge — reference at f189de79ceef7c1ef69f61f12e272f99b4cdb699
 

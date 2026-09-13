@@ -6,7 +6,13 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { confirm, isCancel, select, text } from "@clack/prompts";
-import { collectSetup, databases, stackSummary } from "./setup.mjs";
+import { applyClerk } from "./apply-auth.mjs";
+import {
+  authentications,
+  collectSetup,
+  databases,
+  stackSummary,
+} from "./setup.mjs";
 
 const source = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 function run(command, args, cwd) {
@@ -47,23 +53,31 @@ try {
   const { positionals, values } = parseArgs({
     allowPositionals: true,
     options: {
+      auth: { type: "string" },
       database: { type: "string" },
       help: { short: "h", type: "boolean" },
+      "list-tools": { type: "boolean" },
       name: { type: "string" },
       preset: { type: "string" },
       yes: { short: "y", type: "boolean" },
     },
   });
+  if (values["list-tools"]) {
+    console.log(
+      "Database: neon (default), supabase\nAuthentication: better-auth (default, Resend emails), clerk (managed auth and emails)\nFixed: Next.js, TypeScript, Drizzle, Stripe, Tailwind/shadcn, Ultracite, npm, Turborepo.\nThese four combinations are generated at scaffold time; no provider-switching layer is installed."
+    );
+    process.exit(0);
+  }
   if (values.help) {
     console.log(
-      "Usage: npm create saas-keel@latest [directory] -- [--yes] [--name package-name] [--database neon|supabase]\nInteractive in a terminal; --yes or piped input is noninteractive. Choose a database with arrow keys. --yes defaults to Neon; use --database supabase to select Supabase. --preset is an alias for --database. Refuses existing destinations. Node >=22.12, npm and Git required."
+      "Usage: npm create saas-keel@latest [directory] -- [--yes] [--name package-name] [--database neon|supabase] [--auth better-auth|clerk]\nInteractive in a terminal; --yes or piped input is noninteractive. Choose a database and authentication tool with arrow keys. --auth defaults to better-auth. --list-tools lists supported tools without creating files. --yes defaults to Neon; use --database supabase to select Supabase. --preset is an alias for --database. Refuses existing destinations. Node >=22.12, npm and Git required."
     );
     process.exit(0);
   }
   if (positionals.length > 1) {
     throw new Error("Provide at most one destination directory.");
   }
-  console.log(`\nCreate SaaS Keel\n${stackSummary}\n`);
+  console.log(`\nCreate Feldra\n${stackSummary}\n`);
   const interactive =
     !values.yes && process.stdin.isTTY && process.stdout.isTTY;
   const prompts = interactive
@@ -82,6 +96,7 @@ try {
     : undefined;
   const setup = await collectSetup(
     {
+      auth: values.auth,
       database: values.database,
       directory: positionals[0],
       name: values.name,
@@ -102,6 +117,18 @@ try {
     const bytes = await readFile(join(source, "template", path));
     if (createHash("sha256").update(bytes).digest("hex") !== digest) {
       throw new Error(`Bundled template integrity check failed: ${path}`);
+    }
+  }
+  for (const [path, digest] of Object.entries(manifest.clerkFiles || {})) {
+    if (path.startsWith("/") || path.split("/").includes("..")) {
+      throw new Error("Invalid bundled variant path");
+    }
+    if (
+      createHash("sha256")
+        .update(await readFile(join(source, "variants/clerk", path)))
+        .digest("hex") !== digest
+    ) {
+      throw new Error(`Bundled Clerk integrity check failed: ${path}`);
     }
   }
   npm(["--version"]);
@@ -136,14 +163,31 @@ try {
     }
     await writeFile(path, `${JSON.stringify(data, null, 2)}\n`);
   }
+  if (setup.auth === "clerk") {
+    await applyClerk(destination, join(source, "variants/clerk"));
+    for (const file of ["package.json", "package-lock.json"]) {
+      const path = join(destination, file);
+      const data = JSON.parse(await readFile(path, "utf8"));
+      data.name = name;
+      if (data.packages?.[""]) {
+        data.packages[""].name = name;
+      }
+      await writeFile(path, `${JSON.stringify(data, null, 2)}\n`);
+    }
+  }
+  const authentication = authentications[setup.auth];
   const provider = databases[setup.preset];
   const examplePath = join(destination, ".env.example");
-  const example = `# Database: ${provider.label} (Postgres + Drizzle + Better Auth)\n# ${provider.instructions}\n${await readFile(examplePath, "utf8")}`;
+  const example = `# Database: ${provider.label} (Postgres + Drizzle + ${authentication.label})\n# ${provider.instructions}\n${await readFile(examplePath, "utf8")}`;
   await writeFile(examplePath, example);
   await writeFile(
     join(destination, "DATABASE.md"),
-    `# ${provider.label} database setup\n\n${provider.instructions}\n\nOnly server-side Postgres is used. Better Auth handles authentication.\nSee [database setup](docs/databases.md) for connection security and migrations.\n`,
+    `# ${provider.label} database setup\n\n${provider.instructions}\n\nOnly server-side Postgres is used. ${authentication.label} handles authentication.\nSee [database setup](docs/databases.md) for connection security and migrations.\n`,
     { flag: "wx" }
+  );
+  await writeFile(
+    join(destination, "AUTHENTICATION.md"),
+    `# ${authentication.label}\n\n${authentication.instructions}\n\nSee docs/authentication.md for implementation details and verification limits.\n`
   );
   const env = example.replace(
     "BETTER_AUTH_SECRET=",
@@ -156,15 +200,34 @@ try {
   await chmod(join(destination, ".env.local"), 0o600);
   await writeFile(
     join(destination, "template-origin.json"),
-    `${JSON.stringify({ package: "create-saas-keel", preset: setup.preset, templateSha256: manifest.templateSha256, version: manifest.version }, null, 2)}\n`,
+    `${JSON.stringify({ auth: setup.auth, package: "create-saas-keel", preset: setup.preset, templateSha256: manifest.templateSha256, version: manifest.version }, null, 2)}\n`,
     { flag: "wx" }
   );
   npm(["ci", "--include=dev", "--no-fund"], destination);
+  if (setup.auth === "clerk") {
+    npm(
+      [
+        "exec",
+        "--offline",
+        "--",
+        "biome",
+        "check",
+        "--write",
+        "packages/config/env.ts",
+        "scripts/test-database.mjs",
+        "turbo.json",
+        "packages/auth/package.json",
+        "apps/app/package.json",
+        "package.json",
+      ],
+      destination
+    );
+  }
   // No parent repository history, hooks or identity is copied. No commit identity required.
   run("git", ["init", "--initial-branch=main", "--template="], destination);
   const quotedPath = `'${destination.replaceAll("'", "'\"'\"'")}'`;
   console.log(
-    `\nCreated ${name} from create-saas-keel ${manifest.version}. Dependencies installed.\nProvider services are NOT configured yet. Next:\n\ncd ${quotedPath}\n\n1. Edit .env.local: ${provider.instructions}\n2. Set APP_URL=http://localhost:3001 and WEB_URL=http://localhost:3000 locally; use separate HTTPS origins in production. A fresh local BETTER_AUTH_SECRET was generated; generate a separate production secret.\n3. In Resend verify a sender domain; set RESEND_API_KEY and EMAIL_FROM to a verified sender email.\n4. In a separate Stripe sandbox create a Pro product with a USD 12/month recurring price (or match packages/config/index.ts). Set STRIPE_SECRET_KEY, STRIPE_PRO_PRICE_ID and STRIPE_LIVE_MODE=false. Enable the customer portal.\n5. Run: stripe listen --events customer.subscription.created,customer.subscription.updated,customer.subscription.deleted,customer.subscription.paused,customer.subscription.resumed,checkout.session.completed,checkout.session.async_payment_succeeded,checkout.session.async_payment_failed,invoice.paid,invoice.payment_failed,invoice.payment_action_required --forward-to localhost:3001/api/webhooks/stripe\n   Copy its signing secret to STRIPE_WEBHOOK_SECRET.\n\nnpm run db:migrate\nnpm run check\nnpm run dev\n\nMarketing: http://localhost:3000 · Application: http://localhost:3001\n\nOptional full local fixture tests (Docker required): npm run test:database\nSee docs/setup.md for restricted key permissions, production configuration and live verification. No providers were provisioned and nothing was published.`
+    `\nCreated ${name} from create-saas-keel ${manifest.version}. Dependencies installed.\nProvider services are NOT configured yet. Next:\n\ncd ${quotedPath}\n\n1. Edit .env.local: ${provider.instructions}\n2. Set APP_URL=http://localhost:3001 and WEB_URL=http://localhost:3000 locally; use separate HTTPS origins in production. Authentication: ${authentication.label}.\n3. ${authentication.instructions}\n4. In a separate Stripe sandbox create a Pro product with a USD 12/month recurring price (or match packages/config/index.ts). Set STRIPE_SECRET_KEY, STRIPE_PRO_PRICE_ID and STRIPE_LIVE_MODE=false. Enable the customer portal.\n5. Run: stripe listen --events customer.subscription.created,customer.subscription.updated,customer.subscription.deleted,customer.subscription.paused,customer.subscription.resumed,checkout.session.completed,checkout.session.async_payment_succeeded,checkout.session.async_payment_failed,invoice.paid,invoice.payment_failed,invoice.payment_action_required --forward-to localhost:3001/api/webhooks/stripe\n   Copy its signing secret to STRIPE_WEBHOOK_SECRET.\n\nnpm run db:migrate\nnpm run check\nnpm run dev\n\nMarketing: http://localhost:3000 · Application: http://localhost:3001\n\nOptional full local fixture tests (Docker required): npm run test:database\nSee docs/setup.md for restricted key permissions, production configuration and live verification. No providers were provisioned and nothing was published.`
   );
 } catch (error) {
   console.error(

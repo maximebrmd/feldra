@@ -1,0 +1,27 @@
+---
+import data from "blume:data";
+import PageLayout from "blume/components/layout/PageLayout.astro";
+import Mark from "../components/Mark.astro";
+
+const { config } = data;
+---
+<PageLayout
+  appleIcon={config.appleIcon}
+  favicon={config.favicon}
+  fontCssVars={data.fontCssVars}
+  logo={config.logo}
+  navigation={data.navigation}
+  noindex
+  page={{ title: "Page not found — Feldra", route: "/404" }}
+  searchEnabled={config.search.enabled}
+  site={{ title: config.title, description: config.description }}
+  themeMode={config.theme.mode}
+>
+  <section class="mx-auto flex min-h-[70vh] max-w-xl flex-col items-center justify-center px-6 py-20 text-center">
+    <Mark size={80} />
+    <p class="mt-8 text-sm text-muted-foreground">404</p>
+    <h1 class="mt-4 text-4xl font-medium">Page not found</h1>
+    <p class="mt-4 text-muted-foreground">This page may have moved. Search the Feldra docs or head back to the quickstart.</p>
+    <a class="mt-8 rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background" href="/docs/quickstart">Read the quickstart</a>
+  </section>
+</PageLayout>

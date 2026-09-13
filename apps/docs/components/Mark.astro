@@ -1,0 +1,14 @@
+---
+interface Props {
+  size?: number;
+}
+const { size = 24 } = Astro.props;
+---
+<span class="feldra-mark" style={`width:${size}px;height:${size}px`} aria-hidden="true">
+  <img src="/feldra-white.png" alt="" width="512" height="512" />
+</span>
+<style>
+.feldra-mark { display: inline-block; flex-shrink: 0; }
+.feldra-mark img { display: block; width: 100%; height: 100%; }
+:global([data-theme="light"]) .feldra-mark img { filter: brightness(0); }
+</style>

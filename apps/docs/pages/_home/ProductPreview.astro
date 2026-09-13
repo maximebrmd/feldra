@@ -1,0 +1,51 @@
+---
+import Callout from "blume/components/content/Callout.astro";
+import CodeBlock from "blume/components/content/CodeBlock.astro";
+// Blume ProductPreview.astro's frame and three-column layout, adapted for Feldra.
+import Mark from "../../components/Mark.astro";
+
+const sidebar = [
+  { items: ["Introduction", "Quickstart", "Environment"], label: "Start here" },
+  {
+    items: [
+      "Architecture",
+      "Databases",
+      "Authentication",
+      "Private data",
+      "Billing",
+    ],
+    label: "Core concepts",
+  },
+  {
+    items: ["Testing", "Deployment", "Maintenance", "Releases"],
+    label: "Ship & maintain",
+  },
+];
+---
+<section aria-label="Feldra documentation preview">
+  <div class="h-[660px] overflow-y-hidden rounded-[2rem] bg-muted/50 px-4 pt-8 sm:px-12 sm:pt-14">
+    <div class="overflow-hidden rounded-t-blume border border-border border-b-0 bg-background shadow-2xl shadow-foreground/10">
+      <div class="flex items-center justify-between px-5 py-3">
+        <span class="flex items-center gap-2 font-medium text-base text-foreground"><Mark />Feldra</span>
+        <a href="/docs/quickstart" class="text-sm text-muted-foreground hover:text-foreground">Read the docs →</a>
+      </div>
+      <div class="border-border border-b px-5 py-3 text-sm text-accent">Docs</div>
+      <div class="grid min-h-[360px] grid-cols-1 sm:min-h-[560px] sm:grid-cols-[220px_1fr] lg:grid-cols-[220px_1fr_200px]">
+        <aside class="hidden p-5 text-[13px] sm:block">
+          {sidebar.map(group => <div class="mb-5 last:mb-0"><p class="font-medium text-foreground">{group.label}</p><ul class="mt-3 space-y-2 text-muted-foreground">{group.items.map(item => <li class={item === "Quickstart" ? "text-accent" : ""}>{item}</li>)}</ul></div>)}
+        </aside>
+        <div class="mx-auto min-w-0 max-w-full p-6 sm:max-w-2xl sm:p-8">
+          <div class="font-medium text-2xl text-foreground leading-[1.1] tracking-tighter sm:text-4xl">Quickstart</div>
+          <p class="mt-4 text-muted-foreground leading-relaxed">From a fresh folder to a workspace that is yours. Marketing, authentication, billing, and a private application — ready to build on.</p>
+          <Callout type="tip">The initializer runs locally. Configure database, email, and Stripe credentials before using live integrations.</Callout>
+          <div class="mt-10 font-medium text-foreground text-xl tracking-tighter">Create your project</div>
+          <p class="mt-3 text-muted-foreground text-sm leading-relaxed">Build the versioned initializer from the repository, then follow the quickstart.</p>
+          <div class="relative mt-4 [&_pre]:my-0!"><CodeBlock code="npm run initializer:pack" icons lang="bash" title="Terminal" /></div>
+          <div class="mt-8 font-medium text-foreground text-xl tracking-tighter">Choose your database</div>
+          <p class="mt-3 text-muted-foreground text-sm leading-relaxed">Neon or Supabase Postgres. Better Auth, Drizzle, Stripe, and Resend in either case.</p>
+        </div>
+        <aside class="hidden p-5 text-[13px] lg:block"><p class="font-medium text-foreground">On this page</p><ul class="mt-3 space-y-2.5 text-muted-foreground"><li>Create your project</li><li>Choose your database</li><li>Connect your providers</li><li>Start building</li></ul></aside>
+      </div>
+    </div>
+  </div>
+</section>

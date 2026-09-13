@@ -1,6 +1,6 @@
 # SaaS Keel
 
-A next-forge-style SaaS monorepo with **two Next.js apps, six shared packages and Turborepo**. Fixed toolkit: TypeScript, Neon or Supabase Postgres/Drizzle, Better Auth, Tailwind/shadcn, Ultracite, Stripe and Resend. Individual accounts and user-level billing.
+A next-forge-style SaaS monorepo with **two Next.js apps, shared packages and Turborepo**. Choose Neon or Supabase Postgres and Better Auth or Clerk. Shared toolkit: TypeScript, Drizzle, Tailwind/shadcn, Ultracite and Stripe. Better Auth uses Resend; Clerk manages its own authentication emails. Individual accounts and user-level billing.
 
 ## Create a project
 
@@ -78,3 +78,15 @@ Auth includes signup/login/logout, verification and reset. The dashboard include
 See [architecture/security](docs/architecture.md), [setup/deployment](docs/setup.md), [maintenance and 0.1 migration](docs/maintenance.md), [reference commits](docs/references.md), [dependencies](docs/dependencies.md) and [publication](docs/releasing.md). MIT with retained third-party notices.
 
 Database-specific connection modes and RLS are documented in [database setup](docs/databases.md). The generated `DATABASE.md` identifies your selected provider.
+
+## Template releases
+
+Maintainers use `npm run changeset` to record a release note, `npm run changeset:status` to preview it, and `npm run release:version` to update versions and changelogs. See [release instructions](docs/releasing.md). Generated projects do not include this repository’s release tooling.
+
+## Feldra documentation website
+
+Run `npm run docs:dev` to open the Astro documentation site at http://localhost:4321. Build it with `npm run docs:build`. See [site maintenance](apps/docs/README.md). This website is excluded from generated SaaS projects.
+
+### Authentication choice
+
+The initializer now offers **Better Auth** (default, Resend emails) or **Clerk** (managed authentication and email), independently of Neon/Supabase. Use `--auth clerk --database supabase --yes` for an explicit noninteractive selection, or `--list-tools` to list choices. The Clerk variant installs only Clerk's auth dependencies and includes its own provider setup and fixtures. See [initializer options](initializer/README.md).

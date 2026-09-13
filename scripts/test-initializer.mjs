@@ -33,7 +33,12 @@ for (const entry of entries) {
 }
 assert.ok(entries.includes("package/template/.env.example"));
 assert.ok(entries.includes("package/template/package-lock.json"));
-for (const database of ["neon", "supabase"]) {
+for (const { database, auth } of [
+  { auth: "better-auth", database: "neon" },
+  { auth: "better-auth", database: "supabase" },
+  { auth: "clerk", database: "neon" },
+  { auth: "clerk", database: "supabase" },
+]) {
   const temp = await mkdtemp(join(tmpdir(), "keel packed test "));
   run(
     "npm",
@@ -48,6 +53,8 @@ for (const database of ["neon", "supabase"]) {
       "packed-saas-check",
       "--database",
       database,
+      "--auth",
+      auth,
       "--yes",
     ],
     temp
@@ -62,6 +69,19 @@ for (const database of ["neon", "supabase"]) {
     await readFile(join(project, "template-origin.json"), "utf8")
   );
   assert.equal(origin.preset, database);
+  assert.equal(origin.auth, auth);
+  assert.equal(
+    Boolean(lock.packages["node_modules/@clerk/nextjs"]),
+    auth === "clerk"
+  );
+  assert.equal(
+    Boolean(lock.packages["node_modules/better-auth"]),
+    auth === "better-auth"
+  );
+  assert.equal(
+    Boolean(lock.packages["node_modules/resend"]),
+    auth === "better-auth"
+  );
   assert.match(
     await readFile(join(project, "DATABASE.md"), "utf8"),
     database === "neon" ? /Neon/u : /Supabase/u
@@ -78,12 +98,27 @@ for (const database of ["neon", "supabase"]) {
   assert.equal(lock.packages[""].name, pkg.name);
   assert.ok(!pkg.dependencies?.["create-saas-keel"]);
   assert.ok(!pkg.scripts["initializer:pack"]);
+  assert.ok(!pkg.scripts.changeset);
+  assert.ok(!pkg.scripts["release:version"]);
+  assert.ok(!lock.packages.initializer);
+  assert.ok(!lock.packages["apps/docs"]);
+  assert.ok(!lock.packages["node_modules/astro"]);
+  assert.ok(!pkg.scripts["docs:dev"]);
+  assert.ok(!lock.packages["node_modules/create-saas-keel"]);
+  assert.ok(!lock.packages["node_modules/@changesets/cli"]);
   assert.ok((await readdir(join(project, "node_modules"))).includes("next"));
   const local = await readFile(join(project, ".env.local"), "utf8");
-  assert.match(local, /BETTER_AUTH_SECRET=[A-Za-z0-9_-]{43}/u);
+  if (auth === "better-auth") {
+    assert.match(local, /BETTER_AUTH_SECRET=[A-Za-z0-9_-]{43}/u);
+  } else {
+    assert.match(local, /CLERK_SECRET_KEY=\n/u);
+    assert.doesNotMatch(local, /BETTER_AUTH_SECRET|RESEND_API_KEY/u);
+  }
   assert.match(local, /DATABASE_URL=\n/u);
   assert.match(local, /STRIPE_SECRET_KEY=\n/u);
-  assert.match(local, /RESEND_API_KEY=\n/u);
+  if (auth === "better-auth") {
+    assert.match(local, /RESEND_API_KEY=\n/u);
+  }
   assert.ok((await readdir(project)).includes(".gitignore"));
   assert.equal(
     spawnSync("git", ["rev-list", "--all", "--count"], {
@@ -127,7 +162,9 @@ for (const database of ["neon", "supabase"]) {
   assert.equal(await readFile(join(project, "package.json"), "utf8"), before);
   run("npm", ["run", "check"], project);
   run("npm", ["run", "test:database"], project);
-  run("npm", ["run", "test:browser"], project);
+  if (auth === "better-auth") {
+    run("npm", ["run", "test:browser"], project);
+  }
   console.log(
     `Packed distribution passed (${entries.length} entries). Generated test project preserved at ${project}`
   );
