@@ -1,0 +1,33 @@
+{
+  "name": "create-saas-keel",
+  "version": "0.1.0",
+  "description": "Create an independent minimal Next.js SaaS with Better Auth, Neon, Stripe and Resend.",
+  "keywords": [
+    "create",
+    "nextjs",
+    "saas",
+    "better-auth",
+    "neon",
+    "stripe",
+    "next-forge"
+  ],
+  "license": "MIT",
+  "author": "Maxime Bourmaud",
+  "type": "module",
+  "bin": {
+    "create-saas-keel": "bin/create.mjs"
+  },
+  "files": [
+    "bin/",
+    "template/",
+    "template-manifest.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
