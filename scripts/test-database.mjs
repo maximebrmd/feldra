@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
 
-const name = `keel-tests-${randomBytes(4).toString("hex")}`;
+const name = `feldra-tests-${randomBytes(4).toString("hex")}`;
 function run(command, args, env = process.env) {
   const result = spawnSync(command, args, { env, stdio: "inherit" });
   if (result.error || result.status !== 0) {
@@ -18,9 +18,9 @@ try {
     "--name",
     name,
     "-e",
-    "POSTGRES_PASSWORD=keel-local-test",
+    "POSTGRES_PASSWORD=feldra-local-test",
     "-e",
-    "POSTGRES_DB=keel_test",
+    "POSTGRES_DB=feldra_test",
     "-p",
     "127.0.0.1::5432",
     "postgres:17-alpine",
@@ -51,7 +51,7 @@ try {
   if (!ready) {
     throw new Error("Postgres did not start");
   }
-  const url = `postgresql://postgres:keel-local-test@127.0.0.1:${port}/keel_test`;
+  const url = `postgresql://postgres:feldra-local-test@127.0.0.1:${port}/feldra_test`;
   const env = {
     ...process.env,
     DATABASE_URL_UNPOOLED: url,

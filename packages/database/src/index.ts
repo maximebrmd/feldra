@@ -6,7 +6,7 @@ import { Pool } from "pg";
 import * as schema from "./schema";
 
 const globalDb = globalThis as unknown as {
-  keelDb?: ReturnType<typeof createDatabase>;
+  feldraDb?: ReturnType<typeof createDatabase>;
 };
 function createDatabase() {
   const pool = new Pool({
@@ -18,6 +18,6 @@ function createDatabase() {
   return drizzle(pool, { schema });
 }
 export function db() {
-  globalDb.keelDb ??= createDatabase();
-  return globalDb.keelDb;
+  globalDb.feldraDb ??= createDatabase();
+  return globalDb.feldraDb;
 }

@@ -7,7 +7,7 @@ sidebar:
 
 ## Release status
 
-Feldra is the project’s new brand. The initializer is currently named `create-saas-keel` and has not been published to npm. Maintainers manage versioning through Changesets.
+Feldra is the project’s new brand. The initializer is currently named `create-feldra` and has not been published to npm. Maintainers manage versioning through Changesets.
 
 ## Release workflow
 

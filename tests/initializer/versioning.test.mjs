@@ -26,7 +26,7 @@ async function json(path) {
 }
 
 test("real Changesets versions only the initializer, writes changelog and synchronizes locks", async () => {
-  const temp = await mkdtemp(join(tmpdir(), "keel release test "));
+  const temp = await mkdtemp(join(tmpdir(), "feldra release test "));
   try {
     for (const path of [
       ".changeset",
@@ -48,7 +48,7 @@ test("real Changesets versions only the initializer, writes changelog and synchr
     );
     await writeFile(
       join(temp, "initializer/package.json"),
-      JSON.stringify({ name: "create-saas-keel", version: "0.3.0" })
+      JSON.stringify({ name: "create-feldra", version: "0.3.0" })
     );
     await writeFile(
       join(temp, "packages/private/package.json"),
@@ -64,7 +64,7 @@ test("real Changesets versions only the initializer, writes changelog and synchr
     );
     await writeFile(
       join(temp, ".changeset/test-release.md"),
-      '---\n"create-saas-keel": patch\n---\n\nMake the release workflow reproducible.\n'
+      '---\n"create-feldra": patch\n---\n\nMake the release workflow reproducible.\n'
     );
     run("git", ["init", "--initial-branch=main", "--template="], temp);
     run(

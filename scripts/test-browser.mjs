@@ -6,7 +6,7 @@ import { createServer } from "node:net";
 import { resolve as resolvePath } from "node:path";
 import { chromium, expect } from "@playwright/test";
 
-const name = `keel-browser-${randomBytes(4).toString("hex")}`;
+const name = `feldra-browser-${randomBytes(4).toString("hex")}`;
 function run(command, args, env = process.env) {
   const result = spawnSync(command, args, { env, stdio: "inherit" });
   if (result.error || result.status !== 0) {
@@ -30,7 +30,7 @@ try {
     "--name",
     name,
     "-e",
-    "POSTGRES_PASSWORD=keel-local-test",
+    "POSTGRES_PASSWORD=feldra-local-test",
     "-e",
     "POSTGRES_DB=browser_test",
     "-p",
@@ -63,7 +63,7 @@ try {
   const webPort = await freePort();
   const baseURL = `http://localhost:${port}`;
   const webURL = `http://localhost:${webPort}`;
-  const databaseUrl = `postgresql://postgres:keel-local-test@127.0.0.1:${databasePort}/browser_test`;
+  const databaseUrl = `postgresql://postgres:feldra-local-test@127.0.0.1:${databasePort}/browser_test`;
   const env = {
     ...process.env,
     APP_URL: baseURL,
@@ -137,7 +137,7 @@ try {
     .fill("browser-test-password");
   await page.getByRole("button", { exact: true, name: "Sign in" }).click();
   await expect(page).toHaveURL(/\/onboarding$/u);
-  await page.getByLabel("Your name").fill("Keel Tester");
+  await page.getByLabel("Your name").fill("Feldra Tester");
   await page.getByRole("button", { name: "Open my workspace" }).click();
   await expect(page).toHaveURL(/\/dashboard$/u);
   await expect(page.getByText("Every chapter starts somewhere.")).toBeVisible();

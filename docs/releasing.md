@@ -1,4 +1,4 @@
-# Versioning and publishing create-saas-keel
+# Versioning and publishing create-feldra
 
 Changesets manages the initializer version and `initializer/CHANGELOG.md`. The initializer is a workspace so the CLI can discover it. Apps and shared packages remain private and are not independently versioned or published. Changesets is maintainer tooling; generated SaaS projects do not include it, its scripts, or the initializer workspace.
 
@@ -11,7 +11,7 @@ npm run changeset
 npm run changeset:status
 ```
 
-Select `create-saas-keel`, choose patch/minor/major, and write a user-facing summary. This applies to changes in the bundled apps/packages as well as the initializer itself. Commit the file in `.changeset/` alongside the implementation. Documentation-only changes that do not need a release can omit a changeset. The CLI uses the standard workflow in the [Changesets guide](https://changesets.dev/guide/getting-started).
+Select `create-feldra`, choose patch/minor/major, and write a user-facing summary. This applies to changes in the bundled apps/packages as well as the initializer itself. Commit the file in `.changeset/` alongside the implementation. Documentation-only changes that do not need a release can omit a changeset. The CLI uses the standard workflow in the [Changesets guide](https://changesets.dev/guide/getting-started).
 
 ## Prepare a version
 
@@ -36,7 +36,7 @@ Inspect the tarball, `initializer/template-manifest.json`, and the test output. 
 Nothing is automatically published. Do not use `changeset publish` here: publication must use the exact tested tarball, not the mutable initializer directory. After explicit authorization, authenticate to npm, recheck package-name availability/ownership and publish the artifact for the prepared version:
 
 ```sh
-npm publish ./create-saas-keel-VERSION.tgz --access public
+npm publish ./create-feldra-VERSION.tgz --access public
 ```
 
 Replace VERSION with `initializer/package.json`'s version. The name returned registry 404 on 2026-09-13; that is not a reservation. Verify the public install in a clean directory after publication. There is no CI publication workflow or npm token configured.
@@ -44,7 +44,7 @@ Replace VERSION with `initializer/package.json`'s version. The name returned reg
 Before publication, use the tested local artifact:
 
 ```sh
-npm exec --yes --package="/absolute/path/create-saas-keel-VERSION.tgz" -- create-saas-keel "./my new saas" --name my-new-saas
+npm exec --yes --package="/absolute/path/create-feldra-VERSION.tgz" -- create-feldra "./my new saas" --name my-new-saas
 ```
 
-The public command `npm create saas-keel@latest my-new-saas` only works after publication. Provider credentials still need configuration in each generated project.
+The public command `npm create feldra@latest my-new-saas` only works after publication. Provider credentials still need configuration in each generated project.

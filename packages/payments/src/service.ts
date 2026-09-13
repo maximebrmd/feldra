@@ -99,7 +99,7 @@ export async function checkout(user: { id: string; email: string }) {
         cancel_url: `${appUrl()}/dashboard/settings?checkout=canceled`,
         client_reference_id: user.id,
         customer: row.customerId ?? undefined,
-        integration_identifier: "saas-keel-mqvtxrpa",
+        integration_identifier: "feldra-mqvtxrpa",
         line_items: [{ price: stripeEnv().STRIPE_PRO_PRICE_ID, quantity: 1 }],
         mode: "subscription",
         subscription_data: { metadata: { userId: user.id } },

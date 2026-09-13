@@ -1,4 +1,4 @@
-# SaaS Keel
+# Feldra
 
 A next-forge-style SaaS monorepo with **two Next.js apps, shared packages and Turborepo**. Choose Neon or Supabase Postgres and Better Auth or Clerk. Shared toolkit: TypeScript, Drizzle, Tailwind/shadcn, Ultracite and Stripe. Better Auth uses Resend; Clerk manages its own authentication emails. Individual accounts and user-level billing.
 
@@ -7,20 +7,20 @@ A next-forge-style SaaS monorepo with **two Next.js apps, shared packages and Tu
 After npm publication, run the interactive initializer:
 
 ```sh
-npm create saas-keel@latest
+npm create feldra@latest
 ```
 
 Or give the destination and skip prompts for Codex/CI:
 
 ```sh
-npm create saas-keel@latest my-new-saas -- --yes --database neon
+npm create feldra@latest my-new-saas -- --yes --database neon
 ```
 
 Until publication, from this base repository:
 
 ```sh
 npm run initializer:pack
-npm exec --yes --package="$(pwd)/create-saas-keel-0.3.0.tgz" -- create-saas-keel my-new-saas
+npm exec --yes --package="$(pwd)/create-feldra-0.3.0.tgz" -- create-feldra my-new-saas
 ```
 
 In a terminal, the initializer asks for the directory and package name and offers an arrow-key database selector before confirmation. Use arrow keys and Enter to choose **Neon** or **Supabase**. Both keep Better Auth and Drizzle; Supabase supplies Postgres only. `--yes` or non-TTY input uses noninteractive mode and requires a directory. A quoted path containing spaces works; `--name` overrides the derived package name. Existing destinations are refused, even if empty.

@@ -13,7 +13,7 @@ test("every private table denies direct nonowner access even with client grants"
   await client.connect();
   try {
     await client.query("BEGIN");
-    await client.query("CREATE ROLE keel_untrusted NOLOGIN");
+    await client.query("CREATE ROLE feldra_untrusted NOLOGIN");
     await client.query(
       `INSERT INTO "user" (id, name, email) VALUES ('rls-fixture', 'Private', 'rls@example.com')`
     );
@@ -35,11 +35,11 @@ test("every private table denies direct nonowner access even with client grants"
       enabled.rows.map((row: { relname: string }) => row.relname).sort(),
       tables.toSorted()
     );
-    await client.query("GRANT USAGE ON SCHEMA public TO keel_untrusted");
+    await client.query("GRANT USAGE ON SCHEMA public TO feldra_untrusted");
     await client.query(
-      "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO keel_untrusted"
+      "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO feldra_untrusted"
     );
-    await client.query("SET LOCAL ROLE keel_untrusted");
+    await client.query("SET LOCAL ROLE feldra_untrusted");
     for (const table of tables) {
       const result = await client.query(`SELECT * FROM "${table}"`);
       assert.equal(result.rowCount, 0, `${table} must not expose rows`);

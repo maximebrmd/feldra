@@ -15,7 +15,7 @@ run("npm", ["run", "initializer:pack"]);
 const version = JSON.parse(
   await readFile(join(root, "initializer/package.json"), "utf8")
 ).version;
-const tarball = join(root, `create-saas-keel-${version}.tgz`);
+const tarball = join(root, `create-feldra-${version}.tgz`);
 const listing = spawnSync("tar", ["-tzf", tarball], { encoding: "utf8" });
 assert.equal(listing.status, 0);
 const entries = listing.stdout.trim().split("\n");
@@ -39,7 +39,7 @@ for (const { database, auth } of [
   { auth: "clerk", database: "neon" },
   { auth: "clerk", database: "supabase" },
 ]) {
-  const temp = await mkdtemp(join(tmpdir(), "keel packed test "));
+  const temp = await mkdtemp(join(tmpdir(), "feldra packed test "));
   run(
     "npm",
     [
@@ -47,7 +47,7 @@ for (const { database, auth } of [
       "--yes",
       `--package=${tarball}`,
       "--",
-      "create-saas-keel",
+      "create-feldra",
       "./a project with spaces",
       "--name",
       "packed-saas-check",
@@ -96,7 +96,7 @@ for (const { database, auth } of [
   assert.ok(entries.includes("package/template/packages/auth/server.ts"));
   assert.equal(lock.name, pkg.name);
   assert.equal(lock.packages[""].name, pkg.name);
-  assert.ok(!pkg.dependencies?.["create-saas-keel"]);
+  assert.ok(!pkg.dependencies?.["create-feldra"]);
   assert.ok(!pkg.scripts["initializer:pack"]);
   assert.ok(!pkg.scripts.changeset);
   assert.ok(!pkg.scripts["release:version"]);
@@ -104,7 +104,7 @@ for (const { database, auth } of [
   assert.ok(!lock.packages["apps/docs"]);
   assert.ok(!lock.packages["node_modules/astro"]);
   assert.ok(!pkg.scripts["docs:dev"]);
-  assert.ok(!lock.packages["node_modules/create-saas-keel"]);
+  assert.ok(!lock.packages["node_modules/create-feldra"]);
   assert.ok(!lock.packages["node_modules/@changesets/cli"]);
   assert.ok((await readdir(join(project, "node_modules"))).includes("next"));
   const local = await readFile(join(project, ".env.local"), "utf8");
@@ -147,7 +147,7 @@ for (const { database, auth } of [
       "--yes",
       `--package=${tarball}`,
       "--",
-      "create-saas-keel",
+      "create-feldra",
       "./a project with spaces",
       "--yes",
     ],
