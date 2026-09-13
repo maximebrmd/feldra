@@ -6,5 +6,5 @@
     }
   },
   "include": ["tests/**/*.ts"],
-  "exclude": ["node_modules", "initializer/template", "my-new-saas"]
+  "exclude": ["node_modules", "packages/feldra/template", "my-new-saas"]
 }

@@ -42,7 +42,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          version=$(node -p "require('./initializer/package.json').version")
+          version=$(node -p "require('./packages/feldra/package.json').version")
           tag="create-feldra@$version"
           artifact="release-artifact/create-feldra-$version.tgz"
           cd release-artifact

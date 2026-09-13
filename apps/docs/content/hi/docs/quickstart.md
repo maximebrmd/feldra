@@ -24,7 +24,7 @@ npm ci
 npm run initializer:pack
 ```
 
-यह सोर्स को सत्यापित करता है और रिपॉज़िटरी के मूल फ़ोल्डर में `create-feldra-VERSION.tgz` लिखता है। नीचे VERSION को `initializer/package.json` में दिए गए संस्करण से बदलें:
+यह सोर्स को सत्यापित करता है और रिपॉज़िटरी के मूल फ़ोल्डर में `create-feldra-VERSION.tgz` लिखता है। नीचे VERSION को `packages/feldra/package.json` में दिए गए संस्करण से बदलें:
 
 ```sh
 npm exec --yes --package="./create-feldra-VERSION.tgz" -- create-feldra my-new-saas

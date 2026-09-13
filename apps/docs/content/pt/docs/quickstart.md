@@ -24,7 +24,7 @@ O inicializador ainda não foi publicado no npm. Primeiro, compile o pacote loca
 npm run initializer:pack
 ```
 
-Isso valida o código-fonte e grava `create-feldra-VERSION.tgz` na raiz do repositório. Substitua VERSION abaixo pela versão em `initializer/package.json`:
+Isso valida o código-fonte e grava `create-feldra-VERSION.tgz` na raiz do repositório. Substitua VERSION abaixo pela versão em `packages/feldra/package.json`:
 
 ```sh
 npm exec --yes --package="./create-feldra-VERSION.tgz" -- create-feldra my-new-saas

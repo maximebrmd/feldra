@@ -16,7 +16,7 @@ npm run changeset:status
 npm run release:version
 ```
 
-Der Versionierungsbefehl verarbeitet ausstehende Änderungsnotizen, generiert `initializer/CHANGELOG.md`, aktualisiert die Versionen des Initialisierers und des Stammprojekts und aktualisiert die Lockdatei. Er veröffentlicht nichts. Teste das gepackte Artefakt vor einer ausdrücklich autorisierten Veröffentlichung auf npm.
+Der Versionierungsbefehl verarbeitet ausstehende Änderungsnotizen, generiert `packages/feldra/CHANGELOG.md`, aktualisiert die Versionen des Initialisierers und des Stammprojekts und aktualisiert die Lockdatei. Er veröffentlicht nichts. Teste das gepackte Artefakt vor einer ausdrücklich autorisierten Veröffentlichung auf npm.
 
 ## Lokaler Versionsverlauf [#local-release-history]
 

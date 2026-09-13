@@ -16,7 +16,7 @@ npm run changeset:status
 npm run release:version
 ```
 
-O comando de versionamento processa as notas pendentes, gera `initializer/CHANGELOG.md`, atualiza as versões do inicializador e da raiz e atualiza o arquivo de lock. Ele não publica nada. Teste o artefato empacotado antes de uma publicação no npm explicitamente autorizada.
+O comando de versionamento processa as notas pendentes, gera `packages/feldra/CHANGELOG.md`, atualiza as versões do inicializador e da raiz e atualiza o arquivo de lock. Ele não publica nada. Teste o artefato empacotado antes de uma publicação no npm explicitamente autorizada.
 
 ## Histórico de versões locais [#local-release-history]
 

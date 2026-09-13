@@ -30,7 +30,7 @@ test("real Changesets versions only the initializer, writes changelog and synchr
   try {
     for (const path of [
       ".changeset",
-      "initializer",
+      "packages/feldra",
       "packages/private",
       "scripts",
     ]) {
@@ -43,11 +43,11 @@ test("real Changesets versions only the initializer, writes changelog and synchr
         private: true,
         type: "module",
         version: "0.3.0",
-        workspaces: ["initializer", "packages/*"],
+        workspaces: ["packages/*"],
       })
     );
     await writeFile(
-      join(temp, "initializer/package.json"),
+      join(temp, "packages/feldra/package.json"),
       JSON.stringify({ name: "create-feldra", version: "0.3.0" })
     );
     await writeFile(
@@ -79,7 +79,7 @@ test("real Changesets versions only the initializer, writes changelog and synchr
       temp
     );
     assert.equal(
-      (await json(join(temp, "initializer/package.json"))).version,
+      (await json(join(temp, "packages/feldra/package.json"))).version,
       "0.3.1"
     );
     assert.equal((await json(join(temp, "package.json"))).version, "0.3.1");
@@ -90,9 +90,9 @@ test("real Changesets versions only the initializer, writes changelog and synchr
     const lock = await json(join(temp, "package-lock.json"));
     assert.equal(lock.version, "0.3.1");
     assert.equal(lock.packages[""].version, "0.3.1");
-    assert.equal(lock.packages.initializer.version, "0.3.1");
+    assert.equal(lock.packages["packages/feldra"].version, "0.3.1");
     assert.match(
-      await readFile(join(temp, "initializer/CHANGELOG.md"), "utf8"),
+      await readFile(join(temp, "packages/feldra/CHANGELOG.md"), "utf8"),
       /0\.3\.1[\s\S]*Make the release workflow reproducible/u
     );
     await assert.rejects(readFile(join(temp, ".changeset/test-release.md")), {
@@ -110,7 +110,7 @@ test("real Changesets versions only the initializer, writes changelog and synchr
       temp
     );
     assert.equal(
-      (await json(join(temp, "initializer/package.json"))).version,
+      (await json(join(temp, "packages/feldra/package.json"))).version,
       "0.3.1"
     );
   } finally {

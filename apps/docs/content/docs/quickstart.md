@@ -25,7 +25,7 @@ The initializer has not been published to npm. Build the versioned local package
 npm run initializer:pack
 ```
 
-This validates the source and writes `create-feldra-VERSION.tgz` in the repository root. Replace VERSION below with the version in `initializer/package.json`:
+This validates the source and writes `create-feldra-VERSION.tgz` in the repository root. Replace VERSION below with the version in `packages/feldra/package.json`:
 
 ```sh
 npm exec --yes --package="./create-feldra-VERSION.tgz" -- create-feldra my-new-saas

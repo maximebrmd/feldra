@@ -17,7 +17,7 @@ npm run changeset:status
 npm run release:version
 ```
 
-The version command consumes pending notes, generates `initializer/CHANGELOG.md`, updates the initializer and root versions, and refreshes the lockfile. It does not publish. Test the packed artifact before an explicitly authorized npm publication.
+The version command consumes pending notes, generates `packages/feldra/CHANGELOG.md`, updates the initializer and root versions, and refreshes the lockfile. It does not publish. Test the packed artifact before an explicitly authorized npm publication.
 
 ## Local release history
 
