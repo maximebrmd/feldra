@@ -8,6 +8,8 @@
     "build": "blume build",
     "dev": "blume dev --host 127.0.0.1 --port 4321",
     "preview": "blume preview --host 127.0.0.1 --port 4321",
+    "translate": "blume translate",
+    "translate:check": "blume translate --check",
     "typecheck": "blume check"
   },
   "dependencies": {

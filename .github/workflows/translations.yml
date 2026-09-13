@@ -1,0 +1,25 @@
+name: Translations
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: translations-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  translations:
+    # Source edits can land before translations are refreshed. Release PRs
+    # must carry current translations, matching Blume's release workflow.
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'changeset-release/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-node
+      - name: Check for missing or stale translations
+        run: npm run docs:translations:check

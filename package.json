@@ -19,6 +19,8 @@
     "dev": "turbo run dev",
     "docs:build": "npm run build --workspace docs",
     "docs:dev": "npm run dev --workspace docs",
+    "docs:translate": "npm run translate --workspace docs --",
+    "docs:translations:check": "npm run translate:check --workspace docs",
     "format": "ultracite fix",
     "initializer:pack": "node scripts/pack-initializer.mjs",
     "initializer:test": "node scripts/test-initializer.mjs",
@@ -29,7 +31,7 @@
     "test": "node --conditions=react-server --import tsx --test tests/*.test.ts",
     "test:browser": "node scripts/test-browser.mjs",
     "test:database": "node scripts/test-database.mjs",
-    "test:docs": "node scripts/test-docs.mjs",
+    "test:docs": "node --import tsx scripts/test-docs.mjs",
     "test:initializer": "node --test tests/initializer/*.test.mjs",
     "test:integration": "node --conditions=react-server --import tsx --test tests/integration/*.test.ts",
     "typecheck": "turbo run typecheck && tsc --noEmit"

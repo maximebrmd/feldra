@@ -31,15 +31,15 @@ This runs lint/types/unit tests and both app builds, packs a strict allowlist wi
 
 Inspect the tarball, `initializer/template-manifest.json`, and the test output. Record the tarball SHA-256 and validation results. The bundle includes the generated release changelog. It excludes real credentials, node_modules, Git history, agent files, release configuration and research. Never edit a tested bundle and publish it without repacking/retesting.
 
-## Publish only with authorization
+## Publish
 
-Nothing is automatically published. Do not use `changeset publish` here: publication must use the exact tested tarball, not the mutable initializer directory. After explicit authorization, authenticate to npm, recheck package-name availability/ownership and publish the artifact for the prepared version:
+CI creates Changesets version PRs after checks pass. Once npm trusted publishing and `NPM_PUBLISH_ENABLED` are configured, merging a version PR publishes the exact tested CI tarball and creates a GitHub release. See [CI/CD setup](ci-cd.md). Do not use `changeset publish` here: publication must use the exact tested tarball, not the mutable initializer directory. For the first publication or a manual release, authenticate to npm, recheck package-name availability/ownership and publish the artifact for the prepared version:
 
 ```sh
 npm publish ./create-feldra-VERSION.tgz --access public
 ```
 
-Replace VERSION with `initializer/package.json`'s version. The name returned registry 404 on 2026-09-13; that is not a reservation. Verify the public install in a clean directory after publication. There is no CI publication workflow or npm token configured.
+Replace VERSION with `initializer/package.json`'s version. The name returned registry 404 on 2026-09-13; that is not a reservation. Verify the public install in a clean directory after publication. Automated publication uses npm OIDC trusted publishing, without an npm token.
 
 Before publication, use the tested local artifact:
 

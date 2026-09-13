@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  checks:
+    name: ${{ matrix.command }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        command: [lint, typecheck, test, 'test:initializer']
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-node
+      - run: npm run "${{ matrix.command }}"
+
+  distribution:
+    name: Build and test distribution
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-node
+      - run: npx --no-install playwright install --with-deps chromium
+      # Packs once, then checks all four database/auth combinations, including
+      # isolated Postgres fixtures and the Better Auth production browser flows.
+      - run: npm run initializer:test
+      - name: Record artifact checksum
+        run: sha256sum create-feldra-*.tgz > SHA256SUMS
+      - uses: actions/upload-artifact@v7
+        with:
+          name: initializer
+          path: |
+            create-feldra-*.tgz
+            SHA256SUMS
+          if-no-files-found: error
+          retention-days: 14
+
+  docs:
+    name: Build and test docs
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-node
+      - run: npm run docs:build
+      - run: npx --no-install playwright install --with-deps chromium
+      - name: Test documentation site
+        shell: bash
+        run: |
+          npm run preview --workspace docs > /tmp/feldra-docs.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" || true; cat /tmp/feldra-docs.log' EXIT
+          for _ in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:4321/ > /dev/null; then
+              npm run test:docs
+              exit 0
+            fi
+            sleep 1
+          done
+          exit 1
+      - uses: actions/upload-artifact@v7
+        with:
+          name: docs
+          path: apps/docs/dist
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: docs-screenshots
+          path: test-results/docs
+          if-no-files-found: ignore
+
+  release:
+    needs: [checks, distribution, docs]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/release.yml
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+    secrets: inherit
+
+  deploy:
+    needs: [checks, distribution, docs]
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.DOCS_DEPLOY_ENABLED == 'true'
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit

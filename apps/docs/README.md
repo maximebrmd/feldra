@@ -9,7 +9,7 @@ npm run docs:build
 npm run typecheck --workspace docs
 ```
 
-Open http://localhost:4321. The build produces static files in `apps/docs/dist`. Host that directory with directory-index routing and a `404.html` fallback. No domain or deployment is configured. Set `deployment.site` in `blume.config.ts` when a domain is chosen to enable canonical URLs and a sitemap.
+Open http://localhost:4321. The build produces static files in `apps/docs/dist`. The GitHub Actions deploy workflow sends the tested output to Cloudflare Workers Static Assets once enabled; see [CI/CD setup](../../docs/ci-cd.md). Set `deployment.site` in `blume.config.ts` when a domain is chosen to enable canonical URLs and a sitemap.
 
 ## Edit the site
 
@@ -22,6 +22,22 @@ Open http://localhost:4321. The build produces static files in `apps/docs/dist`.
 Blume generates an ignored `.blume` Astro workspace. Do not edit generated files. Fonts are bundled into the static output. Search, keyboard shortcuts, mobile navigation, code copying, theme switching and the docs layout come from Blume. No AI assistant, MCP server, analytics, or hosted search is configured.
 
 Setup commands still use the actual `create-feldra` package name. The package has been renamed; npm publication has not happened. The homepage command builds the local initializer; the quickstart explains how to run the resulting tarball.
+
+## Translations
+
+English content stays in `content/docs`. German (`de`), Hindi (`hi`), Japanese (`ja`) and Brazilian Portuguese (`pt`) use matching `content/<locale>/docs` directories. Locale names, tone guidance, tab labels and localized redirects are configured in `blume.config.ts`, following Blume's own docs site.
+
+```sh
+npm run docs:translate -- --codex --concurrency 1
+npm run docs:translate -- --claude --locale de
+npm run docs:translations:check
+```
+
+Run generation from the repository root with an authenticated local Codex or Claude CLI. It translates Markdown guides and maintains `blume.translations.json`; commit that ledger with the translations. Review translations for terminology and accuracy. Code samples, URLs and source heading anchors should remain stable across languages. The check command reports missing or stale translations without running a model or writing files.
+
+Blume 1.6.5's smart punctuation can turn `--` inside an anchor marker into an en dash. The translated release-history headings escape one hyphen (`[#020-\-unreleased]`) to retain the original `020--unreleased` ID. Preserve those escapes when refreshing translations. Browser checks compare rendered source and translated anchors, which catches this discrepancy even when the ledger is current.
+
+CI checks freshness on release PRs, and npm publishing repeats the check. Regular source edits can land before translation updates. Refresh translations before merging a release PR; see [CI/CD setup](../../docs/ci-cd.md). Custom Astro homepage and 404 content are English and outside the Markdown translation pipeline.
 
 ## Verify
 

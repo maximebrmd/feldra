@@ -12,6 +12,11 @@
     "next-forge",
     "supabase"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maximebrmd/feldra.git",
+    "directory": "initializer"
+  },
   "license": "MIT",
   "author": "Maxime Bourmaud",
   "type": "module",

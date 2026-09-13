@@ -81,6 +81,10 @@ Database-specific connection modes and RLS are documented in [database setup](do
 
 ## Template releases
 
+For contributions, see the [contribution guide](.github/CONTRIBUTING.md), [code of conduct](.github/CODE_OF_CONDUCT.md), and [security policy](.github/SECURITY.md).
+
+GitHub Actions validates pull requests and main, prepares Changesets version PRs, and can publish tested npm tarballs and deploy the docs to Cloudflare. See [CI/CD setup](docs/ci-cd.md) for account settings and activation.
+
 Maintainers use `npm run changeset` to record a release note, `npm run changeset:status` to preview it, and `npm run release:version` to update versions and changelogs. See [release instructions](docs/releasing.md). Generated projects do not include this repository’s release tooling.
 
 ## Feldra documentation website

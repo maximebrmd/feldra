@@ -95,6 +95,8 @@ delete pkg.scripts["changeset:status"];
 delete pkg.scripts["release:version"];
 delete pkg.scripts["release:sync"];
 delete pkg.scripts["docs:dev"];
+delete pkg.scripts["docs:translate"];
+delete pkg.scripts["docs:translations:check"];
 delete pkg.scripts["docs:build"];
 delete pkg.scripts["test:docs"];
 pkg.workspaces = pkg.workspaces.filter(

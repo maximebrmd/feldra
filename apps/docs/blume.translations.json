@@ -1,0 +1,77 @@
+{
+  "files": {
+    "content/docs/architecture.md": {
+      "de": "1adec51c66b9d80f",
+      "hi": "1adec51c66b9d80f",
+      "ja": "1adec51c66b9d80f",
+      "pt": "1adec51c66b9d80f"
+    },
+    "content/docs/authentication.md": {
+      "de": "6a121718832d6cb5",
+      "hi": "6a121718832d6cb5",
+      "ja": "6a121718832d6cb5",
+      "pt": "6a121718832d6cb5"
+    },
+    "content/docs/billing.md": {
+      "de": "e7208cae30b61f55",
+      "hi": "e7208cae30b61f55",
+      "ja": "e7208cae30b61f55",
+      "pt": "e7208cae30b61f55"
+    },
+    "content/docs/databases.md": {
+      "de": "71655d9bec9977b9",
+      "hi": "71655d9bec9977b9",
+      "ja": "71655d9bec9977b9",
+      "pt": "71655d9bec9977b9"
+    },
+    "content/docs/deployment.md": {
+      "de": "0cf4f7f1d070a8ba",
+      "hi": "0cf4f7f1d070a8ba",
+      "ja": "0cf4f7f1d070a8ba",
+      "pt": "0cf4f7f1d070a8ba"
+    },
+    "content/docs/environment.md": {
+      "de": "f50dbb73401e6056",
+      "hi": "f50dbb73401e6056",
+      "ja": "f50dbb73401e6056",
+      "pt": "f50dbb73401e6056"
+    },
+    "content/docs/introduction.md": {
+      "de": "854b2d3d5452859c",
+      "hi": "854b2d3d5452859c",
+      "ja": "854b2d3d5452859c",
+      "pt": "854b2d3d5452859c"
+    },
+    "content/docs/maintenance.md": {
+      "de": "fe914d3125fb828c",
+      "hi": "fe914d3125fb828c",
+      "ja": "fe914d3125fb828c",
+      "pt": "fe914d3125fb828c"
+    },
+    "content/docs/private-data.md": {
+      "de": "605af7ca708f8da5",
+      "hi": "605af7ca708f8da5",
+      "ja": "605af7ca708f8da5",
+      "pt": "605af7ca708f8da5"
+    },
+    "content/docs/quickstart.md": {
+      "de": "d1eabebd1fc9b314",
+      "hi": "d1eabebd1fc9b314",
+      "ja": "d1eabebd1fc9b314",
+      "pt": "d1eabebd1fc9b314"
+    },
+    "content/docs/releases.md": {
+      "de": "118bcff83d1dc5d3",
+      "hi": "118bcff83d1dc5d3",
+      "ja": "118bcff83d1dc5d3",
+      "pt": "118bcff83d1dc5d3"
+    },
+    "content/docs/testing.md": {
+      "de": "4d70bc407bffa129",
+      "hi": "4d70bc407bffa129",
+      "ja": "4d70bc407bffa129",
+      "pt": "4d70bc407bffa129"
+    }
+  },
+  "version": 1
+}
