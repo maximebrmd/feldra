@@ -1,24 +1,27 @@
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { after, mock, test } from "node:test";
+import { auth } from "@repo/auth/server";
+import { db } from "@repo/database";
+import { billing, stripeEvent, user } from "@repo/database/schema";
+import {
+  checkout,
+  processStripeEvent,
+  requirePaid,
+} from "@repo/payments/service";
+import { stripe } from "@repo/payments/stripe";
 import { eq } from "drizzle-orm";
 import type Stripe from "stripe";
 import {
   DELETE as remove,
   PATCH as update,
-} from "../../src/app/api/notes/[id]/route";
-import { GET as exportNotes } from "../../src/app/api/notes/export/route";
-import { POST as create, GET as read } from "../../src/app/api/notes/route";
-import { POST as webhook } from "../../src/app/api/webhooks/stripe/route";
-import { auth } from "../../src/lib/auth";
+} from "../../apps/app/src/app/api/notes/[id]/route";
+import { GET as exportNotes } from "../../apps/app/src/app/api/notes/export/route";
 import {
-  checkout,
-  processStripeEvent,
-  requirePaid,
-} from "../../src/lib/billing/service";
-import { stripe } from "../../src/lib/billing/stripe";
-import { db } from "../../src/lib/db";
-import { billing, stripeEvent, user } from "../../src/lib/db/schema";
+  POST as create,
+  GET as read,
+} from "../../apps/app/src/app/api/notes/route";
+import { POST as webhook } from "../../apps/app/src/app/api/webhooks/stripe/route";
 
 const databaseUrl = process.env.TEST_DATABASE_URL;
 if (

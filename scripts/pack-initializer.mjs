@@ -20,25 +20,22 @@ function run(args, cwd) {
   }
 }
 run(["run", "check"], root);
+run(["run", "test:initializer"], root);
 await rm(target, { force: true, recursive: true });
 await mkdir(target);
 const files = [
-  "src",
-  "drizzle",
+  "apps",
+  "packages",
   "tests",
   "docs",
-  "scripts/migrate.ts",
   "scripts/test-database.mjs",
   "scripts/test-browser.mjs",
   "package.json",
   "package-lock.json",
   "tsconfig.json",
-  "next-env.d.ts",
-  "next.config.ts",
-  "postcss.config.mjs",
+  "tsconfig.base.json",
+  "turbo.json",
   "biome.jsonc",
-  "components.json",
-  "drizzle.config.ts",
   ".env.example",
   ".gitignore",
   "README.md",
@@ -56,6 +53,16 @@ async function copy(path) {
   });
   if (entries) {
     for (const entry of entries) {
+      if (path === "tests" && entry.name === "initializer") {
+        continue;
+      }
+      if (
+        ["node_modules", ".next", ".turbo"].includes(entry.name) ||
+        entry.name.endsWith(".tsbuildinfo") ||
+        (entry.name.startsWith(".env") && entry.name !== ".env.example")
+      ) {
+        continue;
+      }
       if (entry.isSymbolicLink()) {
         throw new Error(`Symlink disallowed: ${path}/${entry.name}`);
       }
@@ -73,15 +80,17 @@ for (const path of files) {
 const pkg = JSON.parse(await readFile(join(target, "package.json"), "utf8"));
 delete pkg.scripts["initializer:pack"];
 delete pkg.scripts["initializer:test"];
+delete pkg.scripts["test:initializer"];
 await writeFile(
   join(target, "package.json"),
   `${JSON.stringify(pkg, null, 2)}\n`
 );
-// next typegen regenerates its references; never bundle a reference to a local .next tree.
-await writeFile(
-  join(target, "next-env.d.ts"),
-  '/// <reference types="next" />\n/// <reference types="next/image-types/global" />\n'
-);
+for (const app of ["app", "web"]) {
+  await writeFile(
+    join(target, "apps", app, "next-env.d.ts"),
+    '/// <reference types="next" />\n/// <reference types="next/image-types/global" />\n'
+  );
+}
 const hashes = {};
 async function hash(path = "") {
   const entries = await readdir(join(target, path), { withFileTypes: true });

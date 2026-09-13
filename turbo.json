@@ -1,0 +1,31 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "globalDependencies": [".env.local", "tsconfig.base.json"],
+  "globalEnv": [
+    "APP_URL",
+    "WEB_URL",
+    "DATABASE_URL",
+    "DATABASE_URL_UNPOOLED",
+    "BETTER_AUTH_SECRET",
+    "RESEND_API_KEY",
+    "EMAIL_FROM",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET",
+    "STRIPE_PRO_PRICE_ID",
+    "STRIPE_LIVE_MODE"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
+      "outputs": []
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

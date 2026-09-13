@@ -1,0 +1,22 @@
+{
+  "name": "@repo/design-system",
+  "version": "0.2.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./components/ui/*": "./components/ui/*.tsx",
+    "./styles/globals.css": "./styles/globals.css",
+    "./lib/utils": "./lib/utils.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "1.3.3",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "react": "19.3.0",
+    "tailwind-merge": "3.7.0"
+  }
+}

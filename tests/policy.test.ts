@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { hasPaidAccess, subscriptionSnapshot } from "@repo/payments/policy";
 import type Stripe from "stripe";
-import { hasPaidAccess, subscriptionSnapshot } from "../src/lib/billing/policy";
-import { noteInput } from "../src/lib/notes";
+import { noteInput } from "../apps/app/src/lib/notes";
 
 const now = new Date("2026-09-01T00:00:00Z");
 function subscription(

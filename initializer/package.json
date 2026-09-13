@@ -1,7 +1,7 @@
 {
   "name": "create-saas-keel",
-  "version": "0.1.0",
-  "description": "Create an independent minimal Next.js SaaS with Better Auth, Neon, Stripe and Resend.",
+  "version": "0.3.0",
+  "description": "Create a next-forge-style SaaS monorepo with a Neon or Supabase database, Better Auth, Stripe and Resend.",
   "keywords": [
     "create",
     "nextjs",
@@ -9,7 +9,8 @@
     "better-auth",
     "neon",
     "stripe",
-    "next-forge"
+    "next-forge",
+    "supabase"
   ],
   "license": "MIT",
   "author": "Maxime Bourmaud",
@@ -24,6 +25,9 @@
     "README.md",
     "LICENSE"
   ],
+  "dependencies": {
+    "@clack/prompts": "1.8.0"
+  },
   "engines": {
     "node": ">=22.12.0"
   },

@@ -15,7 +15,11 @@
       "!!skills-lock.json",
       "!!package-lock.json",
       "!!test-results",
-      "!!playwright-report"
+      "!!playwright-report",
+      "!!**/.next",
+      "!!**/.turbo",
+      "!!packages/database/drizzle/meta",
+      "!!my-new-saas"
     ]
   },
   "css": {
@@ -25,7 +29,12 @@
   },
   "overrides": [
     {
-      "includes": ["scripts/**", "initializer/bin/**", "tests/**"],
+      "includes": [
+        "scripts/**",
+        "initializer/bin/**",
+        "tests/**",
+        "packages/database/scripts/**"
+      ],
       "linter": {
         "rules": {
           "suspicious": {

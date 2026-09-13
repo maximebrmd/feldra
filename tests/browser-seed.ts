@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
+import { db } from "@repo/database";
+import { account, user } from "@repo/database/schema";
 import { hashPassword } from "better-auth/crypto";
-import { db } from "../src/lib/db";
-import { account, user } from "../src/lib/db/schema";
 
 const url = process.env.DATABASE_URL;
 if (

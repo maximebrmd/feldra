@@ -1,0 +1,23 @@
+{
+  "name": "@repo/auth",
+  "version": "0.2.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./server": "./server.ts",
+    "./client": "./client.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@better-auth/drizzle-adapter": "1.7.4",
+    "@repo/config": "*",
+    "@repo/database": "*",
+    "@repo/email": "*",
+    "better-auth": "1.7.4",
+    "react": "19.3.0",
+    "server-only": "0.0.1"
+  }
+}

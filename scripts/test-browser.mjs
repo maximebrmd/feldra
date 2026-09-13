@@ -3,6 +3,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { mkdir } from "node:fs/promises";
 import { createServer } from "node:net";
+import { resolve as resolvePath } from "node:path";
 import { chromium, expect } from "@playwright/test";
 
 const name = `keel-browser-${randomBytes(4).toString("hex")}`;
@@ -12,10 +13,16 @@ function run(command, args, env = process.env) {
     throw new Error(`${command} failed (${result.status})`);
   }
 }
-let server;
+const servers = [];
+async function freePort() {
+  const probe = createServer();
+  await new Promise((resolve) => probe.listen(0, "127.0.0.1", resolve));
+  const port = probe.address().port;
+  await new Promise((resolve) => probe.close(resolve));
+  return port;
+}
 let browser;
 try {
-  run("npm", ["run", "build"]);
   run("docker", [
     "run",
     "--detach",
@@ -52,12 +59,10 @@ try {
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
   assert.ok(ready, "Postgres ready");
-  const probe = createServer();
-  await new Promise((resolve) => probe.listen(0, "127.0.0.1", resolve));
-  const address = probe.address();
-  const port = address.port;
-  await new Promise((resolve) => probe.close(resolve));
+  const port = await freePort();
+  const webPort = await freePort();
   const baseURL = `http://localhost:${port}`;
+  const webURL = `http://localhost:${webPort}`;
   const databaseUrl = `postgresql://postgres:keel-local-test@127.0.0.1:${databasePort}/browser_test`;
   const env = {
     ...process.env,
@@ -70,22 +75,36 @@ try {
     STRIPE_LIVE_MODE: "false",
     STRIPE_PRO_PRICE_ID: "",
     STRIPE_SECRET_KEY: "",
+    WEB_URL: webURL,
   };
-  run(process.execPath, ["--import", "tsx", "scripts/migrate.ts"], env);
+  run("npm", ["run", "build"], env);
+  run("npm", ["run", "db:migrate"], env);
   run(
     process.execPath,
     ["--conditions=react-server", "--import", "tsx", "tests/browser-seed.ts"],
     env
   );
-  server = spawn(
-    process.execPath,
-    ["node_modules/next/dist/bin/next", "start", "-p", String(port)],
-    { env, stdio: "inherit" }
-  );
+  for (const [app, appPort] of [
+    ["app", port],
+    ["web", webPort],
+  ]) {
+    servers.push(
+      spawn(
+        process.execPath,
+        [
+          resolvePath("node_modules/next/dist/bin/next"),
+          "start",
+          "-p",
+          String(appPort),
+        ],
+        { cwd: resolvePath("apps", app), env, stdio: "inherit" }
+      )
+    );
+  }
   ready = false;
   for (let i = 0; i < 60; i += 1) {
     try {
-      if ((await fetch(baseURL)).ok) {
+      if ((await fetch(baseURL)).ok && (await fetch(webURL)).ok) {
         ready = true;
         break;
       }
@@ -100,18 +119,18 @@ try {
   const page = await browser.newPage({ baseURL });
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("/");
+  await page.goto(webURL);
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     "fresh start"
   );
   await mkdir("test-results", { recursive: true });
   await page.screenshot({ fullPage: true, path: "test-results/home.png" });
-  await page.goto("/pricing");
+  await page.goto(`${webURL}/pricing`);
   await expect(
     page.getByRole("heading", { exact: true, name: "Pro" })
   ).toBeVisible();
-  await page.goto("/dashboard");
-  await expect(page).toHaveURL(/\/login$/u);
+  await page.getByRole("link", { exact: true, name: "Choose Pro" }).click();
+  await expect(page).toHaveURL(`${baseURL}/login`);
   await page.getByLabel("Email", { exact: true }).fill("browser@example.com");
   await page
     .getByLabel("Password", { exact: true })
@@ -156,7 +175,7 @@ try {
   await page.getByRole("button", { name: "Confirm delete" }).click();
   await expect(page.getByRole("article")).toHaveCount(0);
   await page.setViewportSize({ height: 844, width: 390 });
-  await page.goto("/");
+  await page.goto(webURL);
   assert.ok(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth
@@ -170,13 +189,15 @@ try {
   await expect(page).toHaveURL(/\/login$/u);
   assert.deepEqual(errors, [], "No browser runtime errors");
   console.log(
-    "Browser passed: landing/pricing, redirect, login, onboarding, CRUD persistence, settings, missing-provider error, mobile layout, logout and route protection."
+    "Browser passed: two apps, marketing-to-app navigation, landing/pricing, redirect, login, onboarding, CRUD persistence, settings, missing-provider error, mobile layout, logout and route protection."
   );
 } finally {
   await browser?.close();
-  if (server) {
-    server.kill("SIGTERM");
-    await new Promise((resolve) => server.once("exit", resolve));
+  for (const server of servers) {
+    if (server.exitCode === null) {
+      server.kill("SIGTERM");
+      await new Promise((resolve) => server.once("exit", resolve));
+    }
   }
   spawnSync("docker", ["stop", name], { stdio: "ignore" });
 }

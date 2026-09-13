@@ -1,0 +1,23 @@
+{
+  "name": "@repo/payments",
+  "version": "0.2.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./service": "./src/service.ts",
+    "./stripe": "./src/stripe.ts",
+    "./policy": "./src/policy.ts",
+    "./errors": "./src/errors.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@repo/config": "*",
+    "@repo/database": "*",
+    "drizzle-orm": "0.45.2",
+    "server-only": "0.0.1",
+    "stripe": "22.6.2"
+  }
+}

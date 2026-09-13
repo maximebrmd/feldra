@@ -2,9 +2,11 @@
 import { spawnSync } from "node:child_process";
 import { createHash, randomBytes } from "node:crypto";
 import { chmod, copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
-import { basename, dirname, join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
+import { confirm, isCancel, select, text } from "@clack/prompts";
+import { collectSetup, databases, stackSummary } from "./setup.mjs";
 
 const source = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 function run(command, args, cwd) {
@@ -45,37 +47,50 @@ try {
   const { positionals, values } = parseArgs({
     allowPositionals: true,
     options: {
+      database: { type: "string" },
       help: { short: "h", type: "boolean" },
       name: { type: "string" },
+      preset: { type: "string" },
       yes: { short: "y", type: "boolean" },
     },
   });
   if (values.help) {
     console.log(
-      "Usage: npm create saas-keel@latest <directory> -- --yes [--name package-name]\nAlways noninteractive. Refuses any existing destination. Node >=22.12, npm and Git required."
+      "Usage: npm create saas-keel@latest [directory] -- [--yes] [--name package-name] [--database neon|supabase]\nInteractive in a terminal; --yes or piped input is noninteractive. Choose a database with arrow keys. --yes defaults to Neon; use --database supabase to select Supabase. --preset is an alias for --database. Refuses existing destinations. Node >=22.12, npm and Git required."
     );
     process.exit(0);
   }
-  if (positionals.length !== 1) {
-    throw new Error(
-      "Provide exactly one destination: npm create saas-keel@latest my-new-saas -- --yes"
-    );
+  if (positionals.length > 1) {
+    throw new Error("Provide at most one destination directory.");
   }
-  destination = resolve(positionals[0]);
-  const name =
-    values.name ??
-    basename(destination)
-      .toLowerCase()
-      .replace(/[^a-z0-9-]+/gu, "-")
-      .replace(/^-+|-+$/gu, "");
-  if (
-    !/^[a-z0-9][a-z0-9-]{0,213}$/u.test(name) ||
-    ["node-modules", "favicon-ico"].includes(name)
-  ) {
-    throw new Error(
-      "Use --name with a lowercase npm name (letters, digits and hyphens; at most 214 characters)."
-    );
-  }
+  console.log(`\nCreate SaaS Keel\n${stackSummary}\n`);
+  const interactive =
+    !values.yes && process.stdin.isTTY && process.stdout.isTTY;
+  const prompts = interactive
+    ? Object.fromEntries(
+        ["text", "select", "confirm"].map((kind) => [
+          kind,
+          async (options) => {
+            const answer = await { confirm, select, text }[kind](options);
+            if (isCancel(answer)) {
+              throw new Error("Canceled. No project files were created.");
+            }
+            return answer;
+          },
+        ])
+      )
+    : undefined;
+  const setup = await collectSetup(
+    {
+      database: values.database,
+      directory: positionals[0],
+      name: values.name,
+      preset: values.preset,
+    },
+    prompts
+  );
+  destination = resolve(setup.directory);
+  const { name } = setup;
   const manifest = JSON.parse(
     await readFile(join(source, "template-manifest.json"), "utf8")
   );
@@ -121,9 +136,16 @@ try {
     }
     await writeFile(path, `${JSON.stringify(data, null, 2)}\n`);
   }
-  const env = (
-    await readFile(join(destination, ".env.example"), "utf8")
-  ).replace(
+  const provider = databases[setup.preset];
+  const examplePath = join(destination, ".env.example");
+  const example = `# Database: ${provider.label} (Postgres + Drizzle + Better Auth)\n# ${provider.instructions}\n${await readFile(examplePath, "utf8")}`;
+  await writeFile(examplePath, example);
+  await writeFile(
+    join(destination, "DATABASE.md"),
+    `# ${provider.label} database setup\n\n${provider.instructions}\n\nOnly server-side Postgres is used. Better Auth handles authentication.\nSee [database setup](docs/databases.md) for connection security and migrations.\n`,
+    { flag: "wx" }
+  );
+  const env = example.replace(
     "BETTER_AUTH_SECRET=",
     `BETTER_AUTH_SECRET=${randomBytes(32).toString("base64url")}`
   );
@@ -134,7 +156,7 @@ try {
   await chmod(join(destination, ".env.local"), 0o600);
   await writeFile(
     join(destination, "template-origin.json"),
-    `${JSON.stringify({ package: "create-saas-keel", templateSha256: manifest.templateSha256, version: manifest.version }, null, 2)}\n`,
+    `${JSON.stringify({ package: "create-saas-keel", preset: setup.preset, templateSha256: manifest.templateSha256, version: manifest.version }, null, 2)}\n`,
     { flag: "wx" }
   );
   npm(["ci", "--include=dev", "--no-fund"], destination);
@@ -142,7 +164,7 @@ try {
   run("git", ["init", "--initial-branch=main", "--template="], destination);
   const quotedPath = `'${destination.replaceAll("'", "'\"'\"'")}'`;
   console.log(
-    `\nCreated ${name} from create-saas-keel ${manifest.version}. Dependencies installed.\nProvider services are NOT configured yet. Next:\n\ncd ${quotedPath}\n\n1. Edit .env.local: use a NEW Neon database per project. Set DATABASE_URL (pooled) and DATABASE_URL_UNPOOLED (direct).\n2. Set APP_URL (http://localhost:3000 locally, your HTTPS origin in production). A fresh local BETTER_AUTH_SECRET was generated; generate a separate production secret.\n3. In Resend verify a sender domain; set RESEND_API_KEY and EMAIL_FROM to a verified sender email.\n4. In a separate Stripe sandbox create a Pro product with a USD 12/month recurring price (or match src/config.ts). Set STRIPE_SECRET_KEY, STRIPE_PRO_PRICE_ID and STRIPE_LIVE_MODE=false. Enable the customer portal.\n5. Run: stripe listen --events customer.subscription.created,customer.subscription.updated,customer.subscription.deleted,customer.subscription.paused,customer.subscription.resumed,checkout.session.completed,checkout.session.async_payment_succeeded,checkout.session.async_payment_failed,invoice.paid,invoice.payment_failed,invoice.payment_action_required --forward-to localhost:3000/api/webhooks/stripe\n   Copy its signing secret to STRIPE_WEBHOOK_SECRET.\n\nnpm run db:migrate\nnpm run check\nnpm run dev\n\nOptional full local fixture tests (Docker required): npm run test:database\nSee docs/setup.md for restricted key permissions, production configuration and live verification. No providers were provisioned and nothing was published.`
+    `\nCreated ${name} from create-saas-keel ${manifest.version}. Dependencies installed.\nProvider services are NOT configured yet. Next:\n\ncd ${quotedPath}\n\n1. Edit .env.local: ${provider.instructions}\n2. Set APP_URL=http://localhost:3001 and WEB_URL=http://localhost:3000 locally; use separate HTTPS origins in production. A fresh local BETTER_AUTH_SECRET was generated; generate a separate production secret.\n3. In Resend verify a sender domain; set RESEND_API_KEY and EMAIL_FROM to a verified sender email.\n4. In a separate Stripe sandbox create a Pro product with a USD 12/month recurring price (or match packages/config/index.ts). Set STRIPE_SECRET_KEY, STRIPE_PRO_PRICE_ID and STRIPE_LIVE_MODE=false. Enable the customer portal.\n5. Run: stripe listen --events customer.subscription.created,customer.subscription.updated,customer.subscription.deleted,customer.subscription.paused,customer.subscription.resumed,checkout.session.completed,checkout.session.async_payment_succeeded,checkout.session.async_payment_failed,invoice.paid,invoice.payment_failed,invoice.payment_action_required --forward-to localhost:3001/api/webhooks/stripe\n   Copy its signing secret to STRIPE_WEBHOOK_SECRET.\n\nnpm run db:migrate\nnpm run check\nnpm run dev\n\nMarketing: http://localhost:3000 · Application: http://localhost:3001\n\nOptional full local fixture tests (Docker required): npm run test:database\nSee docs/setup.md for restricted key permissions, production configuration and live verification. No providers were provisioned and nothing was published.`
   );
 } catch (error) {
   console.error(

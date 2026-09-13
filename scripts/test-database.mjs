@@ -57,7 +57,7 @@ try {
     DATABASE_URL_UNPOOLED: url,
     TEST_DATABASE_URL: url,
   };
-  run(process.execPath, ["--import", "tsx", "scripts/migrate.ts"], env);
+  run("npm", ["run", "db:migrate"], env);
   run(
     process.execPath,
     [
@@ -66,6 +66,7 @@ try {
       "tsx",
       "--test",
       "tests/integration/flows.test.ts",
+      "tests/integration/database-access.test.ts",
     ],
     env
   );

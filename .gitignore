@@ -7,3 +7,4 @@ node_modules/
 initializer/template/
 playwright-report/
 test-results/
+.turbo/
