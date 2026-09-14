@@ -1,7 +1,14 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
 import { createHash, randomBytes } from "node:crypto";
-import { chmod, copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import {
+  access,
+  chmod,
+  copyFile,
+  mkdir,
+  readFile,
+  writeFile,
+} from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
@@ -17,6 +24,83 @@ import {
 } from "./setup.mjs";
 
 const source = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const packedTemplateSentinel = "apps/docs/blume.config.ts";
+function packedTemplateError(cause) {
+  return new Error(
+    "Packed template is missing or stale (expected template/apps/docs/blume.config.ts and the hashed files listed in template-manifest.json). packages/feldra/template/ is generated and gitignored. From the monorepo root, run `npm run initializer:pack`, then retry `npm exec --workspace packages/feldra -- feldra create …`. Published npm packages already include the template.",
+    { cause }
+  );
+}
+async function readPackedPath(path) {
+  try {
+    return await readFile(path);
+  } catch (error) {
+    if (error && error.code === "ENOENT") {
+      throw packedTemplateError(error);
+    }
+    throw error;
+  }
+}
+async function packedTemplateReady(manifest) {
+  const files = Object.keys(manifest.files ?? {});
+  if (files.length === 0) {
+    return false;
+  }
+  try {
+    await access(join(source, "template", packedTemplateSentinel));
+    for (const path of files) {
+      await access(join(source, "template", path));
+    }
+    return true;
+  } catch (error) {
+    if (error && error.code === "ENOENT") {
+      return false;
+    }
+    throw error;
+  }
+}
+async function autoPackFromMonorepo() {
+  const packScript = resolve(source, "../../scripts/pack-initializer.mjs");
+  try {
+    await access(packScript);
+  } catch (error) {
+    if (error && error.code === "ENOENT") {
+      return false;
+    }
+    throw error;
+  }
+  // `--template-only` copies the gitignored template without `check` or
+  // `test:initializer`, so create does not recurse or surprise npm tarball users.
+  console.error(
+    "Packed template is missing; packing from this monorepo checkout..."
+  );
+  const env = { ...process.env };
+  delete env.npm_config_allow_scripts;
+  delete env.NPM_CONFIG_ALLOW_SCRIPTS;
+  for (const key of [
+    "GIT_DIR",
+    "GIT_WORK_TREE",
+    "GIT_INDEX_FILE",
+    "GIT_COMMON_DIR",
+  ]) {
+    delete env[key];
+  }
+  const result = spawnSync(process.execPath, [packScript, "--template-only"], {
+    cwd: resolve(source, "../.."),
+    env,
+    stdio: "inherit",
+  });
+  return !(result.error || result.status !== 0);
+}
+async function ensurePackedTemplate(manifest) {
+  if (await packedTemplateReady(manifest)) {
+    return;
+  }
+  if ((await autoPackFromMonorepo()) && (await packedTemplateReady(manifest))) {
+    return;
+  }
+  throw packedTemplateError();
+}
 function run(command, args, cwd) {
   const env = { ...process.env };
   // npm 11 exec exports this one-off option, but npm ci rejects it.
@@ -111,16 +195,19 @@ try {
   destination = resolve(setup.directory);
   const { name } = setup;
   const manifest = JSON.parse(
-    await readFile(join(source, "template-manifest.json"), "utf8")
+    await readPackedPath(join(source, "template-manifest.json"))
   );
+  await ensurePackedTemplate(manifest);
   // Validate the bundled release before touching the destination.
   for (const [path, digest] of Object.entries(manifest.files)) {
     if (path.startsWith("/") || path.split("/").some((part) => part === "..")) {
       throw new Error("Invalid bundled template path");
     }
-    const bytes = await readFile(join(source, "template", path));
+    const bytes = await readPackedPath(join(source, "template", path));
     if (createHash("sha256").update(bytes).digest("hex") !== digest) {
-      throw new Error(`Bundled template integrity check failed: ${path}`);
+      throw new Error(
+        `Bundled template integrity check failed: ${path}. Packed template is missing or stale. From the monorepo root, run \`npm run initializer:pack\`.`
+      );
     }
   }
   async function verifyVariant(files, directory, label) {

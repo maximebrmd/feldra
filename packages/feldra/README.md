@@ -52,6 +52,10 @@ Configure Neon or Supabase, Stripe, and Resend, Clerk, GitHub OAuth, Supabase Au
 
 Node 22.12+ (24 LTS recommended), npm, and Git. Docker is only for fixture tests in the generated project.
 
+## Local development
+
+Published npm packages already include the template. In a git checkout, `template/` is generated and gitignored; pack and create from the [repository README](https://github.com/maximebrmd/feldra#quickstart).
+
 ## License
 
 MIT. Retain the bundled third-party notices. Source: [maximebrmd/feldra](https://github.com/maximebrmd/feldra).
