@@ -13,7 +13,12 @@ const page = await context.newPage();
 const errors = [];
 page.on("pageerror", (error) => errors.push(error.message));
 async function assertFeldraBranding() {
-  assert.doesNotMatch(await page.locator("body").innerText(), /blume/iu);
+  // Guides name Blume as a generated-docs choice. Header, sidebar, TOC, and
+  // footer chrome must still be Feldra, not Blume's defaults.
+  const chrome = await page
+    .locator("header, footer, [data-blume-nav-drawer], [data-blume-toc]")
+    .allInnerTexts();
+  assert.doesNotMatch(chrome.join("\n"), /blume/iu);
   assert.equal(
     await page.locator('link[rel="icon"]').first().getAttribute("href"),
     "/icon.png"

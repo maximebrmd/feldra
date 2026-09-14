@@ -168,8 +168,7 @@ for (const [name, apply] of Object.entries(authOverlays)) {
 for (const docsName of ["mintlify", "fumadocs"]) {
   const docsVariant = join(release, "variants/docs", docsName);
   await resolveLockfile(
-    (staging) =>
-      applyDocs(staging, docsVariant, docsName, { lockfile: false }),
+    (staging) => applyDocs(staging, docsVariant, docsName, { lockfile: false }),
     join(docsVariant, "package-lock.json")
   );
   for (const [authName, apply] of Object.entries(authOverlays)) {
