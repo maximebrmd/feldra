@@ -1,33 +1,83 @@
 # Feldra
 
-A next-forge-style SaaS monorepo with **two Next.js apps, shared packages and Turborepo**. Choose Neon or Supabase Postgres and Better Auth or Clerk. Shared toolkit: TypeScript, Drizzle, Tailwind/shadcn, Ultracite and Stripe. Better Auth uses Resend; Clerk manages its own authentication emails. Individual accounts and user-level billing.
+[![CI](https://github.com/maximebrmd/feldra/actions/workflows/ci.yml/badge.svg)](https://github.com/maximebrmd/feldra/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/github/license/maximebrmd/feldra)](LICENSE)
 
-## Create a project
+**A complete foundation for your next SaaS.** Two Next.js apps, shared packages, and Turborepo — choose Neon or Supabase, Better Auth or Clerk, and Stripe. Free and open source.
 
-After npm publication, run the interactive initializer:
+`npx feldra create` copies a hashed, versioned template into an independent Git repository, installs locked dependencies, and stops. No provider accounts, databases, or deployments are provisioned. The generated project has no runtime dependency on this initializer.
+
+**[Documentation](apps/docs/content/docs/introduction.md)** · [Quickstart](#quickstart) · [Architecture](docs/architecture.md) · [CLI](#cli)
+
+## Quickstart
+
+Feldra needs **Node.js 22.12 or newer** (24 LTS recommended), **npm**, and **Git**. Docker is only for isolated database and browser fixture tests.
+
+After npm publication:
 
 ```sh
-npx feldra@latest create
+npx feldra@latest create my-new-saas
 ```
 
-Or give the destination and skip prompts for Codex/CI:
+Equivalent: `npm exec feldra@latest -- create my-new-saas`. **The `feldra` package is not on npm yet** — do not run the public command until it is published.
+
+Until then, pack and run the tested tarball from this repository:
 
 ```sh
-npx feldra@latest create my-new-saas --yes --database neon
-```
-
-Equivalent: `npm exec feldra@latest -- create my-new-saas --yes --database neon`. Until publication, from this base repository:
-
-```sh
+npm ci
 npm run initializer:pack
 npm exec --yes --package="$(pwd)/feldra-0.3.0.tgz" -- feldra create my-new-saas
 ```
 
-In a terminal, the initializer asks for the directory and package name and offers an arrow-key database selector before confirmation. Use arrow keys and Enter to choose **Neon** or **Supabase**. Both keep Better Auth and Drizzle; Supabase supplies Postgres only. `--yes` or non-TTY input uses noninteractive mode and requires a directory. A quoted path containing spaces works; `--name` overrides the derived package name. Existing destinations are refused, even if empty.
+In a terminal, the CLI asks for the directory and package name, then offers arrow-key selectors for **Neon** or **Supabase** and **Better Auth** or **Clerk**. `--yes` or non-TTY input is noninteractive and requires a directory. Existing destinations are refused, even if empty. Quoted paths with spaces work; `--name` overrides the derived package name.
 
-The release bundles the complete template and npm lockfile, installs dependencies with `npm ci`, creates a root `.env.local` with a fresh random local auth secret, and initializes a new Git repository. No provider resources are provisioned, and no history or dependency on the initializer is copied. Internal npm workspace links point only to packages inside your generated project. Node 22.12+ (24 LTS recommended), npm and Git required. Docker is needed only for isolated database/browser tests.
+Then connect your own providers and run:
 
-## Generated architecture
+```sh
+cd my-new-saas
+# Fill `.env.local` using generated DATABASE.md, AUTHENTICATION.md, and docs/setup.md
+npm run db:migrate
+npm run dev
+```
+
+Open marketing at `http://localhost:3000` and the app at `http://localhost:3001`.
+
+## Features
+
+- **Two Next.js apps** — marketing and pricing on port 3000; auth, dashboard, APIs, and webhooks on port 3001.
+- **Postgres you choose** — Neon or Supabase. Both use Drizzle and SQL migrations. Supabase supplies Postgres only, not its Auth product.
+- **Authentication you choose** — Better Auth (default, Resend emails) or Clerk (managed identity and auth emails), independently of the database.
+- **Stripe billing** — Checkout, customer portal, signed webhooks, and a server-side paid-access gate. Individual accounts and user-level billing.
+- **Shared packages** — auth, database, design-system (used shadcn Button/Input and Tailwind), email, payments, and config, coordinated with Turborepo and npm workspaces.
+- **Hashed template** — the CLI copies a versioned, integrity-checked bundle. It never downloads a moving GitHub branch.
+- **No provider provisioning** — you create Neon/Supabase, Resend or Clerk, and Stripe resources yourself. The CLI prints exact next steps.
+- **Independent projects** — a fresh Git repository, locked npm dependencies, and no leftover dependency on the initializer.
+- **Tested workflow** — Ultracite, TypeScript, unit tests, production builds, optional Docker Postgres fixtures, and browser checks.
+- **Example product surface** — signup, verification, login, password reset, onboarding, profile settings, and clearly marked private notes CRUD. `/api/notes/export` is Pro-only.
+
+Organizations, CMS, analytics, AI, queues, and automatic template sync are intentionally not included.
+
+## CLI
+
+| Command / flag | Description |
+| --- | --- |
+| `feldra create [directory]` | Scaffold a project (interactive in a TTY). |
+| `--yes`, `-y` | Noninteractive. Requires a directory. Defaults to Neon and Better Auth. |
+| `--database neon\|supabase` | Choose Postgres. `--preset` is an alias. |
+| `--auth better-auth\|clerk` | Choose authentication. Default: `better-auth`. |
+| `--name <package-name>` | Override the package name derived from the directory. |
+| `--list-tools` | Print supported tools without creating files. |
+| `--help`, `-h` | Show create usage. |
+
+```sh
+npx feldra@latest create my-new-saas --yes --database supabase --auth clerk
+```
+
+See [packages/feldra/README.md](packages/feldra/README.md) for the npm-facing CLI notes.
+
+## How it works
+
+The CLI verifies the bundled template (and Clerk overlay) against SHA-256 hashes, copies it to a new directory, applies the selected auth variant, rewrites package and lockfile names, writes `.env.local` (a random Better Auth secret, or blank Clerk keys), runs `npm ci`, and initializes a new Git repository. Failure returns nonzero and leaves any partial destination for inspection.
 
 ```text
 my-new-saas/
@@ -35,62 +85,52 @@ my-new-saas/
 │   ├── web/                 # Marketing and pricing · localhost:3000
 │   └── app/                 # Auth, dashboard, APIs and webhooks · localhost:3001
 ├── packages/
-│   ├── auth/                # Better Auth server + browser client
+│   ├── auth/                # Better Auth or Clerk
 │   ├── database/            # Drizzle schema, SQL migrations, Postgres client
 │   ├── design-system/       # Used shadcn Button/Input and shared Tailwind styles
-│   ├── email/               # Resend authentication emails
+│   ├── email/               # Resend authentication emails (Better Auth)
 │   ├── payments/            # Stripe Checkout, portal, reconciliation and paid gate
 │   └── config/              # Branding, plan configuration and validated environment
 ├── tests/                   # Cross-package integration and policy tests
-├── turbo.json               # Task dependencies, caching and persistent dev servers
-├── package.json             # npm workspaces and root commands
+├── turbo.json
+├── package.json
 └── .env.example
 ```
 
-Both apps consume configuration and UI packages. The authenticated app consumes the server packages; marketing has no database, auth or payment runtime dependency. There is no separate API app because the implemented APIs and webhooks belong to the authenticated app. Packages export TypeScript source that Next compiles; they do not each need a separate bundler.
+Both apps consume configuration and UI packages. The authenticated app consumes the server packages; marketing has no database, auth, or payment runtime dependency. Packages export TypeScript source that Next compiles.
 
-`turbo.json` orchestrates both builds, orders workspace type checks, runs both development servers and caches successful work. Environment origins and the shared local environment file participate in cache keys. No CMS, analytics, AI, organizations, queues or product-specific Eververse packages are included.
+See [architecture](docs/architecture.md), [setup](docs/setup.md), [databases](docs/databases.md), and [authentication](docs/authentication.md).
 
-## Run locally
+## Deployment
 
-Fill in root `.env.local` using [provider setup](docs/setup.md), then:
+Generated apps are two Next.js deployments from one repository (`apps/web` and `apps/app`). Set `WEB_URL` and `APP_URL` to separate HTTPS origins. Provider setup, restricted keys, and live verification are in [docs/setup.md](docs/setup.md). This repository's documentation site is a separate static app in `apps/docs` and is excluded from generated projects.
+
+## Compatibility
+
+| Requirement | Supported |
+| --- | --- |
+| Node | 22.12+ (24 LTS recommended) |
+| Package manager | npm |
+| Git | Required to initialize the generated repository |
+| Docker | Only for isolated database and browser fixture tests |
+| OS | Tested on macOS; no Windows validation claimed |
+
+## Development
+
+This repository is a monorepo: the published package lives in `packages/feldra`, the SaaS template is the workspace apps and `@repo/*` packages, and `apps/docs` is the Feldra documentation site built with Blume (`npm run docs:dev` → http://localhost:4321).
 
 ```sh
-npm run db:migrate
-npm run dev
+npm ci
+npm run check              # Lint, workspace types, unit tests, both production builds
+npm run docs:dev
+npm run docs:build
+npm run initializer:pack   # Validate and write feldra-VERSION.tgz
 ```
 
-Open marketing at `http://localhost:3000` and the app at `http://localhost:3001`. A source checkout first needs `npm ci`, `cp .env.example .env.local`, and a random BETTER_AUTH_SECRET (`openssl rand -base64 32`). Both Next configs and migrations read the root environment file; no duplicate local credential files are required.
+Optional fixture tests need Docker: `npm run test:database`, `npm run test:browser`.
 
-```sh
-npm run check                          # Lint, all workspace types, unit tests, both production builds
-npm run test:database                  # Real local Postgres/auth + Stripe/Resend fixtures
-npm run test:browser                   # Both production apps, cross-app links and full authenticated UI
-npm run dev --workspace web            # Marketing only
-npm run dev --workspace app            # Authenticated app only
-npx turbo run build --filter=web        # Build just marketing and its dependencies
-npm run db:generate                    # Generate a reviewed migration
-npm run db:migrate                     # Apply committed migrations
-```
+See [CONTRIBUTING](.github/CONTRIBUTING.md), [releasing](docs/releasing.md), and [CI/CD](docs/ci-cd.md). Generated projects do not include this repository's Changesets, docs app, or GitHub workflows; they receive a product README rather than this file.
 
-Auth includes signup/login/logout, verification and reset. The dashboard includes onboarding, profile settings and clearly marked private notes CRUD. `/api/notes/export` is Pro-only. Notes and exports show up to 100 recent records. All APIs/webhooks live on the app origin.
+## License
 
-See [architecture/security](docs/architecture.md), [setup/deployment](docs/setup.md), [maintenance and 0.1 migration](docs/maintenance.md), [reference commits](docs/references.md), [dependencies](docs/dependencies.md) and [publication](docs/releasing.md). MIT with retained third-party notices.
-
-Database-specific connection modes and RLS are documented in [database setup](docs/databases.md). The generated `DATABASE.md` identifies your selected provider.
-
-## Template releases
-
-For contributions, see the [contribution guide](.github/CONTRIBUTING.md), [code of conduct](.github/CODE_OF_CONDUCT.md), and [security policy](.github/SECURITY.md).
-
-GitHub Actions validates pull requests and main, prepares Changesets version PRs, and can publish tested npm tarballs and deploy the docs to Cloudflare. See [CI/CD setup](docs/ci-cd.md) for account settings and activation.
-
-Maintainers use `npm run changeset` to record a release note, `npm run changeset:status` to preview it, and `npm run release:version` to update versions and changelogs. See [release instructions](docs/releasing.md). Generated projects do not include this repository’s release tooling.
-
-## Feldra documentation website
-
-Run `npm run docs:dev` to open the Astro documentation site at http://localhost:4321. Build it with `npm run docs:build`. See [site maintenance](apps/docs/README.md). This website is excluded from generated SaaS projects.
-
-### Authentication choice
-
-The initializer now offers **Better Auth** (default, Resend emails) or **Clerk** (managed authentication and email), independently of Neon/Supabase. Use `--auth clerk --database supabase --yes` for an explicit noninteractive selection, or `--list-tools` to list choices. The Clerk variant installs only Clerk's auth dependencies and includes its own provider setup and fixtures. See [initializer options](packages/feldra/README.md).
+[MIT](LICENSE) © Maxime Bourmaud. Retain [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) in derived projects.

@@ -90,6 +90,19 @@ for (const { database, auth } of [
     await readFile(join(project, "DATABASE.md"), "utf8"),
     database === "neon" ? /Neon/u : /Supabase/u
   );
+  const readme = await readFile(join(project, "README.md"), "utf8");
+  assert.match(readme, /npm run db:migrate/u);
+  assert.match(readme, /npm run dev/u);
+  assert.doesNotMatch(readme, /initializer:pack/u);
+  assert.doesNotMatch(readme, /packages\/feldra/u);
+  assert.doesNotMatch(readme, /docs:dev/u);
+  assert.doesNotMatch(readme, /apps\/docs/u);
+  assert.doesNotMatch(readme, /maximebrmd\/feldra\/actions/u);
+  if (auth === "clerk") {
+    assert.match(readme, /^> Generated authentication: \*\*Clerk\*\*/u);
+  } else {
+    assert.doesNotMatch(readme, /Generated authentication: \*\*Clerk\*\*/u);
+  }
   assert.ok(!pkg.dependencies?.["@clack/prompts"]);
   assert.ok(!pkg.devDependencies?.["@clack/prompts"]);
   assert.ok(!lock.packages["node_modules/@supabase/supabase-js"]);
