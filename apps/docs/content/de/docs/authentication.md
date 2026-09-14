@@ -37,3 +37,11 @@ Wähle Clerk im Initialisierungsassistenten aus oder übergib `--auth clerk`. Da
 Erstelle eine eigenständige Clerk-Anwendung und konfiguriere ihren veröffentlichbaren und ihren geheimen Schlüssel. Clerk versendet Authentifizierungs-E-Mails, daher installiert diese Variante weder Resend noch Better Auth. Die generierte Anleitung beschreibt, wie du die E-Mail-Bestätigung verpflichtend machst, Origins für die Produktion konfigurierst und die gehosteten Abläufe validierst. Bei fehlenden Zugangsdaten wird der Zugriff verweigert und keine schlüssellose Clerk-Instanz bereitgestellt.
 
 Die obigen Abschnitte beschreiben die Standardvariante mit Better Auth. Clerk-Projekte erhalten eine eigene Anleitung zur Einrichtung der Authentifizierung und lokale Fixture-Tests. Die tatsächlichen Abläufe für Clerk-Anmeldung, E-Mail-Bestätigung, Zurücksetzen des Passworts und Abmeldung erfordern weiterhin eine konfigurierte Entwicklungsinstanz.
+
+## Auth.js als Alternative [#authjs-alternative]
+
+Wähle Auth.js im Initialisierungsassistenten aus oder übergib `--auth authjs`. Dadurch werden GitHub-OAuth-Anmeldung (und eine Registrierungsseite, die denselben Ablauf startet), Abmeldung und serverseitige Sitzungsprüfungen generiert. Der erste erfolgreiche Callback erstellt den lokalen Nutzer. GitHub muss eine verifizierte primäre E-Mail-Adresse liefern; lokale Datensätze werden anhand der GitHub-Nutzer-ID (`github:{id}`) zugeordnet und niemals automatisch anhand der E-Mail-Adresse verknüpft. Stripe-Abonnements und private Notizen behalten diese stabile Eigentümer-ID.
+
+Erstelle eine GitHub-OAuth-App für dieses Projekt. Setze die Homepage-URL auf `APP_URL` und die Autorisierungs-Callback-URL auf `APP_URL/api/auth/callback/github`. Setze `AUTH_GITHUB_ID` und `AUTH_GITHUB_SECRET`. Der Initialisierer schreibt ein lokales `AUTH_SECRET`; erzeuge einen eigenen Produktionswert. Auth.js installiert weder Resend noch Better Auth; GitHub übernimmt E-Mail-Bestätigung und Passwortwiederherstellung. Bei fehlenden Zugangsdaten wird der Zugriff verweigert und keine OAuth-App bereitgestellt.
+
+Auth.js-Projekte erhalten eine eigene Anleitung zur Einrichtung der Authentifizierung und lokale Fixture-Tests. Die tatsächliche GitHub-OAuth-Anmeldung erfordert weiterhin eine konfigurierte OAuth-App.

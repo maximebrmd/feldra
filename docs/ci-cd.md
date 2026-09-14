@@ -20,7 +20,7 @@ The rest of [Blume's `.github` directory](https://github.com/haydenbleasel/blume
 | Benchmark workflow | Not enabled: Feldra has no benchmark runner or performance baseline |
 | Translation workflow | `translations.yml` checks translation freshness on release PRs and manual runs |
 
-Dependabot uses the root workspace lockfile. Packaging regenerates the Clerk overlay lockfile, and distribution tests validate both authentication implementations. Major npm updates remain separate PRs. Updates require review and passing CI; there is no automatic merge workflow.
+Dependabot uses the root workspace lockfile. Packaging regenerates auth overlay lockfiles, and distribution tests validate each authentication implementation. Major npm updates remain separate PRs. Updates require review and passing CI; there is no automatic merge workflow.
 
 GitHub reported no Sponsors listing for `maximebrmd` when this configuration was added. Activate the listing and uncomment the account in `FUNDING.yml`, or configure a real custom funding URL. An X profile is a contact channel, not a funding destination.
 
@@ -36,7 +36,7 @@ Run `npm run docs:translate -- --codex` (or `--claude`) with an installed, authe
 
 ## Pull requests and main
 
-`ci.yml` runs on pull requests, pushes to `main`, and manual dispatch. Node 24 and npm 11.19.1 install the committed lockfile with `npm ci`. Independent jobs check lint, types, unit tests, coverage, and initializer tests. The distribution job builds and packs the initializer, scaffolds all four auth/database combinations, and runs their existing checks and isolated Docker database fixtures. Better Auth variants also run production browser tests; Clerk uses its existing fixtures without live credentials.
+`ci.yml` runs on pull requests, pushes to `main`, and manual dispatch. Node 24 and npm 11.19.1 install the committed lockfile with `npm ci`. Independent jobs check lint, types, unit tests, coverage, and initializer tests. The distribution job builds and packs the initializer, scaffolds all six auth/database combinations, and runs their existing checks and isolated Docker database fixtures. Better Auth variants also run production browser tests; Clerk and Auth.js use their existing fixtures without live credentials.
 
 The `build-docs` job builds the static site and tests it in Chromium. Successful runs upload `docs` and `initializer` artifacts, including the tarball's SHA-256 checksum, for 14 days. Docs screenshots are uploaded even when a later browser assertion fails. Generated projects do not receive these repository workflows.
 

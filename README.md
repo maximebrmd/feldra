@@ -29,7 +29,7 @@ npm run initializer:pack
 npm exec --yes --package="$(pwd)/feldra-0.1.0.tgz" -- feldra create my-new-saas
 ```
 
-In a terminal, the CLI asks for the directory and package name, then offers arrow-key selectors for **Neon** or **Supabase** and **Better Auth** or **Clerk**. `--yes` or non-TTY input is noninteractive and requires a directory. Existing destinations are refused, even if empty. Quoted paths with spaces work; `--name` overrides the derived package name.
+In a terminal, the CLI asks for the directory and package name, then offers arrow-key selectors for **Neon** or **Supabase** and **Better Auth**, **Clerk**, or **Auth.js**. `--yes` or non-TTY input is noninteractive and requires a directory. Existing destinations are refused, even if empty. Quoted paths with spaces work; `--name` overrides the derived package name.
 
 Then connect your own providers and run:
 

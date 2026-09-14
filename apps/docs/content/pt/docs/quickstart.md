@@ -30,7 +30,7 @@ Isso valida o código-fonte e grava `feldra-VERSION.tgz` na raiz do repositório
 npm exec --yes --package="./feldra-VERSION.tgz" -- feldra create my-new-saas
 ```
 
-Use as teclas de seta e Enter para escolher **Neon** ou **Supabase**. O inicializador instala as dependências, grava os arquivos de ambiente locais e inicializa um novo repositório Git. Ele recusa um destino existente, mesmo que esteja vazio.
+Use as teclas de seta e Enter para escolher **Neon** ou **Supabase** e, em seguida, **Better Auth**, **Clerk** ou **Auth.js**. O inicializador instala as dependências, grava os arquivos de ambiente locais e inicializa um novo repositório Git. Ele recusa um destino existente, mesmo que esteja vazio.
 
 Para executar sem interação, acrescente `--yes --database supabase` após o nome do projeto. Tanto caminhos relativos quanto caminhos entre aspas contendo espaços funcionam.
 
@@ -40,7 +40,7 @@ Para executar sem interação, acrescente `--yes --database supabase` após o no
 cd my-new-saas
 ```
 
-Preencha `.env.local` usando o arquivo `DATABASE.md` gerado e o [guia de ambiente](/docs/environment/). Um novo segredo local do Better Auth já foi gerado; as credenciais de banco de dados, e-mail e pagamento precisam ser configuradas separadamente.
+Preencha `.env.local` usando o arquivo `DATABASE.md` gerado e o [guia de ambiente](/docs/environment/). Um novo segredo local do Better Auth ou do Auth.js já foi gerado, ou as chaves do Clerk ficam em branco; as credenciais restantes dos provedores precisam ser configuradas separadamente.
 
 ```sh
 npm run db:migrate
@@ -62,6 +62,6 @@ Não use o comando público até que o pacote seja explicitamente publicado. Um 
 
 ## Escolha a autenticação [#choose-authentication]
 
-Após selecionar um banco de dados, escolha **Better Auth** (padrão) ou **Clerk**. O Better Auth usa o Resend para enviar e-mails de verificação e redefinição de senha. O Clerk usa seus componentes gerenciados e seu serviço de envio de e-mails; esse projeto não inclui Better Auth nem Resend.
+Após selecionar um banco de dados, escolha **Better Auth** (padrão), **Clerk** ou **Auth.js**. O Better Auth usa o Resend para enviar e-mails de verificação e redefinição de senha. O Clerk usa seus componentes gerenciados e seu serviço de envio de e-mails. O Auth.js usa o GitHub OAuth. Os projetos com Clerk e Auth.js não incluem Better Auth nem Resend.
 
-Para CI, adicione `--auth clerk` ou `--auth better-auth` ao comando do inicializador local. Combine qualquer uma das opções com `--database neon` ou `--database supabase`. `--list-tools` lista as opções disponíveis sem criar arquivos. Siga as instruções do arquivo `AUTHENTICATION.md` gerado antes de testar a autenticação real. Essas opções criam projetos independentes; elas não migram usuários existentes entre serviços.
+Para CI, adicione `--auth better-auth`, `--auth clerk` ou `--auth authjs` ao comando do inicializador local. Combine qualquer uma dessas opções com `--database neon` ou `--database supabase`. `--list-tools` lista as opções disponíveis sem criar arquivos. Siga as instruções do arquivo `AUTHENTICATION.md` gerado antes de testar a autenticação real. Essas opções criam projetos independentes; elas não migram usuários existentes entre serviços.

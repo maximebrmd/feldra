@@ -97,7 +97,7 @@
     "CHANGELOG.md": "19b97bb6e23b2db2bbde920b9ef4a2a5c4c2677c19ffa800deb80afc6aee0bf9",
     "docs/architecture.md": "df7660da2bdc97c346334b7da59d13722e648ea64513625baf91b32ef2375cfc",
     "docs/authentication.md": "ca9210ff9ab059f61ada1ce946ca173d3c22b0202b4850aadc7c21ffd1e57148",
-    "docs/ci-cd.md": "ea5c7e3180efe607113fd653faaabf03d7ba96d205887cfb8025354df7ecc04f",
+    "docs/ci-cd.md": "54a6ad2532f9d5bb143fe1c4a03b68664dd4454ef0b1d97e4d00e3c69971e815",
     "docs/databases.md": "3b047e7b991313fa6c184b271531071462e200381a09d52618393a4ee10d3ea8",
     "docs/dependencies.md": "bfa96083a6e3508eb860d3cd9c104fb89c93ab3a98a204de55ccf7891deea808",
     "docs/maintenance.md": "2dd76bd782dd6c126e302bc22490a5b762db2aa86386f7aec57fe366c08116d3",
@@ -155,6 +155,6 @@
     "tsconfig.json": "ff0eabcf9857d1a71847fe8ee7faa9a6b9d88ff3ee7d490f1c574bcb00cee21b",
     "turbo.json": "47f8c5db4280e0c7a285175484fe2abc89fc4fedbb1dd39b011a03b94de367d1"
   },
-  "templateSha256": "4d5348e4c2bca6233df89d2639b1fa3f7d597252bb964183a3579ef9ad5ef6dd",
+  "templateSha256": "aa47a9b2995694c83831eceac8bf747d43b510a4c424fa27d2803521f98bc790",
   "version": "0.1.0"
 }

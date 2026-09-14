@@ -37,3 +37,11 @@ Escolha Clerk no inicializador ou passe `--auth clerk`. Isso gera login, cadastr
 Crie uma aplicação independente no Clerk e configure suas chaves publicável e secreta. O Clerk envia os e-mails de autenticação, então essa variante não instala Resend nem Better Auth. O guia gerado explica como exigir a verificação de e-mail, configurar as origens de produção e validar os fluxos hospedados. Na ausência de credenciais, o acesso é bloqueado e nenhuma instância do Clerk sem chaves é provisionada.
 
 As seções acima descrevem a variante padrão com Better Auth. Os projetos com Clerk recebem seu próprio guia de configuração de autenticação e testes locais com fixtures. Login, verificação de e-mail, redefinição de senha e logout reais com Clerk ainda exigem uma instância de desenvolvimento configurada.
+
+## Alternativa com Auth.js [#authjs-alternative]
+
+Escolha Auth.js no inicializador ou passe `--auth authjs`. Isso gera login com GitHub OAuth (e uma página de cadastro que inicia o mesmo fluxo), logout e verificações de sessão no servidor. O primeiro callback bem-sucedido cria o usuário local. O GitHub deve fornecer um e-mail principal verificado; os registros locais usam o ID de usuário do GitHub (`github:{id}`) como chave e nunca são vinculados automaticamente por e-mail. As assinaturas do Stripe e as notas privadas mantêm esse ID estável do proprietário.
+
+Crie um aplicativo GitHub OAuth para este projeto. Defina a URL da página inicial como `APP_URL` e a URL de callback de autorização como `APP_URL/api/auth/callback/github`. Defina `AUTH_GITHUB_ID` e `AUTH_GITHUB_SECRET`. O inicializador grava um `AUTH_SECRET` local; gere um valor distinto para produção. O Auth.js não instala Resend nem Better Auth; o GitHub trata a verificação de e-mail e a recuperação de senha. Na ausência de credenciais, o acesso é bloqueado e nenhum aplicativo OAuth é provisionado.
+
+Os projetos com Auth.js recebem seu próprio guia de configuração de autenticação e testes locais com fixtures. O GitHub OAuth real ainda exige um aplicativo OAuth configurado.

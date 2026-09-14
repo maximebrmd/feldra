@@ -38,3 +38,11 @@ Choose Clerk in the initializer, or pass `--auth clerk`. This generates Clerk si
 Create an independent Clerk application and configure its publishable and secret keys. Clerk sends authentication emails, so this variant does not install Resend or Better Auth. The generated guide documents how to require email verification, configure production origins and validate the hosted flows. Missing credentials fail closed and do not provision a keyless Clerk instance.
 
 The sections above describe the default Better Auth variant. Clerk projects receive their own authentication setup guide and local fixture tests. Live Clerk login, email verification, reset and logout still require a configured development instance.
+
+## Auth.js alternative
+
+Choose Auth.js in the initializer, or pass `--auth authjs`. This generates GitHub OAuth sign-in (and a sign-up page that starts the same flow), logout, and server-side session checks. The first successful callback creates the local user. GitHub must provide a verified primary email; local records are keyed by GitHub user id (`github:{id}`), never automatically linked by email. Stripe subscriptions and private notes keep that stable owner ID.
+
+Create a GitHub OAuth app for this project. Set the homepage URL to `APP_URL` and the authorization callback URL to `APP_URL/api/auth/callback/github`. Set `AUTH_GITHUB_ID` and `AUTH_GITHUB_SECRET`. The initializer writes a local `AUTH_SECRET`; generate a distinct production value. Auth.js does not install Resend or Better Auth; GitHub handles email verification and password recovery. Missing credentials fail closed and do not provision an OAuth app.
+
+Auth.js projects receive their own authentication setup guide and local fixture tests. Live GitHub OAuth still requires a configured OAuth app.

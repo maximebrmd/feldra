@@ -44,7 +44,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-node
       - run: npx --no-install playwright install --with-deps chromium
-      # Packs once, then checks all four database/auth combinations, including
+      # Packs once, then checks all six database/auth combinations, including
       # isolated Postgres fixtures and the Better Auth production browser flows.
       - run: npm run initializer:test
       - name: Record artifact checksum

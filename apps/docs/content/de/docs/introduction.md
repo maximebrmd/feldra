@@ -29,7 +29,7 @@ Die Architektur ist von next-forge inspiriert: zwei separat bereitstellbare Next
 | --- | --- |
 | Anwendung | Next.js App Router und TypeScript |
 | Datenbank | Neon oder Supabase Postgres mit Drizzle |
-| Authentifizierung | Better Auth |
+| Authentifizierung | Better Auth, Clerk oder Auth.js |
 | Styling | Tailwind CSS und verwendete shadcn/ui-Komponenten |
 | Abrechnung | Stripe |
 | E-Mail | Resend |

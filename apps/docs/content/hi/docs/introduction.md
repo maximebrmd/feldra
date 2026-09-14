@@ -27,7 +27,7 @@ Feldra, SaaS के आवश्यक हिस्सों को आपके
 | --- | --- |
 | एप्लिकेशन | Next.js App Router और TypeScript |
 | डेटाबेस | Drizzle के साथ Neon या Supabase Postgres |
-| प्रमाणीकरण | Better Auth |
+| प्रमाणीकरण | Better Auth, Clerk, या Auth.js |
 | स्टाइलिंग | Tailwind CSS और उपयोग किए गए shadcn/ui कॉम्पोनेंट |
 | बिलिंग | Stripe |
 | ईमेल | Resend |

@@ -27,7 +27,7 @@ Feldraは、SaaSに欠かせない要素を、自分で所有するワークス�
 | --- | --- |
 | アプリケーション | Next.js App RouterとTypeScript |
 | データベース | NeonまたはSupabase PostgresとDrizzle |
-| 認証 | Better Auth |
+| 認証 | Better Auth、Clerk、または Auth.js |
 | スタイリング | Tailwind CSSと使用するshadcn/uiコンポーネント |
 | 課金 | Stripe |
 | メール | Resend |
