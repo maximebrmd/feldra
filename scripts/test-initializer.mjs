@@ -33,6 +33,13 @@ for (const entry of entries) {
 }
 assert.ok(entries.includes("package/template/.env.example"));
 assert.ok(entries.includes("package/template/package-lock.json"));
+assert.ok(entries.includes("package/template/apps/docs/package.json"));
+assert.ok(
+  entries.includes("package/variants/docs/mintlify/apps/docs/docs.json")
+);
+assert.ok(
+  entries.includes("package/variants/docs/fumadocs/apps/docs/package.json")
+);
 assert.ok(
   !entries.includes("package/template/tests/ci-required-checks.test.ts")
 );
@@ -78,6 +85,7 @@ for (const { database, auth } of [
   );
   assert.equal(origin.preset, database);
   assert.equal(origin.auth, auth);
+  assert.equal(origin.docs, "blume");
   assert.equal(
     Boolean(lock.packages["node_modules/@clerk/nextjs"]),
     auth === "clerk"
@@ -109,10 +117,10 @@ for (const { database, auth } of [
   const readme = await readFile(join(project, "README.md"), "utf8");
   assert.match(readme, /npm run db:migrate/u);
   assert.match(readme, /npm run dev/u);
+  assert.match(readme, /docs:dev/u);
+  assert.match(readme, /apps\/docs/u);
   assert.doesNotMatch(readme, /initializer:pack/u);
   assert.doesNotMatch(readme, /packages\/feldra/u);
-  assert.doesNotMatch(readme, /docs:dev/u);
-  assert.doesNotMatch(readme, /apps\/docs/u);
   assert.doesNotMatch(readme, /maximebrmd\/feldra\/actions/u);
   if (auth === "clerk") {
     assert.match(readme, /^> Generated authentication: \*\*Clerk\*\*/u);
@@ -140,9 +148,12 @@ for (const { database, auth } of [
   assert.ok(!pkg.scripts.changeset);
   assert.ok(!pkg.scripts["release:version"]);
   assert.ok(!lock.packages["packages/feldra"]);
-  assert.ok(!lock.packages["apps/docs"]);
-  assert.ok(!lock.packages["node_modules/astro"]);
-  assert.ok(!pkg.scripts["docs:dev"]);
+  assert.ok(lock.packages["apps/docs"]);
+  assert.ok(lock.packages["node_modules/astro"]);
+  assert.ok(lock.packages["node_modules/blume"]);
+  assert.equal(pkg.scripts["docs:dev"], "npm run dev --workspace docs");
+  assert.ok(!lock.packages["node_modules/mint"]);
+  assert.ok(!lock.packages["node_modules/fumadocs-ui"]);
   assert.ok(!lock.packages["node_modules/feldra"]);
   assert.ok(!lock.packages["node_modules/@changesets/cli"]);
   assert.ok((await readdir(join(project, "node_modules"))).includes("next"));
@@ -222,4 +233,59 @@ for (const { database, auth } of [
   console.log(
     `Packed distribution passed (${entries.length} entries). Generated test project preserved at ${project}`
   );
+}
+// Auth×database already covers default Blume, including turbo docs build via
+// `npm run check`. Mintlify and Fumadocs are packed and built once each rather
+// than multiplying the auth/database/docs fixture matrix.
+for (const docs of ["mintlify", "fumadocs"]) {
+  const temp = await mkdtemp(join(tmpdir(), `feldra ${docs} docs `));
+  run(
+    "npm",
+    [
+      "exec",
+      "--yes",
+      `--package=${tarball}`,
+      "--",
+      "feldra",
+      "create",
+      "./docs-app",
+      "--name",
+      `packed-${docs}-docs`,
+      "--docs",
+      docs,
+      "--yes",
+    ],
+    temp
+  );
+  const project = join(temp, "docs-app");
+  const origin = JSON.parse(
+    await readFile(join(project, "template-origin.json"), "utf8")
+  );
+  assert.equal(origin.docs, docs);
+  assert.equal(origin.auth, "better-auth");
+  assert.equal(origin.preset, "neon");
+  const pkg = JSON.parse(await readFile(join(project, "package.json"), "utf8"));
+  const lock = JSON.parse(
+    await readFile(join(project, "package-lock.json"), "utf8")
+  );
+  const readme = await readFile(join(project, "README.md"), "utf8");
+  assert.equal(pkg.scripts["docs:dev"], "npm run dev --workspace docs");
+  assert.ok(lock.packages["apps/docs"]);
+  assert.ok(!lock.packages["node_modules/astro"]);
+  assert.ok(!lock.packages["node_modules/blume"]);
+  if (docs === "mintlify") {
+    assert.ok(!lock.packages["node_modules/mint"]);
+    assert.ok(!lock.packages["node_modules/fumadocs-ui"]);
+    assert.match(readme, /^> Generated documentation: \*\*Mintlify\*\*/u);
+    assert.match(
+      await readFile(join(project, "apps/docs/docs.json"), "utf8"),
+      /"theme": "mint"/u
+    );
+  } else {
+    assert.ok(lock.packages["node_modules/fumadocs-ui"]);
+    assert.ok(!lock.packages["node_modules/mint"]);
+    assert.match(readme, /^> Generated documentation: \*\*Fumadocs\*\*/u);
+  }
+  run("npm", ["run", "docs:build"], project);
+  console.log(`Packed ${docs} docs app built at ${project}`);
 }

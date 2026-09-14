@@ -31,9 +31,9 @@ This validates the source and writes `feldra-VERSION.tgz` in the repository root
 npm exec --yes --package="./feldra-VERSION.tgz" -- feldra create my-new-saas
 ```
 
-Use the arrow keys and Enter to choose **Neon** or **Supabase**, then **Better Auth**, **Clerk**, **Auth.js**, or **Supabase Auth**. The initializer installs dependencies, writes local environment files, and initializes a fresh Git repository. It refuses an existing destination, even if it is empty.
+Use the arrow keys and Enter to choose **Neon** or **Supabase**, then **Better Auth**, **Clerk**, **Auth.js**, or **Supabase Auth**, and **Blume**, **Mintlify**, or **Fumadocs**. The initializer installs dependencies, writes local environment files, and initializes a fresh Git repository. It refuses an existing destination, even if it is empty.
 
-For a noninteractive run, append `--yes --database supabase` after the project name. Both relative paths and quoted paths containing spaces work.
+For a noninteractive run, append `--yes --database supabase --docs mintlify` after the project name. `--docs` defaults to `blume`. Both relative paths and quoted paths containing spaces work.
 
 ## Connect your providers
 
@@ -65,4 +65,4 @@ Equivalent: `npm exec feldra@latest -- create my-new-saas`. Do not use the publi
 
 After selecting a database, choose **Better Auth** (default), **Clerk**, **Auth.js**, or **Supabase Auth**. Better Auth uses Resend for verification and reset emails. Clerk uses its managed components and email delivery. Auth.js uses GitHub OAuth. Supabase Auth uses the Supabase Auth API and is independent of the database choice. Clerk, Auth.js, and Supabase Auth projects omit Better Auth and Resend.
 
-For CI, add `--auth better-auth`, `--auth clerk`, `--auth authjs`, or `--auth supabase` to the local initializer command. Combine any of these with `--database neon` or `--database supabase`. `--list-tools` lists supported choices without creating files. Follow the generated `AUTHENTICATION.md` before testing live authentication. These choices create independent projects; they do not migrate existing users between services.
+For CI, add `--auth better-auth`, `--auth clerk`, `--auth authjs`, or `--auth supabase` to the local initializer command. Combine any of these with `--database neon` or `--database supabase` and `--docs blume`, `--docs mintlify`, or `--docs fumadocs`. `--list-tools` lists supported choices without creating files. Follow the generated `AUTHENTICATION.md` before testing live authentication. These choices create independent projects; they do not migrate existing users between services. This repository's product docs stay on Blume.

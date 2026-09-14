@@ -21,16 +21,17 @@ Follow [provider setup](../docs/setup.md) to configure a local app, then run `np
 | --- | --- |
 | `apps/web` | Next.js marketing and pricing pages |
 | `apps/app` | Next.js authentication, dashboard, APIs and billing webhooks |
-| `apps/docs` | Feldra's Blume/Astro documentation website |
+| `apps/docs` | Feldra's Blume/Astro product documentation website (not dual-maintained as Mintlify/Fumadocs) |
 | `packages` | Shared `@repo/*` packages; `packages/feldra` is the published `feldra` workspace |
 | `packages/feldra/bin` | `feldra` CLI (`npx feldra create`) and provider selection |
 | `packages/feldra/variants/clerk` | Clerk template overlay and generated dependency lockfile |
 | `packages/feldra/variants/authjs` | Auth.js template overlay and generated dependency lockfile |
 | `packages/feldra/variants/supabase` | Supabase Auth template overlay and generated dependency lockfile |
+| `packages/feldra/variants/docs` | Generated Blume, Mintlify, and Fumadocs docs apps and overlay lockfiles |
 | `scripts/pack-initializer.mjs` | Template allowlist, manifests and npm tarball packaging |
 | `tests` | Unit, initializer and database integration tests |
 
-The docs app, `feldra` workspace, Changesets and GitHub workflows are maintainer tooling and are excluded from generated projects. Do not edit generated `packages/feldra/template`, `.blume`, `.next`, or `dist` output. Regenerate auth variant lockfiles through the pack script when their dependencies change.
+This repository's Blume docs app, the `feldra` workspace, Changesets and GitHub workflows are maintainer tooling. Generated projects receive a chosen docs app from `packages/feldra/variants/docs` rather than this repository's `apps/docs` site. Do not edit generated `packages/feldra/template`, `.blume`, `.source`, `.next`, or `dist` output. Regenerate auth and docs overlay lockfiles through the pack script when those dependencies change.
 
 ## Checks
 
@@ -41,7 +42,7 @@ npm run test:coverage      # Same unit tests as `npm test`, with Node coverage
 npm run test:initializer   # CLI options and release-version tests
 npm run test:database      # Isolated Docker Postgres integration fixtures
 npm run test:browser       # Production app flows in Chromium; Docker required
-npm run initializer:test   # Pack and verify auth/database combinations
+npm run initializer:test   # Pack and verify auth/database combinations plus Mintlify and Fumadocs docs builds
 ```
 
 For documentation browser checks, build with `npm run docs:build`, start `npm run preview --workspace docs`, install Chromium with `npx --no-install playwright install chromium`, and run `npm run test:docs` in another terminal. Linux may need `playwright install --with-deps chromium`.

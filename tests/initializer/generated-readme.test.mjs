@@ -1,5 +1,12 @@
 import assert from "node:assert/strict";
-import { copyFile, mkdir, mkdtemp, readFile, rm } from "node:fs/promises";
+import {
+  copyFile,
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { test } from "node:test";
@@ -8,6 +15,7 @@ import {
   applyClerk,
   applySupabase,
 } from "../../packages/feldra/bin/apply-auth.mjs";
+import { applyDocs } from "../../packages/feldra/bin/apply-docs.mjs";
 
 const root = resolve(import.meta.dirname, "../..");
 const release = join(root, "packages/feldra");
@@ -16,10 +24,10 @@ function assertProductReadme(readme) {
   assert.match(readme, /npm run db:migrate/u);
   assert.match(readme, /npm run dev/u);
   assert.match(readme, /This project was generated with Feldra/u);
+  assert.match(readme, /docs:dev/u);
+  assert.match(readme, /apps\/docs/u);
   assert.doesNotMatch(readme, /initializer:pack/u);
   assert.doesNotMatch(readme, /packages\/feldra/u);
-  assert.doesNotMatch(readme, /docs:dev/u);
-  assert.doesNotMatch(readme, /apps\/docs/u);
   assert.doesNotMatch(readme, /maximebrmd\/feldra\/actions/u);
   assert.doesNotMatch(readme, /npm run initializer:pack/u);
 }
@@ -37,7 +45,10 @@ test("the product README contract is distinct from the monorepo README", async (
     assertProductReadme(packed);
     assert.match(monorepo, /initializer:pack/u);
     assert.match(monorepo, /apps\/docs/u);
-    assert.match(monorepo, /Feldra documentation site built with Blume/u);
+    assert.match(
+      monorepo,
+      /Feldra product documentation site built with Blume/u
+    );
     assert.doesNotMatch(monorepo, /is the Blume documentation site/u);
   } finally {
     await rm(temp, { force: true, recursive: true });
@@ -177,6 +188,59 @@ test("Clerk generation prepends a banner onto the product README", async () => {
     const readme = await readFile(join(destination, "README.md"), "utf8");
     assert.match(readme, /^> Generated authentication: \*\*Clerk\*\*/u);
     assertProductReadme(readme);
+  } finally {
+    await rm(destination, { force: true, recursive: true });
+  }
+});
+
+test("Mintlify generation prepends a banner and replaces the Blume docs app", async () => {
+  const destination = await mkdtemp(join(tmpdir(), "feldra-mintlify-readme-"));
+  try {
+    await mkdir(join(destination, "apps/docs"), { recursive: true });
+    await writeFile(join(destination, "apps/docs/sentinel.txt"), "blume");
+    await writeFile(
+      join(destination, "package.json"),
+      `${JSON.stringify(
+        {
+          name: "packed-saas-check",
+          overrides: {
+            "@scalar/astro": { astro: "7.3.2" },
+            lodash: "4.17.21",
+          },
+        },
+        null,
+        2
+      )}\n`
+    );
+    await copyFile(
+      join(release, "template-readme.md"),
+      join(destination, "README.md")
+    );
+    await applyDocs(
+      destination,
+      join(release, "variants/docs/mintlify"),
+      "mintlify",
+      { lockfile: false }
+    );
+    const readme = await readFile(join(destination, "README.md"), "utf8");
+    assert.match(readme, /^> Generated documentation: \*\*Mintlify\*\*/u);
+    assertProductReadme(readme);
+    await assert.rejects(
+      readFile(join(destination, "apps/docs/sentinel.txt")),
+      { code: "ENOENT" }
+    );
+    const pkg = JSON.parse(
+      await readFile(join(destination, "package.json"), "utf8")
+    );
+    assert.equal(pkg.overrides?.["@scalar/astro"], undefined);
+    assert.equal(pkg.overrides?.lodash, "4.17.21");
+    const docsPkg = JSON.parse(
+      await readFile(join(destination, "apps/docs/package.json"), "utf8")
+    );
+    assert.match(docsPkg.scripts.dev, /mint@4\.2\.891/u);
+    assert.equal(docsPkg.scripts.build, "node ./check-docs.mjs");
+    assert.ok(!docsPkg.dependencies?.mint);
+    assert.ok(!docsPkg.devDependencies?.mint);
   } finally {
     await rm(destination, { force: true, recursive: true });
   }

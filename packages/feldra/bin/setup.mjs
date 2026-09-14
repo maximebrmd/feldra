@@ -45,6 +45,57 @@ export const authentications = {
   },
 };
 
+export const docsFrameworks = {
+  blume: {
+    hint: "Astro documentation app (default)",
+    instructions:
+      "Run npm run docs:dev to preview the Blume docs app at http://localhost:4321, and npm run docs:build to produce static files in apps/docs/dist.",
+    label: "Blume",
+  },
+  fumadocs: {
+    hint: "Fumadocs Next.js documentation app",
+    instructions:
+      "Run npm run docs:dev to preview the Fumadocs app at http://localhost:4321, and npm run docs:build to produce a Next.js production build.",
+    label: "Fumadocs",
+  },
+  mintlify: {
+    hint: "Mintlify documentation app · local preview and validate",
+    instructions:
+      "Run npm run docs:dev to preview the Mintlify docs app at http://localhost:4321. Hosted Mintlify deployment is optional and not provisioned.",
+    label: "Mintlify",
+  },
+};
+
+function requireChoice(value, table, message) {
+  if (value && !Object.hasOwn(table, value)) {
+    throw new Error(message);
+  }
+  return value;
+}
+
+async function pickChoice(
+  value,
+  prompts,
+  { choices, fallback, message, order }
+) {
+  if (value) {
+    return value;
+  }
+  if (!prompts) {
+    return fallback;
+  }
+  const keys = order ?? Object.keys(choices);
+  return await prompts.select({
+    initialValue: fallback,
+    message,
+    options: keys.map((option) => ({
+      hint: choices[option].hint,
+      label: choices[option].label,
+      value: option,
+    })),
+  });
+}
+
 export async function collectSetup(options, prompts) {
   if (
     options.database &&
@@ -53,18 +104,23 @@ export async function collectSetup(options, prompts) {
   ) {
     throw new Error("--database and --preset must agree; prefer --database.");
   }
-  let authentication = options.auth;
-  if (authentication && !Object.hasOwn(authentications, authentication)) {
-    throw new Error(
-      `Choose ${Object.keys(authentications)
-        .map((value) => `--auth ${value}`)
-        .join(" or ")}.`
-    );
-  }
-  let database = options.database || options.preset;
-  if (database && !Object.hasOwn(databases, database)) {
-    throw new Error("Choose --database neon or --database supabase.");
-  }
+  let authentication = requireChoice(
+    options.auth,
+    authentications,
+    `Choose ${Object.keys(authentications)
+      .map((value) => `--auth ${value}`)
+      .join(" or ")}.`
+  );
+  let database = requireChoice(
+    options.database || options.preset,
+    databases,
+    "Choose --database neon or --database supabase."
+  );
+  let docs = requireChoice(
+    options.docs,
+    docsFrameworks,
+    "Choose --docs blume, --docs mintlify, or --docs fumadocs."
+  );
   let directory = options.directory;
   if (!directory && prompts) {
     directory = await prompts.text({
@@ -99,36 +155,36 @@ export async function collectSetup(options, prompts) {
       "Use a lowercase npm name (letters, digits and hyphens; at most 214 characters)."
     );
   }
-  database ||= prompts
-    ? await prompts.select({
-        initialValue: "neon",
-        message: "Which database do you want to use?",
-        options: Object.entries(databases).map(([value, config]) => ({
-          hint: config.hint,
-          label: config.label,
-          value,
-        })),
-      })
-    : "neon";
-  authentication ||= prompts
-    ? await prompts.select({
-        initialValue: "better-auth",
-        message: "Which authentication tool do you want to use?",
-        options: Object.entries(authentications).map(([value, config]) => ({
-          hint: config.hint,
-          label: config.label,
-          value,
-        })),
-      })
-    : "better-auth";
+  database = await pickChoice(database, prompts, {
+    choices: databases,
+    fallback: "neon",
+    message: "Which database do you want to use?",
+  });
+  authentication = await pickChoice(authentication, prompts, {
+    choices: authentications,
+    fallback: "better-auth",
+    message: "Which authentication tool do you want to use?",
+  });
+  docs = await pickChoice(docs, prompts, {
+    choices: docsFrameworks,
+    fallback: "blume",
+    message: "Which documentation framework do you want to use?",
+    order: ["blume", "mintlify", "fumadocs"],
+  });
   if (
     prompts &&
     !(await prompts.confirm({
       initialValue: true,
-      message: `Create ${name} with ${databases[database].label} + ${authentications[authentication].label}?`,
+      message: `Create ${name} with ${databases[database].label} + ${authentications[authentication].label} + ${docsFrameworks[docs].label}?`,
     }))
   ) {
     throw new Error("Canceled. No project files were created.");
   }
-  return { auth: authentication, directory, name, preset: database };
+  return {
+    auth: authentication,
+    directory,
+    docs,
+    name,
+    preset: database,
+  };
 }

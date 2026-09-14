@@ -1,0 +1,39 @@
+---
+title: "Setup"
+description: "Connect providers and run this generated project."
+---
+
+Create a separate Neon or Supabase project, auth secret or Clerk application, Resend sender (Better Auth), and Stripe sandbox per derived SaaS. Never copy credentials from another project. None are provisioned by the initializer.
+
+## Environment
+
+Fill `.env.local` from `.env.example`. Both Next app configs load the root environment file; migrations read the same file. See `docs/setup.md` in this repository for the full variable table, restricted Stripe key permissions, and live verification limits.
+
+| Variable | Purpose |
+| --- | --- |
+| `APP_URL` | Authenticated app origin (`http://localhost:3001` locally) |
+| `WEB_URL` | Marketing origin (`http://localhost:3000` locally) |
+| `DATABASE_URL` | Pooled Postgres URL |
+| `DATABASE_URL_UNPOOLED` | Direct Postgres URL for migrations |
+
+## Database and authentication
+
+1. Follow `docs/databases.md` for Neon or Supabase connection URLs.
+2. Run `npm run db:migrate`. Do not use `db push` for production.
+3. Follow generated `AUTHENTICATION.md` for Better Auth/Resend or Clerk.
+4. Run `npm run dev`. Sign up, verify email, log in, and finish onboarding.
+
+## Stripe
+
+Create a dedicated Stripe sandbox with a Pro product and a USD 12/month recurring price, or match `packages/config/index.ts`. Set `STRIPE_LIVE_MODE=false` locally. Run `stripe listen` forwarding to `localhost:3001/api/webhooks/stripe` and copy the signing secret.
+
+## Next commands
+
+```sh
+npm run db:migrate
+npm run check
+npm run dev
+npm run docs:dev
+```
+
+Marketing is http://localhost:3000, the app is http://localhost:3001, and this docs site is http://localhost:4321. Production uses two Vercel projects from the same repository (`apps/web` and `apps/app`). See `docs/setup.md` for deployment, webhook registration, and tax notes.

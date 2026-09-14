@@ -36,7 +36,7 @@ Run `npm run docs:translate -- --codex` (or `--claude`) with an installed, authe
 
 ## Pull requests and main
 
-`ci.yml` runs on pull requests, pushes to `main`, and manual dispatch. Node 24 and npm 11.19.1 install the committed lockfile with `npm ci`. Independent jobs check lint, types, unit tests, coverage, and initializer tests. The distribution job builds and packs the initializer, scaffolds all auth/database combinations, and runs their existing checks and isolated Docker database fixtures. Better Auth variants also run production browser tests; Clerk, Auth.js, and Supabase Auth use their existing fixtures without live credentials.
+`ci.yml` runs on pull requests, pushes to `main`, and manual dispatch. Node 24 and npm 11.19.1 install the committed lockfile with `npm ci`. Independent jobs check lint, types, unit tests, coverage, and initializer tests. The distribution job builds and packs the initializer, scaffolds all auth/database combinations with the default Blume docs app, and runs their existing checks and isolated Docker database fixtures. Better Auth variants also run production browser tests; Clerk, Auth.js, and Supabase Auth use their existing fixtures without live credentials. The same packed tarball also scaffolds Mintlify and Fumadocs once each and builds those docs apps. A full auth/database/docs fixture matrix is not run.
 
 The `build-docs` job builds the static site and tests it in Chromium. Successful runs upload `docs` and `initializer` artifacts, including the tarball's SHA-256 checksum, for 14 days. Docs screenshots are uploaded even when a later browser assertion fails. Generated projects do not receive these repository workflows.
 
