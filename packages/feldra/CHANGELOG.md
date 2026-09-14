@@ -1,5 +1,20 @@
 # feldra
 
+## 0.4.0
+
+### Minor Changes
+
+- fff98ff: Add independent Better Auth or Clerk selection alongside Neon or Supabase. Bundle Clerk code and a resolved dependency lockfile, remove unused Better Auth/Resend tooling from Clerk projects, preserve server authorization, and document managed authentication setup and live verification limits.
+- 9f220fa: Rename the template to Feldra. Update generated project branding, CLI commands, release metadata, tests and documentation. npm publication remains a separate release step.
+- 9efd11f: **Breaking:** rename the published initializer from `create-feldra` to `feldra`. Run `npx feldra create` instead of `npm create feldra`. Bare `npx feldra` prints help listing `create`.
+
+### Patch Changes
+
+- fff98ff: Add the standalone Feldra Astro documentation site and exclude its app and tooling from generated SaaS projects. Use a shared TypeScript version compatible with Astro checking.
+- c3650ca: Ship a product README in generated projects instead of the source-repository README.
+- 02b6ce0: Move the initializer package from `initializer/` to `packages/feldra`.
+- fff98ff: Manage initializer releases with Changesets and generated changelogs. Keep release tooling outside generated SaaS projects and synchronize release versions with the bundled template.
+
 ## Unreleased
 
 - **Breaking:** rename the published package and CLI from `create-feldra` to `feldra`. Run `npx feldra create` instead of `npm create feldra`. Bare `npx feldra` prints help.
