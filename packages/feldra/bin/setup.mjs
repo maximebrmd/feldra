@@ -37,6 +37,12 @@ export const authentications = {
       "Create a NEW Clerk application. Enable email/password and require email verification. Set NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY and CLERK_SECRET_KEY in .env.local. Configure /login and /signup and production domains. Clerk delivers verification and reset emails; Resend is not installed.",
     label: "Clerk",
   },
+  supabase: {
+    hint: "Supabase Auth · independent of --database · project URL and publishable key required",
+    instructions:
+      "Create a NEW Supabase project for Auth (independent of the database choice). Enable email/password and confirm email. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY in .env.local. Add the application origin and /api/auth/callback to Auth redirect URLs. Supabase delivers verification and reset emails; Resend is not installed. Never add the service role key.",
+    label: "Supabase Auth",
+  },
 };
 
 export async function collectSetup(options, prompts) {

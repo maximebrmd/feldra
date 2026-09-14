@@ -213,7 +213,99 @@ export async function applyAuthjs(
   );
 }
 
+export async function applySupabase(
+  destination,
+  variant,
+  { lockfile = true } = {}
+) {
+  await cp(variant, destination, {
+    filter: (path) => lockfile || !path.endsWith("package-lock.json"),
+    recursive: true,
+  });
+  for (const path of [
+    "packages/email",
+    "apps/app/src/app/api/auth/[...all]",
+    "tests/integration/flows.test.ts",
+    "scripts/test-browser.mjs",
+    "tests/browser-seed.ts",
+  ]) {
+    await rm(join(destination, path), { force: true, recursive: true });
+  }
+  await json(destination, "packages/auth/package.json", (pkg) => {
+    pkg.exports = {
+      "./client": "./client.ts",
+      "./config": "./config.ts",
+      "./identity": "./identity.ts",
+      "./server": "./server.ts",
+    };
+    pkg.dependencies = {
+      "@repo/database": "*",
+      "@supabase/ssr": "0.12.7",
+      "@supabase/supabase-js": "2.116.0",
+      next: "16.3.5",
+      "server-only": "0.0.1",
+    };
+  });
+  await json(destination, "apps/app/package.json", (pkg) => {
+    pkg.dependencies["@supabase/ssr"] = "0.12.7";
+    pkg.dependencies["@supabase/supabase-js"] = "2.116.0";
+  });
+  await json(destination, "package.json", (pkg) => {
+    delete pkg.devDependencies["better-auth"];
+    delete pkg.scripts["test:browser"];
+    pkg.scripts["test:integration"] = pkg.scripts["test:integration"].replace(
+      "node ",
+      "node --experimental-test-module-mocks "
+    );
+  });
+  await json(destination, "turbo.json", (config) => {
+    config.globalEnv = config.globalEnv.filter(
+      (key) =>
+        !["BETTER_AUTH_SECRET", "RESEND_API_KEY", "EMAIL_FROM"].includes(key)
+    );
+    config.globalEnv.push(
+      "NEXT_PUBLIC_SUPABASE_URL",
+      "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+    );
+  });
+  const envFile = join(destination, "packages/config/env.ts");
+  let env = await readFile(envFile, "utf8");
+  env = env
+    .replace(/export function authEnv\(\) \{[\s\S]*?\n\}/u, "")
+    .replace(/export function emailEnv\(\) \{[\s\S]*?\n\}/u, "");
+  await writeFile(envFile, env);
+  const readme = join(destination, "README.md");
+  await writeFile(
+    readme,
+    `> Generated authentication: **Supabase Auth**. Start with [Supabase Auth setup](docs/authentication.md). Better Auth/Resend sections describe the alternative default, not this generated project.\n\n${await readFile(readme, "utf8")}`
+  );
+  const example = join(destination, ".env.example");
+  await writeFile(
+    example,
+    (await readFile(example, "utf8")).replace(
+      /^(BETTER_AUTH_SECRET|RESEND_API_KEY|EMAIL_FROM)=.*\n/gmu,
+      ""
+    ) +
+      "\n# Separate Supabase project for Auth, independent of --database. Supabase delivers auth emails.\n# Publishable/anon key is public. Never add the service role key.\nNEXT_PUBLIC_SUPABASE_URL=\nNEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=\n"
+  );
+  const testScript = join(destination, "scripts/test-database.mjs");
+  await writeFile(
+    testScript,
+    (await readFile(testScript, "utf8"))
+      .replace(
+        '"--conditions=react-server"',
+        '"--experimental-test-module-mocks", "--conditions=react-server"'
+      )
+      .replace(
+        '"tests/integration/flows.test.ts"',
+        '"tests/integration/supabase-data.test.ts"'
+      )
+  );
+}
+
 export const authOverlays = {
   authjs: applyAuthjs,
   clerk: applyClerk,
+  supabase: applySupabase,
 };

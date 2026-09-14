@@ -33,8 +33,10 @@ The Feldra documentation website references Ultracite’s `apps/docs` at `4e29a0
 
 ### CLI authentication choices
 
-Read https://www.next-forge.com/llms.txt on 2026-09-13, including its FAQ on opinionated defaults and the Authentication package documentation. It uses Clerk and Clerk-delivered authentication email by default. Feldra retains Better Auth/Resend as its default and offers complete Clerk and Auth.js variants, selected independently of Postgres hosting. No organizations or unrelated platform packages were adopted.
+Read https://www.next-forge.com/llms.txt on 2026-09-13, including its FAQ on opinionated defaults and the Authentication package documentation. It uses Clerk and Clerk-delivered authentication email by default. Feldra retains Better Auth/Resend as its default and offers complete Clerk, Auth.js, and Supabase Auth variants, selected independently of Postgres hosting. No organizations or unrelated platform packages were adopted.
 
 Clerk 7.9.2 integration was checked against its official Next.js quickstart, `clerkMiddleware` reference and server `auth()`/`currentUser()` documentation. Authorization remains at the protected resource, with middleware supplying request authentication context. Source: https://clerk.com/docs/nextjs/getting-started/quickstart and https://clerk.com/docs/reference/nextjs/clerk-middleware.
 
 Auth.js (`next-auth@5.0.0-beta.32`) follows next-forge's Auth.js migration (handlers, `signIn` for sign-in and sign-up, `AUTH_SECRET`, `/api/auth/[...nextauth]`, session proxy as context only) with GitHub as the complete generated provider. Checked against https://www.next-forge.com/docs/migrations/authentication/authjs, https://authjs.dev/getting-started/installation?framework=next.js, and the GitHub provider plus App Router proxy notes. Local users are keyed by GitHub id; resource authorization stays on the persisted Postgres row.
+
+Supabase Auth (`@supabase/ssr` 0.12.7, `@supabase/supabase-js` 2.116.0) was checked against the next-forge migration guide and current Supabase Next.js SSR docs (cookie clients, Proxy `getClaims()` refresh, `getUser()` for fresh identity). Authorization remains at the protected resource. Source: https://www.next-forge.com/docs/migrations/authentication/supabase and https://supabase.com/docs/guides/auth/server-side/nextjs.

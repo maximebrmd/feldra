@@ -7,7 +7,7 @@ sidebar:
 
 ## Better Auth owns identity
 
-Both database choices use Better Auth with the Drizzle adapter. Supabase is used as Postgres only; no Supabase Auth, anonymous key, or browser database client is required.
+The default is Better Auth with the Drizzle adapter. Database choice is independent: Neon or Supabase Postgres does not install Supabase Auth. Choose `--auth supabase` when you want Supabase Auth.
 
 Users sign up with email and password, verify their email, and sign in. Verification is required for access to the application. Forgot-password and reset-password flows send time-limited links through Resend.
 
@@ -31,7 +31,7 @@ npm run test:database
 
 The fixture suite exercises real Better Auth signup, verification, login, reset, logout, and session revocation with local Postgres. It intercepts email delivery in tests. Live inbox delivery still needs verification using your Resend account.
 
-## Clerk alternative
+## Clerk and Supabase Auth alternatives
 
 Choose Clerk in the initializer, or pass `--auth clerk`. This generates Clerk sign-in, sign-up, logout and account settings, plus server-side session checks. Only a verified primary email is accepted; local records are keyed by the Clerk user ID, never automatically linked by email. Stripe subscriptions and private notes keep that stable owner ID.
 
@@ -46,3 +46,7 @@ Choose Auth.js in the initializer, or pass `--auth authjs`. This generates GitHu
 Create a GitHub OAuth app for this project. Set the homepage URL to `APP_URL` and the authorization callback URL to `APP_URL/api/auth/callback/github`. Set `AUTH_GITHUB_ID` and `AUTH_GITHUB_SECRET`. The initializer writes a local `AUTH_SECRET`; generate a distinct production value. Auth.js does not install Resend or Better Auth; GitHub handles email verification and password recovery. Missing credentials fail closed and do not provision an OAuth app.
 
 Auth.js projects receive their own authentication setup guide and local fixture tests. Live GitHub OAuth still requires a configured OAuth app.
+
+Choose Supabase Auth with `--auth supabase`. This is independent of `--database`: you can keep Neon for Postgres and still use a Supabase project for identity. The overlay uses `@supabase/ssr` cookie sessions, a Next.js proxy to refresh tokens, and server `getUser()` checks at each protected resource. Confirm email in the Supabase project, set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, and register `/api/auth/callback`. Never add the service role key. Supabase sends authentication emails; Resend and Better Auth are omitted.
+
+Clerk, Auth.js, and Supabase Auth projects receive their own authentication setup guides and local fixture tests. Live login, email verification, reset and logout still require a configured development instance.

@@ -1,6 +1,6 @@
 # Feldra
 
-**A complete foundation for your next SaaS.** Two Next.js apps, shared packages, and Turborepo — Neon or Supabase, Better Auth, Clerk, or Auth.js, and Stripe.
+**A complete foundation for your next SaaS.** Two Next.js apps, shared packages, and Turborepo — Neon or Supabase, Better Auth, Clerk, Auth.js, or Supabase Auth, and Stripe.
 
 This project was generated with Feldra. It is an independent Git repository with locked npm dependencies and no runtime dependency on the initializer. No provider accounts, databases, or deployments were provisioned.
 
@@ -20,8 +20,8 @@ Open marketing at `http://localhost:3000` and the app at `http://localhost:3001`
 ## Features
 
 - **Two Next.js apps** — marketing and pricing on port 3000; auth, dashboard, APIs, and webhooks on port 3001.
-- **Postgres you choose** — Neon or Supabase. Both use Drizzle and SQL migrations. Supabase supplies Postgres only, not its Auth product.
-- **Authentication you choose** — Better Auth (default, Resend emails), Clerk (managed identity and auth emails), or Auth.js (NextAuth, GitHub OAuth), independently of the database.
+- **Postgres you choose** — Neon or Supabase. Both use Drizzle and SQL migrations. Database choice is independent of authentication.
+- **Authentication you choose** — Better Auth (default, Resend emails), Clerk (managed identity and auth emails), Auth.js (NextAuth, GitHub OAuth), or Supabase Auth, independently of the database.
 - **Stripe billing** — Checkout, customer portal, signed webhooks, and a server-side paid-access gate. Individual accounts and user-level billing.
 - **Shared packages** — auth, database, design-system (used shadcn Button/Input and Tailwind), email, payments, and config, coordinated with Turborepo and npm workspaces.
 - **Tested workflow** — Ultracite, TypeScript, unit tests, production builds, optional Docker Postgres fixtures, and browser checks.
@@ -37,7 +37,7 @@ Organizations, CMS, analytics, AI, queues, and automatic template sync are inten
 │   ├── web/                 # Marketing and pricing · localhost:3000
 │   └── app/                 # Auth, dashboard, APIs and webhooks · localhost:3001
 ├── packages/
-│   ├── auth/                # Better Auth, Clerk, or Auth.js
+│   ├── auth/                # Better Auth, Clerk, Auth.js, or Supabase Auth
 │   ├── database/            # Drizzle schema, SQL migrations, Postgres client
 │   ├── design-system/       # Used shadcn Button/Input and shared Tailwind styles
 │   ├── email/               # Resend authentication emails (Better Auth)

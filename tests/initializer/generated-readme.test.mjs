@@ -6,6 +6,7 @@ import { test } from "node:test";
 import {
   applyAuthjs,
   applyClerk,
+  applySupabase,
 } from "../../packages/feldra/bin/apply-auth.mjs";
 
 const root = resolve(import.meta.dirname, "../..");
@@ -69,6 +70,38 @@ test("Auth.js generation prepends a banner onto the product README", async () =>
     });
     const readme = await readFile(join(destination, "README.md"), "utf8");
     assert.match(readme, /^> Generated authentication: \*\*Auth\.js\*\*/u);
+    assertProductReadme(readme);
+  } finally {
+    await rm(destination, { force: true, recursive: true });
+  }
+});
+
+test("Supabase Auth generation prepends a banner onto the product README", async () => {
+  const destination = await mkdtemp(join(tmpdir(), "feldra-supabase-readme-"));
+  try {
+    const copies = [
+      "package.json",
+      "turbo.json",
+      ".env.example",
+      "packages/auth/package.json",
+      "packages/config/env.ts",
+      "apps/app/package.json",
+      "apps/app/src/app/dashboard/settings/page.tsx",
+      "scripts/test-database.mjs",
+    ];
+    for (const path of copies) {
+      await mkdir(join(destination, dirname(path)), { recursive: true });
+      await copyFile(join(root, path), join(destination, path));
+    }
+    await copyFile(
+      join(release, "template-readme.md"),
+      join(destination, "README.md")
+    );
+    await applySupabase(destination, join(release, "variants/supabase"), {
+      lockfile: false,
+    });
+    const readme = await readFile(join(destination, "README.md"), "utf8");
+    assert.match(readme, /^> Generated authentication: \*\*Supabase Auth\*\*/u);
     assertProductReadme(readme);
   } finally {
     await rm(destination, { force: true, recursive: true });

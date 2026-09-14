@@ -7,7 +7,7 @@ sidebar:
 
 The initializer offers Neon and Supabase with arrow keys and Enter. Noninteractive commands use `--yes --database neon` or `--yes --database supabase`. Neon is the default. The selected database is recorded in `template-origin.json`, `.env.example`, and `DATABASE.md`.
 
-Both choices use the same Drizzle schema, migrations, node-postgres driver and Better Auth Drizzle adapter. These are standard Postgres connections; no Supabase SDK, Supabase Auth, anonymous key or service-role API key is needed. Database selection changes setup instructions, not your application APIs. No resources are provisioned by the initializer.
+Both choices use the same Drizzle schema, migrations, node-postgres driver and Postgres access. These are standard Postgres connections. Database selection does not install Supabase Auth; choose `--auth supabase` at scaffold time if you want Supabase Auth. Database selection changes setup instructions, not your application APIs. No resources are provisioned by the initializer.
 
 ## Neon
 
@@ -21,7 +21,7 @@ Use the database owner credentials supplied by the project for the server and mi
 
 Disable the unused **Data API** in Supabase project settings. This template serves data through authenticated Next.js route handlers only. Its migration enables row-level security on all nine tables without client policies. This denies reads and writes to nonowner roles without BYPASSRLS even if table grants exist. It protects auth tokens, password hashes, billing state and private notes from direct client access. Server queries run as the table owner, which bypasses RLS; user ownership checks in the server remain mandatory. Supabase service-role API access also bypasses RLS; keep that key private. Never expose database URLs to the browser. See [Supabase API security](https://supabase.com/docs/guides/api/securing-your-api) and [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security).
 
-Keep RLS enabled on any new tables you add. If you later enable the Data API, explicitly review exposed schemas, table grants and policies; Better Auth sessions are not Supabase JWTs. No Supabase Auth integration is included.
+Keep RLS enabled on any new tables you add. If you later enable the Data API, explicitly review exposed schemas, table grants and policies. Better Auth sessions are not Supabase JWTs. The default authentication choice does not install Supabase Auth; `--auth supabase` is a separate overlay that uses the Auth API, not the Data API.
 
 ## Finish setup
 
