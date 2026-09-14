@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Security fixes target the latest `create-feldra` release and the `main` branch. Older template releases do not have separate maintenance branches.
+Security fixes target the latest `feldra` release and the `main` branch. Older template releases do not have separate maintenance branches.
 
 Generated projects are independent copies: upgrading the initializer does not patch an existing application. Review fixes to the affected template files and dependencies and apply them to your project. See the [maintenance guide](../docs/maintenance.md).
 

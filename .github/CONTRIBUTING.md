@@ -1,6 +1,6 @@
 # Contributing to Feldra
 
-Feldra is an npm workspace monorepo and a published project initializer. Changes to the template affect projects generated with `create-feldra`, so check both the source repository and the packaged output when changing scaffolding behavior.
+Feldra is an npm workspace monorepo and a published project initializer. Changes to the template affect projects generated with `feldra`, so check both the source repository and the packaged output when changing scaffolding behavior.
 
 Please follow the [code of conduct](CODE_OF_CONDUCT.md). Report vulnerabilities using the [security policy](SECURITY.md).
 
@@ -22,13 +22,13 @@ Follow [provider setup](../docs/setup.md) to configure a local app, then run `np
 | `apps/web` | Next.js marketing and pricing pages |
 | `apps/app` | Next.js authentication, dashboard, APIs and billing webhooks |
 | `apps/docs` | Feldra's Blume/Astro documentation website |
-| `packages` | Shared `@repo/*` packages; `packages/feldra` is the published `create-feldra` workspace |
-| `packages/feldra/bin` | `create-feldra` CLI and provider selection |
+| `packages` | Shared `@repo/*` packages; `packages/feldra` is the published `feldra` workspace |
+| `packages/feldra/bin` | `feldra` CLI and provider selection |
 | `packages/feldra/variants/clerk` | Clerk template overlay and generated dependency lockfile |
 | `scripts/pack-initializer.mjs` | Template allowlist, manifests and npm tarball packaging |
 | `tests` | Unit, initializer and database integration tests |
 
-The docs app, `create-feldra` workspace, Changesets and GitHub workflows are maintainer tooling and are excluded from generated projects. Do not edit generated `packages/feldra/template`, `.blume`, `.next`, or `dist` output. Regenerate the Clerk variant lockfile through the pack script when its dependencies change.
+The docs app, `feldra` workspace, Changesets and GitHub workflows are maintainer tooling and are excluded from generated projects. Do not edit generated `packages/feldra/template`, `.blume`, `.next`, or `dist` output. Regenerate the Clerk variant lockfile through the pack script when its dependencies change.
 
 ## Checks
 
@@ -49,7 +49,7 @@ Run checks appropriate to the change. Add regression coverage for behavior chang
 
 Branch from `main`. Describe the problem, resulting behavior and validation in the PR template. Link related issues and include screenshots for visible UI changes. Follow the existing TypeScript, React and Astro patterns and use the repository's formatter.
 
-For changes shipped in the initializer or generated template, run `npm run changeset`, select `create-feldra`, and describe the user-facing change. Documentation-only and repository-tooling changes usually do not need a changeset. Update relevant guides when commands, provider setup or behavior change.
+For changes shipped in the initializer or generated template, run `npm run changeset`, select `feldra`, and describe the user-facing change. Documentation-only and repository-tooling changes usually do not need a changeset. Update relevant guides when commands, provider setup or behavior change.
 
 CI runs lint, types, tests, production builds, packaged distribution checks and documentation browser checks on pull requests. Dependency updates use the same checks; do not merge a failing dependency PR just because it is automated.
 

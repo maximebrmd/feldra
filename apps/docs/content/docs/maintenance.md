@@ -7,7 +7,7 @@ sidebar:
 
 Each initializer release bundles a tested monorepo and npm lockfile. Scaffolding performs no GitHub download. `template-origin.json` records the version, preset and content digest. Commit each generated project's initial state yourself for later comparison. The internal @repo packages belong to that project and are not downloaded from the original template.
 
-Customize `packages/config/index.ts`, app copy, metadata and the example notes. Each project owns its provider resources and environment. Never distribute `.env.local` or real credentials. Generated projects have no dependency on create-feldra and do not automatically change when it updates.
+Customize `packages/config/index.ts`, app copy, metadata and the example notes. Each project owns its provider resources and environment. Never distribute `.env.local` or real credentials. Generated projects have no dependency on feldra and do not automatically change when it updates.
 
 For future fixes, publish a new initializer version with affected files, migrations and validation in the changelog. Generate temporary projects from the old and new versions, inspect the relevant diff, and manually apply a reviewed patch. Resolve customizations deliberately; run lint/types/tests/build and that project's live-provider checks. Apply new migrations in order, never rewrite an applied migration. There is no automatic synchronization or provider interchange layer.
 

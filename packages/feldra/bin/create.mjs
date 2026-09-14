@@ -70,7 +70,7 @@ try {
   }
   if (values.help) {
     console.log(
-      "Usage: npm create feldra@latest [directory] -- [--yes] [--name package-name] [--database neon|supabase] [--auth better-auth|clerk]\nInteractive in a terminal; --yes or piped input is noninteractive. Choose a database and authentication tool with arrow keys. --auth defaults to better-auth. --list-tools lists supported tools without creating files. --yes defaults to Neon; use --database supabase to select Supabase. --preset is an alias for --database. Refuses existing destinations. Node >=22.12, npm and Git required."
+      "Usage: npx feldra@latest [directory] [--yes] [--name package-name] [--database neon|supabase] [--auth better-auth|clerk]\nEquivalent: npm exec feldra@latest -- [directory] [--yes] [...]\nInteractive in a terminal; --yes or piped input is noninteractive. Choose a database and authentication tool with arrow keys. --auth defaults to better-auth. --list-tools lists supported tools without creating files. --yes defaults to Neon; use --database supabase to select Supabase. --preset is an alias for --database. Refuses existing destinations. Node >=22.12, npm and Git required."
     );
     process.exit(0);
   }
@@ -200,7 +200,7 @@ try {
   await chmod(join(destination, ".env.local"), 0o600);
   await writeFile(
     join(destination, "template-origin.json"),
-    `${JSON.stringify({ auth: setup.auth, package: "create-feldra", preset: setup.preset, templateSha256: manifest.templateSha256, version: manifest.version }, null, 2)}\n`,
+    `${JSON.stringify({ auth: setup.auth, package: "feldra", preset: setup.preset, templateSha256: manifest.templateSha256, version: manifest.version }, null, 2)}\n`,
     { flag: "wx" }
   );
   npm(["ci", "--include=dev", "--no-fund"], destination);
@@ -227,11 +227,11 @@ try {
   run("git", ["init", "--initial-branch=main", "--template="], destination);
   const quotedPath = `'${destination.replaceAll("'", "'\"'\"'")}'`;
   console.log(
-    `\nCreated ${name} from create-feldra ${manifest.version}. Dependencies installed.\nProvider services are NOT configured yet. Next:\n\ncd ${quotedPath}\n\n1. Edit .env.local: ${provider.instructions}\n2. Set APP_URL=http://localhost:3001 and WEB_URL=http://localhost:3000 locally; use separate HTTPS origins in production. Authentication: ${authentication.label}.\n3. ${authentication.instructions}\n4. In a separate Stripe sandbox create a Pro product with a USD 12/month recurring price (or match packages/config/index.ts). Set STRIPE_SECRET_KEY, STRIPE_PRO_PRICE_ID and STRIPE_LIVE_MODE=false. Enable the customer portal.\n5. Run: stripe listen --events customer.subscription.created,customer.subscription.updated,customer.subscription.deleted,customer.subscription.paused,customer.subscription.resumed,checkout.session.completed,checkout.session.async_payment_succeeded,checkout.session.async_payment_failed,invoice.paid,invoice.payment_failed,invoice.payment_action_required --forward-to localhost:3001/api/webhooks/stripe\n   Copy its signing secret to STRIPE_WEBHOOK_SECRET.\n\nnpm run db:migrate\nnpm run check\nnpm run dev\n\nMarketing: http://localhost:3000 · Application: http://localhost:3001\n\nOptional full local fixture tests (Docker required): npm run test:database\nSee docs/setup.md for restricted key permissions, production configuration and live verification. No providers were provisioned and nothing was published.`
+    `\nCreated ${name} from feldra ${manifest.version}. Dependencies installed.\nProvider services are NOT configured yet. Next:\n\ncd ${quotedPath}\n\n1. Edit .env.local: ${provider.instructions}\n2. Set APP_URL=http://localhost:3001 and WEB_URL=http://localhost:3000 locally; use separate HTTPS origins in production. Authentication: ${authentication.label}.\n3. ${authentication.instructions}\n4. In a separate Stripe sandbox create a Pro product with a USD 12/month recurring price (or match packages/config/index.ts). Set STRIPE_SECRET_KEY, STRIPE_PRO_PRICE_ID and STRIPE_LIVE_MODE=false. Enable the customer portal.\n5. Run: stripe listen --events customer.subscription.created,customer.subscription.updated,customer.subscription.deleted,customer.subscription.paused,customer.subscription.resumed,checkout.session.completed,checkout.session.async_payment_succeeded,checkout.session.async_payment_failed,invoice.paid,invoice.payment_failed,invoice.payment_action_required --forward-to localhost:3001/api/webhooks/stripe\n   Copy its signing secret to STRIPE_WEBHOOK_SECRET.\n\nnpm run db:migrate\nnpm run check\nnpm run dev\n\nMarketing: http://localhost:3000 · Application: http://localhost:3001\n\nOptional full local fixture tests (Docker required): npm run test:database\nSee docs/setup.md for restricted key permissions, production configuration and live verification. No providers were provisioned and nothing was published.`
   );
 } catch (error) {
   console.error(
-    `\ncreate-feldra: ${error instanceof Error ? error.message : String(error)}`
+    `\nfeldra: ${error instanceof Error ? error.message : String(error)}`
   );
   if (created) {
     console.error(

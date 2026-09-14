@@ -24,10 +24,10 @@ npm ci
 npm run initializer:pack
 ```
 
-このコマンドはソースを検証し、リポジトリのルートに `create-feldra-VERSION.tgz` を書き出します。以下の VERSION を `packages/feldra/package.json` に記載されているバージョンに置き換えてください。
+このコマンドはソースを検証し、リポジトリのルートに `feldra-VERSION.tgz` を書き出します。以下の VERSION を `packages/feldra/package.json` に記載されているバージョンに置き換えてください。
 
 ```sh
-npm exec --yes --package="./create-feldra-VERSION.tgz" -- create-feldra my-new-saas
+npm exec --yes --package="./feldra-VERSION.tgz" -- feldra my-new-saas
 ```
 
 矢印キーと Enter キーを使って **Neon** または **Supabase** を選択します。初期化ツールは依存関係をインストールし、ローカル環境ファイルを書き出して、新しい Git リポジトリを初期化します。作成先がすでに存在する場合は、空であっても処理を拒否します。
@@ -55,7 +55,7 @@ npm run dev
 現在のパッケージが公開されると、次のコマンドでプロジェクトを作成できるようになります。
 
 ```sh
-npm create feldra@latest my-new-saas
+npx feldra@latest my-new-saas
 ```
 
 パッケージが明示的に公開されるまでは、この公開用コマンドを使用しないでください。1 つのコマンドでひな形の作成とインストールを行いますが、プロバイダーのアカウント作成や認証情報の設定は行いません。

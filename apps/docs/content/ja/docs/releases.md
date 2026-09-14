@@ -6,7 +6,7 @@ sidebar:
 ---
 ## リリース状況 [#release-status]
 
-Feldra は、このプロジェクトの新しいブランドです。初期化ツールの現在の名前は `create-feldra` で、npm にはまだ公開されていません。メンテナーは Changesets を通じてバージョンを管理しています。
+Feldra は、このプロジェクトの新しいブランドです。初期化パッケージは `feldra` で、npm にはまだ公開されていません。公開後は `npx feldra` または `npm exec feldra` を実行します。メンテナーは Changesets を通じてバージョンを管理しています。
 
 ## リリースワークフロー [#release-workflow]
 

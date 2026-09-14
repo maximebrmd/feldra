@@ -21,7 +21,7 @@ Open http://localhost:4321. The build produces static files in `apps/docs/dist`.
 
 Blume generates an ignored `.blume` Astro workspace. Do not edit generated files. Fonts are bundled into the static output. Search, keyboard shortcuts, mobile navigation, code copying, theme switching and the docs layout come from Blume. No AI assistant, MCP server, analytics, or hosted search is configured.
 
-Setup commands still use the actual `create-feldra` package name. The package has been renamed; npm publication has not happened. The homepage command builds the local initializer; the quickstart explains how to run the resulting tarball.
+After publication, users run `npx feldra` or `npm exec feldra`. npm publication has not happened. The homepage command builds the local initializer; the quickstart explains how to run the resulting tarball.
 
 ## Translations
 

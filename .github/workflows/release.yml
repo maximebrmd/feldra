@@ -26,8 +26,8 @@ jobs:
         uses: changesets/action@v2
         with:
           version-script: npm run release:version
-          pr-title: 'Release create-feldra'
-          commit-message: 'chore: version create-feldra'
+          pr-title: 'Release feldra'
+          commit-message: 'chore: version feldra'
       - uses: actions/download-artifact@v8
         if: steps.changesets.outputs.has-changesets == 'false' && vars.NPM_PUBLISH_ENABLED == 'true'
         with:
@@ -43,15 +43,15 @@ jobs:
         shell: bash
         run: |
           version=$(node -p "require('./packages/feldra/package.json').version")
-          tag="create-feldra@$version"
-          artifact="release-artifact/create-feldra-$version.tgz"
+          tag="feldra@$version"
+          artifact="release-artifact/feldra-$version.tgz"
           cd release-artifact
           sha256sum --check SHA256SUMS
           cd ..
           # Fail on registry/network errors; only a genuine 404 permits publish.
-          status=$(curl --silent --show-error --output /tmp/npm-version.json --write-out '%{http_code}' "https://registry.npmjs.org/create-feldra/$version")
+          status=$(curl --silent --show-error --output /tmp/npm-version.json --write-out '%{http_code}' "https://registry.npmjs.org/feldra/$version")
           case "$status" in
-            200) echo "create-feldra@$version is already published"; exit 0 ;;
+            200) echo "feldra@$version is already published"; exit 0 ;;
             404) npm publish "$artifact" --access public --provenance ;;
             *) cat /tmp/npm-version.json; exit 1 ;;
           esac
