@@ -27,8 +27,11 @@ function run(args, cwd) {
     throw new Error(`npm ${args.join(" ")} failed`);
   }
 }
-run(["run", "check"], root);
-run(["run", "test:initializer"], root);
+const templateOnly = process.argv.includes("--template-only");
+if (!templateOnly) {
+  run(["run", "check"], root);
+  run(["run", "test:initializer"], root);
+}
 await rm(target, { force: true, recursive: true });
 await mkdir(target);
 const files = [
@@ -124,6 +127,9 @@ for (const app of ["app", "web"]) {
     join(target, "apps", app, "next-env.d.ts"),
     '/// <reference types="next" />\n/// <reference types="next/image-types/global" />\n'
   );
+}
+if (templateOnly) {
+  process.exit(0);
 }
 async function hashTree(treeRoot, path = "") {
   const hashes = {};

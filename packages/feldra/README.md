@@ -52,6 +52,18 @@ Configure Neon or Supabase, Stripe, and Resend, Clerk, GitHub OAuth, Supabase Au
 
 Node 22.12+ (24 LTS recommended), npm, and Git. Docker is only for fixture tests in the generated project.
 
+## Local development
+
+From a Feldra monorepo checkout, `packages/feldra/template/` is generated and gitignored. After `npm ci`, pack before a workspace create:
+
+```sh
+npm ci
+npm run initializer:pack
+npm exec --workspace packages/feldra -- feldra create my-new-saas
+```
+
+Published npm packages already include the template. Create from this checkout also auto-packs a missing template when `scripts/pack-initializer.mjs` is present.
+
 ## License
 
 MIT. Retain the bundled third-party notices. Source: [maximebrmd/feldra](https://github.com/maximebrmd/feldra).
