@@ -41,6 +41,8 @@ for (const { database, auth } of [
   { auth: "better-auth", database: "supabase" },
   { auth: "clerk", database: "neon" },
   { auth: "clerk", database: "supabase" },
+  { auth: "authjs", database: "neon" },
+  { auth: "authjs", database: "supabase" },
 ]) {
   const temp = await mkdtemp(join(tmpdir(), "feldra packed test "));
   run(
@@ -79,6 +81,10 @@ for (const { database, auth } of [
     auth === "clerk"
   );
   assert.equal(
+    Boolean(lock.packages["node_modules/next-auth"]),
+    auth === "authjs"
+  );
+  assert.equal(
     Boolean(lock.packages["node_modules/better-auth"]),
     auth === "better-auth"
   );
@@ -100,8 +106,13 @@ for (const { database, auth } of [
   assert.doesNotMatch(readme, /maximebrmd\/feldra\/actions/u);
   if (auth === "clerk") {
     assert.match(readme, /^> Generated authentication: \*\*Clerk\*\*/u);
+  } else if (auth === "authjs") {
+    assert.match(readme, /^> Generated authentication: \*\*Auth\.js\*\*/u);
   } else {
-    assert.doesNotMatch(readme, /Generated authentication: \*\*Clerk\*\*/u);
+    assert.doesNotMatch(
+      readme,
+      /Generated authentication: \*\*(Clerk|Auth\.js)\*\*/u
+    );
   }
   assert.ok(!pkg.dependencies?.["@clack/prompts"]);
   assert.ok(!pkg.devDependencies?.["@clack/prompts"]);
@@ -127,6 +138,13 @@ for (const { database, auth } of [
   const local = await readFile(join(project, ".env.local"), "utf8");
   if (auth === "better-auth") {
     assert.match(local, /BETTER_AUTH_SECRET=[A-Za-z0-9_-]{43}/u);
+  } else if (auth === "authjs") {
+    assert.match(local, /AUTH_SECRET=[A-Za-z0-9_-]{43}/u);
+    assert.match(local, /AUTH_GITHUB_ID=\n/u);
+    assert.doesNotMatch(
+      local,
+      /BETTER_AUTH_SECRET|RESEND_API_KEY|CLERK_SECRET_KEY/u
+    );
   } else {
     assert.match(local, /CLERK_SECRET_KEY=\n/u);
     assert.doesNotMatch(local, /BETTER_AUTH_SECRET|RESEND_API_KEY/u);

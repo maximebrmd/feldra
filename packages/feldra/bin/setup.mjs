@@ -19,6 +19,12 @@ export const databases = {
 };
 
 export const authentications = {
+  authjs: {
+    hint: "Auth.js / NextAuth · GitHub OAuth · self-hosted session",
+    instructions:
+      "Create a NEW GitHub OAuth app. Set Homepage URL to APP_URL and callback URL to APP_URL/api/auth/callback/github. Set AUTH_GITHUB_ID and AUTH_GITHUB_SECRET in .env.local. A local AUTH_SECRET is generated; create a separate production secret. GitHub verifies email; Resend is not installed.",
+    label: "Auth.js",
+  },
   "better-auth": {
     hint: "Self-hosted identity · Resend auth emails (default)",
     instructions:
@@ -43,7 +49,11 @@ export async function collectSetup(options, prompts) {
   }
   let authentication = options.auth;
   if (authentication && !Object.hasOwn(authentications, authentication)) {
-    throw new Error("Choose --auth better-auth or --auth clerk.");
+    throw new Error(
+      `Choose ${Object.keys(authentications)
+        .map((value) => `--auth ${value}`)
+        .join(" or ")}.`
+    );
   }
   let database = options.database || options.preset;
   if (database && !Object.hasOwn(databases, database)) {

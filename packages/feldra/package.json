@@ -1,12 +1,15 @@
 {
   "name": "feldra",
   "version": "0.1.0",
-  "description": "Create a Feldra SaaS monorepo with Neon or Supabase, Better Auth or Clerk, and Stripe.",
+  "description": "Create a Feldra SaaS monorepo with Neon or Supabase, Better Auth, Clerk, or Auth.js, and Stripe.",
   "keywords": [
     "create",
     "nextjs",
     "saas",
     "better-auth",
+    "clerk",
+    "auth.js",
+    "next-auth",
     "neon",
     "stripe",
     "next-forge",

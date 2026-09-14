@@ -82,3 +82,25 @@ test("Clerk is explicit and unknown authentication choices fail before creating 
     /Choose --auth/u
   );
 });
+
+test("Auth.js is explicit and remains selectable beside Better Auth and Clerk", async () => {
+  assert.equal(
+    (await collectSetup({ auth: "authjs", directory: "new" })).auth,
+    "authjs"
+  );
+  const setup = await collectSetup(
+    { database: "neon", directory: "new", name: "new" },
+    {
+      confirm: () => true,
+      select: (prompt) => {
+        const values = prompt.options.map((option) => option.value);
+        assert.ok(values.includes("better-auth"));
+        assert.ok(values.includes("clerk"));
+        assert.ok(values.includes("authjs"));
+        assert.equal(prompt.initialValue, "better-auth");
+        return "authjs";
+      },
+    }
+  );
+  assert.equal(setup.auth, "authjs");
+});

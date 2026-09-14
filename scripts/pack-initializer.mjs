@@ -12,7 +12,7 @@ import {
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { applyClerk } from "../packages/feldra/bin/apply-auth.mjs";
+import { authOverlays } from "../packages/feldra/bin/apply-auth.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const release = join(root, "packages/feldra");
@@ -127,39 +127,43 @@ for (const app of ["app", "web"]) {
     '/// <reference types="next" />\n/// <reference types="next/image-types/global" />\n'
   );
 }
-// Resolve the Clerk dependency tree at release time, not during scaffolding.
-const variant = join(release, "variants/clerk");
-const staging = await mkdtemp(join(tmpdir(), "feldra-clerk-lock-"));
-try {
-  await cp(target, staging, { recursive: true });
-  await applyClerk(staging, variant, { lockfile: false });
-  run(
-    ["install", "--package-lock-only", "--ignore-scripts", "--no-fund"],
-    staging
-  );
-  await copyFile(
-    join(staging, "package-lock.json"),
-    join(variant, "package-lock.json")
-  );
-} finally {
-  await rm(staging, { force: true, recursive: true });
-}
-const variantHashes = {};
-async function hashVariant(path = "") {
-  for (const entry of await readdir(join(variant, path), {
-    withFileTypes: true,
-  })) {
-    const file = path ? `${path}/${entry.name}` : entry.name;
-    if (entry.isDirectory()) {
-      await hashVariant(file);
-    } else {
-      variantHashes[file] = createHash("sha256")
-        .update(await readFile(join(variant, file)))
-        .digest("hex");
+// Resolve each auth overlay's dependency tree at release time, not during scaffolding.
+const variantFiles = {};
+for (const [name, apply] of Object.entries(authOverlays)) {
+  const variant = join(release, "variants", name);
+  const staging = await mkdtemp(join(tmpdir(), `feldra-${name}-lock-`));
+  try {
+    await cp(target, staging, { recursive: true });
+    await apply(staging, variant, { lockfile: false });
+    run(
+      ["install", "--package-lock-only", "--ignore-scripts", "--no-fund"],
+      staging
+    );
+    await copyFile(
+      join(staging, "package-lock.json"),
+      join(variant, "package-lock.json")
+    );
+  } finally {
+    await rm(staging, { force: true, recursive: true });
+  }
+  const hashes = {};
+  async function hashVariant(path = "") {
+    for (const entry of await readdir(join(variant, path), {
+      withFileTypes: true,
+    })) {
+      const file = path ? `${path}/${entry.name}` : entry.name;
+      if (entry.isDirectory()) {
+        await hashVariant(file);
+      } else {
+        hashes[file] = createHash("sha256")
+          .update(await readFile(join(variant, file)))
+          .digest("hex");
+      }
     }
   }
+  await hashVariant();
+  variantFiles[`${name}Files`] = hashes;
 }
-await hashVariant();
 const hashes = {};
 async function hash(path = "") {
   const entries = await readdir(join(target, path), { withFileTypes: true });
@@ -180,6 +184,6 @@ const version = JSON.parse(
 ).version;
 await writeFile(
   join(release, "template-manifest.json"),
-  `${JSON.stringify({ clerkFiles: variantHashes, files: hashes, templateSha256: createHash("sha256").update(JSON.stringify(hashes)).digest("hex"), version }, null, 2)}\n`
+  `${JSON.stringify({ ...variantFiles, files: hashes, templateSha256: createHash("sha256").update(JSON.stringify(hashes)).digest("hex"), version }, null, 2)}\n`
 );
 run(["pack", "--pack-destination", root], release);

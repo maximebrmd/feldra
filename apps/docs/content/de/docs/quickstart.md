@@ -30,7 +30,7 @@ Damit wird der Quellcode validiert und `feldra-VERSION.tgz` im Stammverzeichnis 
 npm exec --yes --package="./feldra-VERSION.tgz" -- feldra create my-new-saas
 ```
 
-Wähle mit den Pfeiltasten und der Eingabetaste **Neon** oder **Supabase** aus. Der Initialisierer installiert Abhängigkeiten, schreibt lokale Umgebungsdateien und initialisiert ein neues Git-Repository. Er lehnt ein bereits vorhandenes Zielverzeichnis ab, selbst wenn es leer ist.
+Wähle mit den Pfeiltasten und der Eingabetaste **Neon** oder **Supabase** und anschließend **Better Auth**, **Clerk** oder **Auth.js** aus. Der Initialisierer installiert Abhängigkeiten, schreibt lokale Umgebungsdateien und initialisiert ein neues Git-Repository. Er lehnt ein bereits vorhandenes Zielverzeichnis ab, selbst wenn es leer ist.
 
 Für einen nicht interaktiven Durchlauf hängst du `--yes --database supabase` an den Projektnamen an. Sowohl relative Pfade als auch in Anführungszeichen gesetzte Pfade mit Leerzeichen funktionieren.
 
@@ -40,7 +40,7 @@ Für einen nicht interaktiven Durchlauf hängst du `--yes --database supabase` a
 cd my-new-saas
 ```
 
-Fülle `.env.local` mithilfe der generierten `DATABASE.md` und der [Anleitung zu Umgebungsvariablen](/docs/environment/) aus. Ein neues lokales Secret für Better Auth wurde bereits generiert; Zugangsdaten für Datenbank, E-Mail und Zahlungen musst du separat konfigurieren.
+Fülle `.env.local` mithilfe der generierten `DATABASE.md` und der [Anleitung zu Umgebungsvariablen](/docs/environment/) aus. Ein neues lokales Secret für Better Auth oder Auth.js wurde bereits generiert, oder die Clerk-Schlüssel bleiben leer; die übrigen Anbieterzugangsdaten musst du separat konfigurieren.
 
 ```sh
 npm run db:migrate
@@ -62,6 +62,6 @@ Verwende den öffentlichen Befehl erst, wenn das Paket ausdrücklich veröffentl
 
 ## Authentifizierung auswählen [#choose-authentication]
 
-Nachdem du eine Datenbank ausgewählt hast, wählst du **Better Auth** (Standard) oder **Clerk**. Better Auth verwendet Resend für Bestätigungs-E-Mails und E-Mails zum Zurücksetzen des Passworts. Clerk verwendet seine verwalteten Komponenten und seinen E-Mail-Versand; in diesem Projekt sind Better Auth und Resend nicht enthalten.
+Nachdem du eine Datenbank ausgewählt hast, wählst du **Better Auth** (Standard), **Clerk** oder **Auth.js**. Better Auth verwendet Resend für Bestätigungs-E-Mails und E-Mails zum Zurücksetzen des Passworts. Clerk verwendet seine verwalteten Komponenten und seinen E-Mail-Versand. Auth.js verwendet GitHub-OAuth. In Clerk- und Auth.js-Projekten sind Better Auth und Resend nicht enthalten.
 
-Für CI fügst du dem lokalen Initialisierungsbefehl `--auth clerk` oder `--auth better-auth` hinzu. Kombiniere eine der beiden Optionen mit `--database neon` oder `--database supabase`. `--list-tools` listet die unterstützten Optionen auf, ohne Dateien zu erstellen. Befolge die generierte `AUTHENTICATION.md`, bevor du die Live-Authentifizierung testest. Diese Optionen erstellen unabhängige Projekte; sie migrieren keine bestehenden Nutzer zwischen Diensten.
+Für CI fügst du dem lokalen Initialisierungsbefehl `--auth better-auth`, `--auth clerk` oder `--auth authjs` hinzu. Kombiniere eine dieser Optionen mit `--database neon` oder `--database supabase`. `--list-tools` listet die unterstützten Optionen auf, ohne Dateien zu erstellen. Befolge die generierte `AUTHENTICATION.md`, bevor du die Live-Authentifizierung testest. Diese Optionen erstellen unabhängige Projekte; sie migrieren keine bestehenden Nutzer zwischen Diensten.

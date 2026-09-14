@@ -3,7 +3,10 @@ import { copyFile, mkdir, mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { test } from "node:test";
-import { applyClerk } from "../../packages/feldra/bin/apply-auth.mjs";
+import {
+  applyAuthjs,
+  applyClerk,
+} from "../../packages/feldra/bin/apply-auth.mjs";
 
 const root = resolve(import.meta.dirname, "../..");
 const release = join(root, "packages/feldra");
@@ -37,6 +40,38 @@ test("the product README contract is distinct from the monorepo README", async (
     assert.doesNotMatch(monorepo, /is the Blume documentation site/u);
   } finally {
     await rm(temp, { force: true, recursive: true });
+  }
+});
+
+test("Auth.js generation prepends a banner onto the product README", async () => {
+  const destination = await mkdtemp(join(tmpdir(), "feldra-authjs-readme-"));
+  try {
+    const copies = [
+      "package.json",
+      "turbo.json",
+      ".env.example",
+      "packages/auth/package.json",
+      "packages/config/env.ts",
+      "apps/app/package.json",
+      "apps/app/src/app/dashboard/settings/page.tsx",
+      "scripts/test-database.mjs",
+    ];
+    for (const path of copies) {
+      await mkdir(join(destination, dirname(path)), { recursive: true });
+      await copyFile(join(root, path), join(destination, path));
+    }
+    await copyFile(
+      join(release, "template-readme.md"),
+      join(destination, "README.md")
+    );
+    await applyAuthjs(destination, join(release, "variants/authjs"), {
+      lockfile: false,
+    });
+    const readme = await readFile(join(destination, "README.md"), "utf8");
+    assert.match(readme, /^> Generated authentication: \*\*Auth\.js\*\*/u);
+    assertProductReadme(readme);
+  } finally {
+    await rm(destination, { force: true, recursive: true });
   }
 });
 

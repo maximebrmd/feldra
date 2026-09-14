@@ -3,7 +3,7 @@
 [![CI](https://github.com/maximebrmd/feldra/actions/workflows/ci.yml/badge.svg)](https://github.com/maximebrmd/feldra/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/github/license/maximebrmd/feldra)](LICENSE)
 
-**A complete foundation for your next SaaS.** Two Next.js apps, shared packages, and Turborepo — choose Neon or Supabase, Better Auth or Clerk, and Stripe. Free and open source.
+**A complete foundation for your next SaaS.** Two Next.js apps, shared packages, and Turborepo — choose Neon or Supabase, Better Auth, Clerk, or Auth.js, and Stripe. Free and open source.
 
 `npx feldra create` copies a hashed, versioned template into an independent Git repository, installs locked dependencies, and stops. No provider accounts, databases, or deployments are provisioned. The generated project has no runtime dependency on this initializer.
 
@@ -29,7 +29,7 @@ npm run initializer:pack
 npm exec --yes --package="$(pwd)/feldra-0.1.0.tgz" -- feldra create my-new-saas
 ```
 
-In a terminal, the CLI asks for the directory and package name, then offers arrow-key selectors for **Neon** or **Supabase** and **Better Auth** or **Clerk**. `--yes` or non-TTY input is noninteractive and requires a directory. Existing destinations are refused, even if empty. Quoted paths with spaces work; `--name` overrides the derived package name.
+In a terminal, the CLI asks for the directory and package name, then offers arrow-key selectors for **Neon** or **Supabase** and **Better Auth**, **Clerk**, or **Auth.js**. `--yes` or non-TTY input is noninteractive and requires a directory. Existing destinations are refused, even if empty. Quoted paths with spaces work; `--name` overrides the derived package name.
 
 Then connect your own providers and run:
 
@@ -46,11 +46,11 @@ Open marketing at `http://localhost:3000` and the app at `http://localhost:3001`
 
 - **Two Next.js apps** — marketing and pricing on port 3000; auth, dashboard, APIs, and webhooks on port 3001.
 - **Postgres you choose** — Neon or Supabase. Both use Drizzle and SQL migrations. Supabase supplies Postgres only, not its Auth product.
-- **Authentication you choose** — Better Auth (default, Resend emails) or Clerk (managed identity and auth emails), independently of the database.
+- **Authentication you choose** — Better Auth (default, Resend emails), Clerk (managed identity and auth emails), or Auth.js (NextAuth, GitHub OAuth), independently of the database.
 - **Stripe billing** — Checkout, customer portal, signed webhooks, and a server-side paid-access gate. Individual accounts and user-level billing.
 - **Shared packages** — auth, database, design-system (used shadcn Button/Input and Tailwind), email, payments, and config, coordinated with Turborepo and npm workspaces.
 - **Hashed template** — the CLI copies a versioned, integrity-checked bundle. It never downloads a moving GitHub branch.
-- **No provider provisioning** — you create Neon/Supabase, Resend or Clerk, and Stripe resources yourself. The CLI prints exact next steps.
+- **No provider provisioning** — you create Neon/Supabase, Resend, Clerk, or GitHub OAuth, and Stripe resources yourself. The CLI prints exact next steps.
 - **Independent projects** — a fresh Git repository, locked npm dependencies, and no leftover dependency on the initializer.
 - **Tested workflow** — Ultracite, TypeScript, unit tests, production builds, optional Docker Postgres fixtures, and browser checks.
 - **Example product surface** — signup, verification, login, password reset, onboarding, profile settings, and clearly marked private notes CRUD. `/api/notes/export` is Pro-only.
@@ -64,7 +64,7 @@ Organizations, CMS, analytics, AI, queues, and automatic template sync are inten
 | `feldra create [directory]` | Scaffold a project (interactive in a TTY). |
 | `--yes`, `-y` | Noninteractive. Requires a directory. Defaults to Neon and Better Auth. |
 | `--database neon\|supabase` | Choose Postgres. `--preset` is an alias. |
-| `--auth better-auth\|clerk` | Choose authentication. Default: `better-auth`. |
+| `--auth better-auth\|clerk\|authjs` | Choose authentication. Default: `better-auth`. |
 | `--name <package-name>` | Override the package name derived from the directory. |
 | `--list-tools` | Print supported tools without creating files. |
 | `--help`, `-h` | Show create usage. |
@@ -77,7 +77,7 @@ See [packages/feldra/README.md](packages/feldra/README.md) for the npm-facing CL
 
 ## How it works
 
-The CLI verifies the bundled template (and Clerk overlay) against SHA-256 hashes, copies it to a new directory, applies the selected auth variant, rewrites package and lockfile names, writes `.env.local` (a random Better Auth secret, or blank Clerk keys), runs `npm ci`, and initializes a new Git repository. Failure returns nonzero and leaves any partial destination for inspection.
+The CLI verifies the bundled template (and auth overlays) against SHA-256 hashes, copies it to a new directory, applies the selected auth variant, rewrites package and lockfile names, writes `.env.local` (a random Better Auth or Auth.js secret, or blank Clerk keys), runs `npm ci`, and initializes a new Git repository. Failure returns nonzero and leaves any partial destination for inspection.
 
 ```text
 my-new-saas/
@@ -85,7 +85,7 @@ my-new-saas/
 │   ├── web/                 # Marketing and pricing · localhost:3000
 │   └── app/                 # Auth, dashboard, APIs and webhooks · localhost:3001
 ├── packages/
-│   ├── auth/                # Better Auth or Clerk
+│   ├── auth/                # Better Auth, Clerk, or Auth.js
 │   ├── database/            # Drizzle schema, SQL migrations, Postgres client
 │   ├── design-system/       # Used shadcn Button/Input and shared Tailwind styles
 │   ├── email/               # Resend authentication emails (Better Auth)
