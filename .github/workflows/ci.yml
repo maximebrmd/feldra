@@ -27,6 +27,15 @@ jobs:
       - uses: ./.github/actions/setup-node
       - run: npm run "${{ matrix.command }}"
 
+  coverage:
+    name: coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-node
+      - run: npm run test:coverage
+
   distribution:
     name: Build and test distribution
     runs-on: ubuntu-latest
@@ -50,7 +59,7 @@ jobs:
           retention-days: 14
 
   docs:
-    name: Build and test docs
+    name: build-docs
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -88,7 +97,7 @@ jobs:
           if-no-files-found: ignore
 
   release:
-    needs: [checks, distribution, docs]
+    needs: [checks, coverage, distribution, docs]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     uses: ./.github/workflows/release.yml
     permissions:
@@ -98,7 +107,7 @@ jobs:
     secrets: inherit
 
   deploy:
-    needs: [checks, distribution, docs]
+    needs: [checks, coverage, distribution, docs]
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.DOCS_DEPLOY_ENABLED == 'true'
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
