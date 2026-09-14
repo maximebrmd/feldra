@@ -287,5 +287,11 @@ for (const docs of ["mintlify", "fumadocs"]) {
     assert.match(readme, /^> Generated documentation: \*\*Fumadocs\*\*/u);
   }
   run("npm", ["run", "docs:build"], project);
+  // Generated Mintlify projects tell users to run `npm run check`. The docs
+  // build is a content check; lint is the generated-project Ultracite path
+  // that previously failed on apps/docs/check-docs.mjs.
+  if (docs === "mintlify") {
+    run("npm", ["run", "lint"], project);
+  }
   console.log(`Packed ${docs} docs app built at ${project}`);
 }

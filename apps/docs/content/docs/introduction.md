@@ -17,6 +17,7 @@ The architecture takes inspiration from next-forge: two deployable Next.js apps 
 
 - **A public website** with landing and pricing pages.
 - **An authenticated app** with signup, verification, login, password reset, onboarding, and account settings.
+- **Documentation** you choose: Blume (default), Mintlify, or Fumadocs (`apps/docs`, port 4321).
 - **Private notes** as a clearly marked example of validated, authorized CRUD.
 - **Subscriptions** with Stripe Checkout, customer portal, signed webhooks, and server-side paid access.
 - **Transactional emails** through Resend.
@@ -29,6 +30,7 @@ The architecture takes inspiration from next-forge: two deployable Next.js apps 
 | Application | Next.js App Router and TypeScript |
 | Database | Neon or Supabase Postgres with Drizzle |
 | Authentication | Better Auth, Clerk, Auth.js, or Supabase Auth |
+| Documentation | Blume (default), Mintlify, or Fumadocs |
 | Styling | Tailwind CSS and used shadcn/ui components |
 | Billing | Stripe |
 | Email | Resend |

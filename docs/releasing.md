@@ -37,7 +37,7 @@ Update version-specific examples in README files and validation reports before p
 npm run initializer:test
 ```
 
-This runs lint/types/unit tests and both app builds, packs a strict allowlist with `npm pack`, and scaffolds all six auth/database combinations from that tarball in temporary paths containing spaces. It verifies npm installation, naming, Git, environment files, overwrite refusal and exclusion of release tooling, then runs generated-project checks and isolated Docker database fixtures. Better Auth variants also run production browser tests. Docker is required; browser tests install Chromium if missing.
+This runs lint/types/unit tests and both app builds, packs a strict allowlist with `npm pack`, and scaffolds all auth/database combinations from that tarball in temporary paths containing spaces. It covers those combinations with the default Blume docs, then scaffolds Mintlify and Fumadocs once each and builds those docs apps. It verifies npm installation, naming, Git, environment files, overwrite refusal and exclusion of release tooling, then runs generated-project checks and isolated Docker database fixtures. Better Auth variants also run production browser tests. Docker is required; browser tests install Chromium if missing.
 
 Inspect the tarball, `packages/feldra/template-manifest.json`, and the test output. Record the tarball SHA-256 and validation results. The bundle includes the generated release changelog. It excludes real credentials, node_modules, Git history, agent files, release configuration and research. Never edit a tested bundle and publish it without repacking/retesting.
 

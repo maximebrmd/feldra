@@ -193,6 +193,33 @@ test("Clerk generation prepends a banner onto the product README", async () => {
   }
 });
 
+test("Blume generation leaves the default docs app in place", async () => {
+  const destination = await mkdtemp(join(tmpdir(), "feldra-blume-docs-"));
+  try {
+    await mkdir(join(destination, "apps/docs"), { recursive: true });
+    await writeFile(join(destination, "apps/docs/sentinel.txt"), "blume");
+    await copyFile(
+      join(release, "template-readme.md"),
+      join(destination, "README.md")
+    );
+    await applyDocs(
+      destination,
+      join(release, "variants/docs/blume"),
+      "blume",
+      { lockfile: false }
+    );
+    assert.equal(
+      await readFile(join(destination, "apps/docs/sentinel.txt"), "utf8"),
+      "blume"
+    );
+    const readme = await readFile(join(destination, "README.md"), "utf8");
+    assertProductReadme(readme);
+    assert.doesNotMatch(readme, /Generated documentation:/u);
+  } finally {
+    await rm(destination, { force: true, recursive: true });
+  }
+});
+
 test("Mintlify generation prepends a banner and replaces the Blume docs app", async () => {
   const destination = await mkdtemp(join(tmpdir(), "feldra-mintlify-readme-"));
   try {
@@ -241,6 +268,55 @@ test("Mintlify generation prepends a banner and replaces the Blume docs app", as
     assert.equal(docsPkg.scripts.build, "node ./check-docs.mjs");
     assert.ok(!docsPkg.dependencies?.mint);
     assert.ok(!docsPkg.devDependencies?.mint);
+  } finally {
+    await rm(destination, { force: true, recursive: true });
+  }
+});
+
+test("Fumadocs generation prepends a banner and replaces the Blume docs app", async () => {
+  const destination = await mkdtemp(join(tmpdir(), "feldra-fumadocs-readme-"));
+  try {
+    await mkdir(join(destination, "apps/docs"), { recursive: true });
+    await writeFile(join(destination, "apps/docs/sentinel.txt"), "blume");
+    await writeFile(
+      join(destination, "package.json"),
+      `${JSON.stringify(
+        {
+          name: "packed-saas-check",
+          overrides: {
+            "@scalar/astro": { astro: "7.3.2" },
+          },
+        },
+        null,
+        2
+      )}\n`
+    );
+    await copyFile(
+      join(release, "template-readme.md"),
+      join(destination, "README.md")
+    );
+    await applyDocs(
+      destination,
+      join(release, "variants/docs/fumadocs"),
+      "fumadocs",
+      { lockfile: false }
+    );
+    const readme = await readFile(join(destination, "README.md"), "utf8");
+    assert.match(readme, /^> Generated documentation: \*\*Fumadocs\*\*/u);
+    assertProductReadme(readme);
+    await assert.rejects(
+      readFile(join(destination, "apps/docs/sentinel.txt")),
+      { code: "ENOENT" }
+    );
+    const pkg = JSON.parse(
+      await readFile(join(destination, "package.json"), "utf8")
+    );
+    assert.equal(pkg.overrides?.["@scalar/astro"], undefined);
+    const docsPkg = JSON.parse(
+      await readFile(join(destination, "apps/docs/package.json"), "utf8")
+    );
+    assert.equal(docsPkg.scripts.build, "next build");
+    assert.equal(docsPkg.dependencies?.["fumadocs-ui"], "16.15.10");
   } finally {
     await rm(destination, { force: true, recursive: true });
   }
