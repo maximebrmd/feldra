@@ -8,6 +8,10 @@ import { persistIdentity } from "./sync";
 
 export const SESSION_COOKIE = "appwrite-session";
 
+export class AppwriteSessionRevokeError extends Error {
+  readonly status = 503;
+}
+
 function sessionCookieOptions(expire: string) {
   return {
     expires: new Date(expire),
@@ -140,6 +144,15 @@ export async function applyEmailVerification(userId: string, secret: string) {
   }
 }
 
+export const emailVerifiedPath = "/verify-email?verified=1";
+
+export function showEmailVerified(
+  verifiedQuery: string | undefined,
+  sessionVerified: boolean
+) {
+  return verifiedQuery === "1" || sessionVerified;
+}
+
 export async function requestPasswordRecovery(email: string) {
   const { account } = createAdminClient();
   await account.createRecovery({ email, url: `${appUrl()}/reset-password` });
@@ -156,8 +169,16 @@ export async function completePasswordRecovery(input: {
     secret: input.secret,
     userId: input.userId,
   });
-  await new Users(adminClient()).deleteSessions({ userId: input.userId });
-  await clearSessionCookie();
+  try {
+    await new Users(adminClient()).deleteSessions({ userId: input.userId });
+  } catch (cause) {
+    throw new AppwriteSessionRevokeError(
+      "Unable to complete the request. Check provider configuration or try again.",
+      { cause }
+    );
+  } finally {
+    await clearSessionCookie();
+  }
 }
 
 export async function destroySession() {

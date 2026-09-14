@@ -226,9 +226,12 @@ test("password reset deletes sessions and verification replay stays verified", a
     },
   });
   try {
-    const { applyEmailVerification, completePasswordRecovery } = await import(
-      "../../packages/auth/server"
-    );
+    const {
+      AppwriteSessionRevokeError,
+      applyEmailVerification,
+      completePasswordRecovery,
+      showEmailVerified,
+    } = await import("../../packages/auth/server");
     updateRecovery.mock.mockImplementationOnce(() => {
       throw new Error("invalid recovery");
     });
@@ -241,6 +244,22 @@ test("password reset deletes sessions and verification replay stays verified", a
     );
     assert.equal(deleteSessions.mock.calls.length, 0);
     assert.equal(cookieSet.mock.calls.length, 0);
+    deleteSessions.mock.mockImplementationOnce(() => {
+      throw new Error("sessions.write failed");
+    });
+    await assert.rejects(
+      () =>
+        completePasswordRecovery({
+          password: "a-long-test-password",
+          secret: "recovery-secret",
+          userId: "user_reset",
+        }),
+      (error: unknown) =>
+        error instanceof AppwriteSessionRevokeError && error.status === 503
+    );
+    assert.equal(cookieSet.mock.calls.length, 1);
+    assert.equal(cookieSet.mock.calls[0]?.arguments[0], "appwrite-session");
+    assert.equal(cookieSet.mock.calls[0]?.arguments[1], "");
     await completePasswordRecovery({
       password: "a-long-test-password",
       secret: "recovery-secret",
@@ -251,11 +270,12 @@ test("password reset deletes sessions and verification replay stays verified", a
       secret: "recovery-secret",
       userId: "user_reset",
     });
-    assert.deepEqual(deleteSessions.mock.calls[0]?.arguments[0], {
+    assert.deepEqual(deleteSessions.mock.calls.at(-1)?.arguments[0], {
       userId: "user_reset",
     });
-    assert.equal(cookieSet.mock.calls[0]?.arguments[0], "appwrite-session");
-    assert.equal(cookieSet.mock.calls[0]?.arguments[1], "");
+    assert.equal(cookieSet.mock.calls.length, 2);
+    assert.equal(cookieSet.mock.calls.at(-1)?.arguments[0], "appwrite-session");
+    assert.equal(cookieSet.mock.calls.at(-1)?.arguments[1], "");
     assert.equal(await applyEmailVerification("user_a", "fresh-secret"), true);
     updateEmailVerification.mock.mockImplementation(() => {
       throw new Error("token already used");
@@ -269,8 +289,51 @@ test("password reset deletes sessions and verification replay stays verified", a
       name: "Ada",
     }));
     assert.equal(await applyEmailVerification("user_a", "used-secret"), true);
+    assert.equal(showEmailVerified("1", false), true);
+    assert.equal(showEmailVerified(undefined, false), false);
+    assert.equal(showEmailVerified(undefined, true), true);
   } finally {
     headers.restore();
     appwrite.restore();
+  }
+});
+
+test("password reset returns 503 when session revoke fails after recovery", async () => {
+  const { mock } = await import("node:test");
+  class AppwriteSessionRevokeError extends Error {
+    readonly status = 503;
+  }
+  const sdk = mock.module("@repo/auth/server", {
+    namedExports: {
+      AppwriteSessionRevokeError,
+      completePasswordRecovery: () => {
+        throw new AppwriteSessionRevokeError(
+          "Unable to complete the request. Check provider configuration or try again."
+        );
+      },
+    },
+  });
+  try {
+    process.env.APP_URL = "http://localhost:3001";
+    const { POST } = await import(
+      "../../apps/app/src/app/api/auth/reset/route"
+    );
+    const response = await POST(
+      new Request("http://localhost:3001/api/auth/reset", {
+        body: JSON.stringify({
+          password: "a-long-test-password",
+          secret: "recovery-secret",
+          userId: "user_reset",
+        }),
+        headers: {
+          "content-type": "application/json",
+          origin: "http://localhost:3001",
+        },
+        method: "POST",
+      })
+    );
+    assert.equal(response.status, 503);
+  } finally {
+    sdk.restore();
   }
 });

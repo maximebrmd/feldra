@@ -1,7 +1,10 @@
-import { completePasswordRecovery } from "@repo/auth/server";
+import {
+  AppwriteSessionRevokeError,
+  completePasswordRecovery,
+} from "@repo/auth/server";
 import { z } from "zod";
 import { authFailure } from "@/lib/auth-http";
-import { jsonInput, sameOrigin } from "@/lib/http";
+import { failure, jsonInput, sameOrigin } from "@/lib/http";
 
 export const runtime = "nodejs";
 
@@ -18,6 +21,9 @@ export async function POST(request: Request) {
     await completePasswordRecovery(input);
     return Response.json({ ok: true });
   } catch (error) {
+    if (error instanceof AppwriteSessionRevokeError) {
+      return failure(error);
+    }
     return authFailure(error);
   }
 }
