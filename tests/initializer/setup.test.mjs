@@ -27,7 +27,7 @@ test("interactive selector offers both databases and preserves Supabase selectio
         if (prompt.message.includes("authentication")) {
           assert.deepEqual(
             prompt.options.map((option) => option.value),
-            ["authjs", "better-auth", "clerk", "supabase", "appwrite"]
+            ["better-auth", "clerk", "authjs", "supabase", "appwrite"]
           );
           return "better-auth";
         }
@@ -103,7 +103,7 @@ test("Clerk and Appwrite are explicit and unknown authentication choices fail be
   );
   await assert.rejects(
     collectSetup({ auth: "unknown", directory: "new" }),
-    /Choose --auth authjs or --auth better-auth or --auth clerk or --auth supabase or --auth appwrite/u
+    /Choose --auth better-auth or --auth clerk or --auth authjs or --auth supabase or --auth appwrite/u
   );
 });
 
@@ -171,7 +171,7 @@ test("interactive selector offers Better Auth, Clerk, Auth.js, Supabase Auth and
         }
         assert.deepEqual(
           prompt.options.map((option) => option.value),
-          ["authjs", "better-auth", "clerk", "supabase", "appwrite"]
+          ["better-auth", "clerk", "authjs", "supabase", "appwrite"]
         );
         assert.equal(prompt.initialValue, "better-auth");
         return "supabase";
