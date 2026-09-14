@@ -21,7 +21,7 @@ npx feldra@latest create my-new-saas
 
 Equivalent: `npm exec feldra@latest -- create my-new-saas`. **The `feldra` package is not on npm yet** — the repository stays at **0.1.0** until an explicit public release. Do not run the public command until it is published.
 
-Until then, pack and run the tested tarball from this repository, or create from the workspace after pack:
+Until then, pack and create from this repository:
 
 ```sh
 npm ci
@@ -29,7 +29,7 @@ npm run initializer:pack
 npm exec --workspace packages/feldra -- feldra create my-new-saas
 ```
 
-Equivalent tarball path: `npm exec --yes --package="$(pwd)/feldra-0.1.0.tgz" -- feldra create my-new-saas`. `packages/feldra/template/` is generated and gitignored; skip pack and local create fails.
+Equivalent tarball path: `npm exec --yes --package="$(pwd)/feldra-0.1.0.tgz" -- feldra create my-new-saas`. `packages/feldra/template/` is gitignored and produced by pack. A workspace create from this checkout auto-packs a missing template; the tarball path still needs pack.
 
 In a terminal, the CLI asks for the directory and package name, then offers arrow-key selectors for **Neon** or **Supabase**, **Better Auth**, **Clerk**, **Auth.js**, **Supabase Auth**, or **Appwrite**, and **Blume**, **Mintlify**, or **Fumadocs**. `--yes` or non-TTY input is noninteractive and requires a directory. Existing destinations are refused, even if empty. Quoted paths with spaces work; `--name` overrides the derived package name.
 
@@ -133,7 +133,7 @@ npm run initializer:pack   # Write packages/feldra/template/ and feldra-VERSION.
 npm exec --workspace packages/feldra -- feldra create my-new-saas
 ```
 
-After `npm ci`, run `npm run initializer:pack` before a local workspace create. `packages/feldra/template/` is gitignored and only produced by pack.
+See [Quickstart](#quickstart) for the gitignored template and local create.
 
 Optional fixture tests need Docker: `npm run test:database`, `npm run test:browser`.
 

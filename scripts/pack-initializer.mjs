@@ -129,6 +129,7 @@ for (const app of ["app", "web"]) {
   );
 }
 if (templateOnly) {
+  // Local create auto-pack: copy the gitignored template without hashing or the tarball.
   process.exit(0);
 }
 async function hashTree(treeRoot, path = "") {

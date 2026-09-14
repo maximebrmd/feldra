@@ -54,15 +54,7 @@ Node 22.12+ (24 LTS recommended), npm, and Git. Docker is only for fixture tests
 
 ## Local development
 
-From a Feldra monorepo checkout, `packages/feldra/template/` is generated and gitignored. After `npm ci`, pack before a workspace create:
-
-```sh
-npm ci
-npm run initializer:pack
-npm exec --workspace packages/feldra -- feldra create my-new-saas
-```
-
-Published npm packages already include the template. Create from this checkout also auto-packs a missing template when `scripts/pack-initializer.mjs` is present.
+Published npm packages already include the template. In a git checkout, `template/` is generated and gitignored; pack and create from the [repository README](https://github.com/maximebrmd/feldra#quickstart).
 
 ## License
 
