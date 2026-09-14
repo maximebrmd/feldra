@@ -33,6 +33,9 @@ for (const entry of entries) {
 }
 assert.ok(entries.includes("package/template/.env.example"));
 assert.ok(entries.includes("package/template/package-lock.json"));
+assert.ok(
+  !entries.includes("package/template/tests/ci-required-checks.test.ts")
+);
 for (const { database, auth } of [
   { auth: "better-auth", database: "neon" },
   { auth: "better-auth", database: "supabase" },
