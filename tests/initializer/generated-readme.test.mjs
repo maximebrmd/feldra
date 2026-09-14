@@ -23,7 +23,10 @@ function assertProductReadme(readme) {
 test("the product README contract is distinct from the monorepo README", async () => {
   const temp = await mkdtemp(join(tmpdir(), "feldra-template-readme-"));
   try {
-    await copyFile(join(release, "template-readme.md"), join(temp, "README.md"));
+    await copyFile(
+      join(release, "template-readme.md"),
+      join(temp, "README.md")
+    );
     const packed = await readFile(join(temp, "README.md"), "utf8");
     const monorepo = await readFile(join(root, "README.md"), "utf8");
     assert.notEqual(packed, monorepo);
@@ -71,7 +74,9 @@ test("Clerk generation prepends a banner onto the product README", async () => {
 
 test("monorepo README headings follow Blume's section order", async () => {
   const readme = await readFile(join(root, "README.md"), "utf8");
-  const headings = [...readme.matchAll(/^## (.+)$/gmu)].map((match) => match[1]);
+  const headings = [...readme.matchAll(/^## (.+)$/gmu)].map(
+    (match) => match[1]
+  );
   assert.deepEqual(headings, [
     "Quickstart",
     "Features",
