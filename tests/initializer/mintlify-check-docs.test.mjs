@@ -32,7 +32,7 @@ async function copyMintlifyDocs(destination) {
   await cp(mintlifyDocs, destination, { recursive: true });
 }
 
-test("Mintlify check-docs accepts the bundled docs.json pages and internal links", async () => {
+test("Mintlify check-docs accepts the bundled docs.json pages and internal links", () => {
   const result = runNode(checkDocs, mintlifyDocs);
   assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
 });
