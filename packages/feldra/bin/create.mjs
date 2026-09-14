@@ -67,13 +67,13 @@ try {
   });
   if (values["list-tools"]) {
     console.log(
-      "Database: neon (default), supabase\nAuthentication: better-auth (default, Resend emails), clerk (managed auth and emails), authjs (Auth.js / NextAuth, GitHub OAuth), supabase (Supabase Auth; independent of --database)\nDocumentation: blume (default, Astro), mintlify, fumadocs\nFixed: Next.js, TypeScript, Drizzle, Stripe, Tailwind/shadcn, Ultracite, npm, Turborepo.\nAuth and database combinations are generated at scaffold time with the selected docs app; no provider-switching layer is installed."
+      "Database: neon (default), supabase\nAuthentication: better-auth (default, Resend emails), clerk (managed auth and emails), authjs (Auth.js / NextAuth, GitHub OAuth), supabase (Supabase Auth; independent of --database), appwrite (managed auth and emails)\nDocumentation: blume (default, Astro), mintlify, fumadocs\nFixed: Next.js, TypeScript, Drizzle, Stripe, Tailwind/shadcn, Ultracite, npm, Turborepo.\nAuth and database combinations are generated at scaffold time with the selected docs app; no provider-switching layer is installed."
     );
     process.exit(0);
   }
   if (values.help) {
     console.log(
-      "Usage: npx feldra@latest create [directory] [--yes] [--name package-name] [--database neon|supabase] [--auth better-auth|clerk|authjs|supabase] [--docs blume|mintlify|fumadocs]\nEquivalent: npm exec feldra@latest -- create [directory] [--yes] [...]\nInteractive in a terminal; --yes or piped input is noninteractive. Choose a database, authentication tool, and documentation framework with arrow keys. --auth defaults to better-auth. --docs defaults to blume. --list-tools lists supported tools without creating files. --yes defaults to Neon, Better Auth, and Blume; use --database supabase to select Supabase. --preset is an alias for --database. Auth and database are independent; --auth supabase still needs a Supabase project URL and publishable key. Refuses existing destinations. Node >=22.12, npm and Git required."
+      "Usage: npx feldra@latest create [directory] [--yes] [--name package-name] [--database neon|supabase] [--auth better-auth|clerk|authjs|supabase|appwrite] [--docs blume|mintlify|fumadocs]\nEquivalent: npm exec feldra@latest -- create [directory] [--yes] [...]\nInteractive in a terminal; --yes or piped input is noninteractive. Choose a database, authentication tool, and documentation framework with arrow keys. --auth defaults to better-auth. --docs defaults to blume. --list-tools lists supported tools without creating files. --yes defaults to Neon, Better Auth, and Blume; use --database supabase to select Supabase. --preset is an alias for --database. Auth and database are independent; --auth supabase still needs a Supabase project URL and publishable key. Refuses existing destinations. Node >=22.12, npm and Git required."
     );
     process.exit(0);
   }

@@ -43,6 +43,12 @@ export const authentications = {
       "Create a NEW Supabase project for Auth (independent of the database choice). Enable email/password and confirm email. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY in .env.local. Add the application origin and /api/auth/callback to Auth redirect URLs. Supabase delivers verification and reset emails; Resend is not installed. Never add the service role key.",
     label: "Supabase Auth",
   },
+  appwrite: {
+    hint: "Managed identity and auth emails · separate Appwrite project required",
+    instructions:
+      "Create a NEW Appwrite project. Enable email/password and require email verification. Create an API key with the Sessions write scope. Set NEXT_PUBLIC_APPWRITE_ENDPOINT, NEXT_PUBLIC_APPWRITE_PROJECT_ID and APPWRITE_API_KEY in .env.local. Appwrite delivers verification and reset emails; Resend is not installed.",
+    label: "Appwrite",
+  },
 };
 
 export const docsFrameworks = {

@@ -11,6 +11,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { test } from "node:test";
 import {
+  applyAppwrite,
   applyAuthjs,
   applyClerk,
   applySupabase,
@@ -156,6 +157,47 @@ test("Supabase Auth generation prepends a banner onto the product README", async
     );
     assert.match(testDatabase, /tests\/integration\/supabase-data\.test\.ts/u);
     assert.doesNotMatch(testDatabase, /tests\/integration\/flows\.test\.ts/u);
+  } finally {
+    await rm(destination, { force: true, recursive: true });
+  }
+});
+
+test("Appwrite generation prepends a banner onto the product README", async () => {
+  const destination = await mkdtemp(join(tmpdir(), "feldra-appwrite-readme-"));
+  try {
+    const copies = [
+      "package.json",
+      "turbo.json",
+      ".env.example",
+      "packages/auth/package.json",
+      "packages/config/env.ts",
+      "apps/app/package.json",
+      "apps/app/src/app/dashboard/settings/page.tsx",
+      "scripts/test-database.mjs",
+    ];
+    for (const path of copies) {
+      await mkdir(join(destination, dirname(path)), { recursive: true });
+      await copyFile(join(root, path), join(destination, path));
+    }
+    await copyFile(
+      join(release, "template-readme.md"),
+      join(destination, "README.md")
+    );
+    await applyAppwrite(destination, join(release, "variants/appwrite"), {
+      lockfile: false,
+    });
+    const readme = await readFile(join(destination, "README.md"), "utf8");
+    assert.match(readme, /^> Generated authentication: \*\*Appwrite\*\*/u);
+    assertProductReadme(readme);
+    assert.match(
+      await readFile(join(destination, ".env.example"), "utf8"),
+      /APPWRITE_API_KEY=/u
+    );
+    const authPkg = JSON.parse(
+      await readFile(join(destination, "packages/auth/package.json"), "utf8")
+    );
+    assert.equal(authPkg.dependencies["node-appwrite"], "29.0.0");
+    assert.equal(authPkg.dependencies["better-auth"], undefined);
   } finally {
     await rm(destination, { force: true, recursive: true });
   }

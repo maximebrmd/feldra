@@ -52,6 +52,8 @@ for (const { database, auth } of [
   { auth: "authjs", database: "supabase" },
   { auth: "supabase", database: "neon" },
   { auth: "supabase", database: "supabase" },
+  { auth: "appwrite", database: "neon" },
+  { auth: "appwrite", database: "supabase" },
 ]) {
   const temp = await mkdtemp(join(tmpdir(), "feldra packed test "));
   run(
@@ -103,6 +105,10 @@ for (const { database, auth } of [
     auth === "supabase"
   );
   assert.equal(
+    Boolean(lock.packages["node_modules/node-appwrite"]),
+    auth === "appwrite"
+  );
+  assert.equal(
     Boolean(lock.packages["node_modules/better-auth"]),
     auth === "better-auth"
   );
@@ -128,10 +134,12 @@ for (const { database, auth } of [
     assert.match(readme, /^> Generated authentication: \*\*Auth\.js\*\*/u);
   } else if (auth === "supabase") {
     assert.match(readme, /^> Generated authentication: \*\*Supabase Auth\*\*/u);
+  } else if (auth === "appwrite") {
+    assert.match(readme, /^> Generated authentication: \*\*Appwrite\*\*/u);
   } else {
     assert.doesNotMatch(
       readme,
-      /Generated authentication: \*\*(Clerk|Auth\.js|Supabase Auth)\*\*/u
+      /Generated authentication: \*\*(Clerk|Auth\.js|Supabase Auth|Appwrite)\*\*/u
     );
   }
   assert.ok(!pkg.dependencies?.["@clack/prompts"]);
@@ -170,6 +178,13 @@ for (const { database, auth } of [
   } else if (auth === "clerk") {
     assert.match(local, /CLERK_SECRET_KEY=\n/u);
     assert.doesNotMatch(local, /BETTER_AUTH_SECRET|RESEND_API_KEY/u);
+  } else if (auth === "appwrite") {
+    assert.match(local, /APPWRITE_API_KEY=\n/u);
+    assert.match(local, /NEXT_PUBLIC_APPWRITE_PROJECT_ID=\n/u);
+    assert.doesNotMatch(
+      local,
+      /BETTER_AUTH_SECRET|RESEND_API_KEY|CLERK_SECRET_KEY/u
+    );
   } else {
     assert.match(local, /NEXT_PUBLIC_SUPABASE_URL=\n/u);
     assert.match(local, /NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=\n/u);

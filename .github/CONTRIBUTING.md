@@ -27,6 +27,7 @@ Follow [provider setup](../docs/setup.md) to configure a local app, then run `np
 | `packages/feldra/variants/clerk` | Clerk template overlay and generated dependency lockfile |
 | `packages/feldra/variants/authjs` | Auth.js template overlay and generated dependency lockfile |
 | `packages/feldra/variants/supabase` | Supabase Auth template overlay and generated dependency lockfile |
+| `packages/feldra/variants/appwrite` | Appwrite Auth overlay and generated dependency lockfile |
 | `packages/feldra/variants/docs` | Generated Blume, Mintlify, and Fumadocs docs apps and overlay lockfiles |
 | `scripts/pack-initializer.mjs` | Template allowlist, manifests and npm tarball packaging |
 | `tests` | Unit, initializer and database integration tests |
