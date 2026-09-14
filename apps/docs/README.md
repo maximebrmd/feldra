@@ -35,7 +35,7 @@ npm run docs:translations:check
 
 Run generation from the repository root with an authenticated local Codex or Claude CLI. It translates Markdown guides and maintains `blume.translations.json`; commit that ledger with the translations. Review translations for terminology and accuracy. Code samples, URLs and source heading anchors should remain stable across languages. The check command reports missing or stale translations without running a model or writing files.
 
-Blume 1.6.5's smart punctuation can turn `--` inside an anchor marker into an en dash. The translated release-history headings escape one hyphen (`[#020-\-unreleased]`) to retain the original `020--unreleased` ID. Preserve those escapes when refreshing translations. Browser checks compare rendered source and translated anchors, which catches this discrepancy even when the ledger is current.
+Blume 1.6.5's smart punctuation can turn `--` inside an anchor marker into an en dash. The translated release-history headings escape one hyphen (`[#010-\-first-public-release-not-published-yet]`) to retain the original `010--first-public-release-not-published-yet` ID. Preserve those escapes when refreshing translations. Browser checks compare rendered source and translated anchors, which catches this discrepancy even when the ledger is current.
 
 CI checks freshness on release PRs, and npm publishing repeats the check. Regular source edits can land before translation updates. Refresh translations before merging a release PR; see [CI/CD setup](../../docs/ci-cd.md). Custom Astro homepage and 404 content are English and outside the Markdown translation pipeline.
 
