@@ -14,14 +14,17 @@ if (pages.length === 0) {
   throw new Error("docs.json navigation has no pages.");
 }
 const known = new Set(pages);
-for (const page of pages) {
-  await readFile(join(root, `${page}.mdx`), "utf8");
-}
-const linkPattern = /\[[^\]]+\]\(([^)]+)\)/gu;
-for (const page of pages) {
-  const text = await readFile(join(root, `${page}.mdx`), "utf8");
+const documents = await Promise.all(
+  pages.map(async (page) => ({
+    page,
+    text: await readFile(join(root, `${page}.mdx`), "utf8"),
+  }))
+);
+for (const { page, text } of documents) {
+  const linkPattern = /\[[^\]]+\]\(([^)]+)\)/gu;
   for (const match of text.matchAll(linkPattern)) {
-    const href = match[1].split("#")[0];
+    const [, captured = ""] = match;
+    const [href = ""] = captured.split("#");
     if (!href.startsWith("/") || href.startsWith("//")) {
       continue;
     }
@@ -31,4 +34,3 @@ for (const page of pages) {
     }
   }
 }
-console.log(`Mintlify docs check passed (${pages.length} pages).`);

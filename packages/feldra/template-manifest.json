@@ -210,7 +210,7 @@
   "mintlifyFiles": {
     "apps/docs/README.md": "7191fa4ceb61aa1f7a3e02a3b073de07c7cba5aa171903c8a8bbb78b32b800d5",
     "apps/docs/architecture.mdx": "b12b72558521cba6b2960d066f0ccc67351e2be2ca7188287cb53626793d8b6c",
-    "apps/docs/check-docs.mjs": "db2c32349c7abdbc4d5772f7f48326d0a8f8ef79ac4b069ba465f68544c73e4c",
+    "apps/docs/check-docs.mjs": "1af1ea65d2a7a9605848f4c873a26181584a040848b60ca2b99e1fe6ae6162db",
     "apps/docs/docs.json": "2d6596e9f8079b7d9603cbcbb97ba550c1255ec486b784717552883b47f8336f",
     "apps/docs/introduction.mdx": "8906f7626354bc5101d184d4f4fbe89e8bcb8f4cafc9ae0659de82fa8e513c59",
     "apps/docs/package.json": "50b65802bc19b6b79eb97e8eccda63bde4b84ab2fecf48ece245a1cbc5820eef",
