@@ -46,7 +46,6 @@ const files = [
   "biome.jsonc",
   ".env.example",
   ".gitignore",
-  "README.md",
   "LICENSE",
   "THIRD_PARTY_NOTICES.md",
 ];
@@ -93,6 +92,7 @@ async function copy(path) {
 for (const path of files) {
   await copy(path);
 }
+await copyFile(join(release, "template-readme.md"), join(target, "README.md"));
 await copyFile(join(release, "CHANGELOG.md"), join(target, "CHANGELOG.md"));
 const pkg = JSON.parse(await readFile(join(target, "package.json"), "utf8"));
 delete pkg.scripts["initializer:pack"];

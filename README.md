@@ -117,7 +117,7 @@ Generated apps are two Next.js deployments from one repository (`apps/web` and `
 
 ## Development
 
-This repository is a monorepo: the published package lives in `packages/feldra`, the SaaS template is the workspace apps and `@repo/*` packages, and `apps/docs` is the Blume documentation site (`npm run docs:dev` → http://localhost:4321).
+This repository is a monorepo: the published package lives in `packages/feldra`, the SaaS template is the workspace apps and `@repo/*` packages, and `apps/docs` is the Feldra documentation site built with Blume (`npm run docs:dev` → http://localhost:4321).
 
 ```sh
 npm ci
@@ -129,7 +129,7 @@ npm run initializer:pack   # Validate and write feldra-VERSION.tgz
 
 Optional fixture tests need Docker: `npm run test:database`, `npm run test:browser`.
 
-See [CONTRIBUTING](.github/CONTRIBUTING.md), [releasing](docs/releasing.md), and [CI/CD](docs/ci-cd.md). Generated projects do not include this repository's Changesets, docs app, or GitHub workflows.
+See [CONTRIBUTING](.github/CONTRIBUTING.md), [releasing](docs/releasing.md), and [CI/CD](docs/ci-cd.md). Generated projects do not include this repository's Changesets, docs app, or GitHub workflows; they receive a product README rather than this file.
 
 ## License
 
