@@ -19,6 +19,12 @@ export const databases = {
 };
 
 export const authentications = {
+  appwrite: {
+    hint: "Managed identity and auth emails · separate Appwrite project required",
+    instructions:
+      "Create a NEW Appwrite project. Enable email/password and require email verification. Create an API key with the Sessions write scope. Set NEXT_PUBLIC_APPWRITE_ENDPOINT, NEXT_PUBLIC_APPWRITE_PROJECT_ID and APPWRITE_API_KEY in .env.local. Appwrite delivers verification and reset emails; Resend is not installed.",
+    label: "Appwrite",
+  },
   authjs: {
     hint: "Auth.js / NextAuth · GitHub OAuth · self-hosted session",
     instructions:
@@ -44,6 +50,14 @@ export const authentications = {
     label: "Supabase Auth",
   },
 };
+
+const authenticationOrder = [
+  "better-auth",
+  "clerk",
+  "authjs",
+  "supabase",
+  "appwrite",
+];
 
 export const docsFrameworks = {
   blume: {
@@ -107,7 +121,7 @@ export async function collectSetup(options, prompts) {
   let authentication = requireChoice(
     options.auth,
     authentications,
-    `Choose ${Object.keys(authentications)
+    `Choose ${authenticationOrder
       .map((value) => `--auth ${value}`)
       .join(" or ")}.`
   );
@@ -164,6 +178,7 @@ export async function collectSetup(options, prompts) {
     choices: authentications,
     fallback: "better-auth",
     message: "Which authentication tool do you want to use?",
+    order: authenticationOrder,
   });
   docs = await pickChoice(docs, prompts, {
     choices: docsFrameworks,

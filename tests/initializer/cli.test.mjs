@@ -40,7 +40,10 @@ test("create --help documents npx feldra create flags", () => {
   assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
   assert.match(result.stdout, /npx feldra@latest create \[directory\]/u);
   assert.match(result.stdout, /--database/u);
-  assert.match(result.stdout, /--auth better-auth\|clerk\|authjs\|supabase/u);
+  assert.match(
+    result.stdout,
+    /--auth better-auth\|clerk\|authjs\|supabase\|appwrite/u
+  );
   assert.match(result.stdout, /--docs blume\|mintlify\|fumadocs/u);
   assert.doesNotMatch(result.stdout, /Unknown command/u);
 });
@@ -53,6 +56,7 @@ test("create --list-tools prints supported tools without creating files", () => 
   assert.match(result.stdout, /clerk/u);
   assert.match(result.stdout, /authjs/u);
   assert.match(result.stdout, /supabase/u);
+  assert.match(result.stdout, /appwrite/u);
   assert.match(result.stdout, /blume/u);
   assert.match(result.stdout, /mintlify/u);
   assert.match(result.stdout, /fumadocs/u);
@@ -61,7 +65,10 @@ test("create --list-tools prints supported tools without creating files", () => 
 test("create --help documents the supabase auth choice", () => {
   const result = run(["create", "--help"]);
   assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
-  assert.match(result.stdout, /--auth better-auth\|clerk\|authjs\|supabase/u);
+  assert.match(
+    result.stdout,
+    /--auth better-auth\|clerk\|authjs\|supabase\|appwrite/u
+  );
 });
 
 test("create without a directory in noninteractive mode tells the user the npx create command", () => {

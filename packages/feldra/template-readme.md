@@ -1,6 +1,6 @@
 # Feldra
 
-**A complete foundation for your next SaaS.** Two Next.js apps, shared packages, and Turborepo — Neon or Supabase, Better Auth, Clerk, Auth.js, or Supabase Auth, Stripe, and a Blume, Mintlify, or Fumadocs documentation app.
+**A complete foundation for your next SaaS.** Two Next.js apps, shared packages, and Turborepo — Neon or Supabase, Better Auth, Clerk, Auth.js, Supabase Auth, or Appwrite, Stripe, and a Blume, Mintlify, or Fumadocs documentation app.
 
 This project was generated with Feldra. It is an independent Git repository with locked npm dependencies and no runtime dependency on the initializer. No provider accounts, databases, or deployments were provisioned.
 
@@ -21,7 +21,7 @@ Open marketing at `http://localhost:3000` and the app at `http://localhost:3001`
 
 - **Two Next.js apps** — marketing and pricing on port 3000; auth, dashboard, APIs, and webhooks on port 3001.
 - **Postgres you choose** — Neon or Supabase. Both use Drizzle and SQL migrations. Database choice is independent of authentication.
-- **Authentication you choose** — Better Auth (default, Resend emails), Clerk (managed identity and auth emails), Auth.js (NextAuth, GitHub OAuth), or Supabase Auth, independently of the database.
+- **Authentication you choose** — Better Auth (default, Resend emails), Clerk (managed identity and auth emails), Auth.js (NextAuth, GitHub OAuth), Supabase Auth, or Appwrite, independently of the database.
 - **Stripe billing** — Checkout, customer portal, signed webhooks, and a server-side paid-access gate. Individual accounts and user-level billing.
 - **Documentation you choose** — Blume (default), Mintlify, or Fumadocs. `npm run docs:dev` serves `apps/docs` at http://localhost:4321.
 - **Shared packages** — auth, database, design-system (used shadcn Button/Input and Tailwind), email, payments, and config, coordinated with Turborepo and npm workspaces.
@@ -39,7 +39,7 @@ Organizations, CMS, analytics, AI, queues, and automatic template sync are inten
 │   ├── app/                 # Auth, dashboard, APIs and webhooks · localhost:3001
 │   └── docs/                # Blume, Mintlify, or Fumadocs · localhost:4321
 ├── packages/
-│   ├── auth/                # Better Auth, Clerk, Auth.js, or Supabase Auth
+│   ├── auth/                # Better Auth, Clerk, Auth.js, Supabase Auth, or Appwrite
 │   ├── database/            # Drizzle schema, SQL migrations, Postgres client
 │   ├── design-system/       # Used shadcn Button/Input and shared Tailwind styles
 │   ├── email/               # Resend authentication emails (Better Auth)

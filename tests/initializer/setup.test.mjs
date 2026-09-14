@@ -25,6 +25,10 @@ test("interactive selector offers both databases and preserves Supabase selectio
       },
       select: (prompt) => {
         if (prompt.message.includes("authentication")) {
+          assert.deepEqual(
+            prompt.options.map((option) => option.value),
+            ["better-auth", "clerk", "authjs", "supabase", "appwrite"]
+          );
           return "better-auth";
         }
         if (prompt.message.includes("documentation")) {
@@ -88,14 +92,18 @@ test("unknown providers, conflicting flags and missing paths fail explicitly", a
   await assert.rejects(collectSetup({}), /Provide a destination/u);
 });
 
-test("Clerk is explicit and unknown authentication choices fail before creating files", async () => {
+test("Clerk and Appwrite are explicit and unknown authentication choices fail before creating files", async () => {
   assert.equal(
     (await collectSetup({ auth: "clerk", directory: "new" })).auth,
     "clerk"
   );
+  assert.equal(
+    (await collectSetup({ auth: "appwrite", directory: "new" })).auth,
+    "appwrite"
+  );
   await assert.rejects(
     collectSetup({ auth: "unknown", directory: "new" }),
-    /Choose --auth/u
+    /Choose --auth better-auth or --auth clerk or --auth authjs or --auth supabase or --auth appwrite/u
   );
 });
 
@@ -116,6 +124,7 @@ test("Auth.js is explicit and remains selectable beside Better Auth and Clerk", 
         assert.ok(values.includes("better-auth"));
         assert.ok(values.includes("clerk"));
         assert.ok(values.includes("authjs"));
+        assert.ok(values.includes("appwrite"));
         assert.equal(prompt.initialValue, "better-auth");
         return "authjs";
       },
@@ -151,7 +160,7 @@ test("Supabase Auth is an independent choice from the database provider", async 
   );
 });
 
-test("interactive selector offers Better Auth, Clerk, Auth.js and Supabase Auth", async () => {
+test("interactive selector offers Better Auth, Clerk, Auth.js, Supabase Auth and Appwrite", async () => {
   const setup = await collectSetup(
     { database: "neon", directory: "new", name: "new" },
     {
@@ -162,7 +171,7 @@ test("interactive selector offers Better Auth, Clerk, Auth.js and Supabase Auth"
         }
         assert.deepEqual(
           prompt.options.map((option) => option.value),
-          ["authjs", "better-auth", "clerk", "supabase"]
+          ["better-auth", "clerk", "authjs", "supabase", "appwrite"]
         );
         assert.equal(prompt.initialValue, "better-auth");
         return "supabase";
