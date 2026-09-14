@@ -4,6 +4,7 @@ This file is the project's committed home for project-intrinsic agent knowledge:
 
 - Add durable project-specific notes here as they are discovered through real work.
 - Published initializer is `feldra` at `packages/feldra` (`npx feldra create`). Root package.json is private `feldra-monorepo`. Stay on **0.1.0** until an explicit public npm release; do not merge Changesets version PRs that bump past 0.1.0 while unpublished. See `.github/CONTRIBUTING.md` and `docs/releasing.md`.
+- Auth overlays live in `packages/feldra/variants/{clerk,authjs}` and are applied through `authOverlays` in `packages/feldra/bin/apply-auth.mjs`. `scripts/pack-initializer.mjs` hashes each as `{name}Files` in `template-manifest.json`.
 
 ## Maintaining this file
 

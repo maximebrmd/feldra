@@ -25,10 +25,11 @@ Follow [provider setup](../docs/setup.md) to configure a local app, then run `np
 | `packages` | Shared `@repo/*` packages; `packages/feldra` is the published `feldra` workspace |
 | `packages/feldra/bin` | `feldra` CLI (`npx feldra create`) and provider selection |
 | `packages/feldra/variants/clerk` | Clerk template overlay and generated dependency lockfile |
+| `packages/feldra/variants/authjs` | Auth.js template overlay and generated dependency lockfile |
 | `scripts/pack-initializer.mjs` | Template allowlist, manifests and npm tarball packaging |
 | `tests` | Unit, initializer and database integration tests |
 
-The docs app, `feldra` workspace, Changesets and GitHub workflows are maintainer tooling and are excluded from generated projects. Do not edit generated `packages/feldra/template`, `.blume`, `.next`, or `dist` output. Regenerate the Clerk variant lockfile through the pack script when its dependencies change.
+The docs app, `feldra` workspace, Changesets and GitHub workflows are maintainer tooling and are excluded from generated projects. Do not edit generated `packages/feldra/template`, `.blume`, `.next`, or `dist` output. Regenerate auth variant lockfiles through the pack script when their dependencies change.
 
 ## Checks
 
@@ -39,7 +40,7 @@ npm run test:coverage      # Same unit tests as `npm test`, with Node coverage
 npm run test:initializer   # CLI options and release-version tests
 npm run test:database      # Isolated Docker Postgres integration fixtures
 npm run test:browser       # Production app flows in Chromium; Docker required
-npm run initializer:test   # Pack and verify all four auth/database combinations
+npm run initializer:test   # Pack and verify auth/database combinations
 ```
 
 For documentation browser checks, build with `npm run docs:build`, start `npm run preview --workspace docs`, install Chromium with `npx --no-install playwright install chromium`, and run `npm run test:docs` in another terminal. Linux may need `playwright install --with-deps chromium`.

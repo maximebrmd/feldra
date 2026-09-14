@@ -1,6 +1,6 @@
 # feldra
 
-**Create a Feldra SaaS monorepo.** Two Next.js apps, shared packages, and Turborepo — Neon or Supabase, Better Auth or Clerk, and Stripe.
+**Create a Feldra SaaS monorepo.** Two Next.js apps, shared packages, and Turborepo — Neon or Supabase, Better Auth, Clerk, or Auth.js, and Stripe.
 
 ```sh
 npx feldra@latest create my-new-saas
@@ -16,7 +16,7 @@ npm exec --yes --package="/absolute/path/feldra-0.1.0.tgz" -- feldra create my-n
 
 - Two Next.js apps: marketing (`apps/web`, port 3000) and authenticated app (`apps/app`, port 3001)
 - Neon or Supabase Postgres with Drizzle
-- Better Auth (Resend emails) or Clerk (managed identity and auth emails)
+- Better Auth (Resend emails), Clerk (managed identity and auth emails), or Auth.js (NextAuth, GitHub OAuth)
 - Stripe Checkout, customer portal, webhooks, and server-side paid access
 - Tailwind, used shadcn components, TypeScript, Ultracite, Turborepo, npm workspaces
 - Hashed, versioned template bundled in this package — never a moving GitHub branch
@@ -29,7 +29,7 @@ npm exec --yes --package="/absolute/path/feldra-0.1.0.tgz" -- feldra create my-n
 | `[directory]` | Destination. Required with `--yes` or non-TTY input. |
 | `--yes`, `-y` | Noninteractive. Defaults to Neon and Better Auth. |
 | `--database neon\|supabase` | Postgres provider. `--preset` is an alias. |
-| `--auth better-auth\|clerk` | Authentication. Default: `better-auth`. |
+| `--auth better-auth\|clerk\|authjs` | Authentication. Default: `better-auth`. |
 | `--name <package-name>` | Override the package name derived from the directory. |
 | `--list-tools` | List choices without creating files. |
 | `--help`, `-h` | Show create usage. |
@@ -42,9 +42,9 @@ npx feldra@latest create my-new-saas --yes --database supabase --auth clerk
 
 ## How it works
 
-The CLI verifies the bundled template hashes, copies the template, applies the Clerk overlay when selected, sets package and lockfile names, writes `.env.local` (a random Better Auth secret, or blank Clerk keys), installs with `npm ci`, and initializes Git. Generated projects have no dependency on this package. Failure returns nonzero and preserves any partial destination.
+The CLI verifies the bundled template hashes, copies the template, applies the Clerk or Auth.js overlay when selected, sets package and lockfile names, writes `.env.local` (a random Better Auth or Auth.js secret, or blank Clerk keys), installs with `npm ci`, and initializes Git. Generated projects have no dependency on this package. Failure returns nonzero and preserves any partial destination.
 
-Configure Neon or Supabase, Stripe, and Resend or Clerk yourself. Follow the generated `docs/setup.md`, then `npm run db:migrate` and `npm run dev`. Set `APP_URL` and `WEB_URL` for cross-app navigation.
+Configure Neon or Supabase, Stripe, and Resend, Clerk, or GitHub OAuth yourself. Follow the generated `docs/setup.md`, then `npm run db:migrate` and `npm run dev`. Set `APP_URL` and `WEB_URL` for cross-app navigation.
 
 ## Compatibility
 

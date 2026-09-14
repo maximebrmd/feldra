@@ -1,6 +1,13 @@
 import { cp, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
+async function json(destination, path, update) {
+  const file = join(destination, path);
+  const data = JSON.parse(await readFile(file, "utf8"));
+  update(data);
+  await writeFile(file, `${JSON.stringify(data, null, 2)}\n`);
+}
+
 export async function applyClerk(
   destination,
   variant,
@@ -23,13 +30,7 @@ export async function applyClerk(
   ]) {
     await rm(join(destination, path), { force: true, recursive: true });
   }
-  async function json(path, update) {
-    const file = join(destination, path);
-    const data = JSON.parse(await readFile(file, "utf8"));
-    update(data);
-    await writeFile(file, `${JSON.stringify(data, null, 2)}\n`);
-  }
-  await json("packages/auth/package.json", (pkg) => {
+  await json(destination, "packages/auth/package.json", (pkg) => {
     pkg.exports = {
       "./config": "./config.ts",
       "./identity": "./identity.ts",
@@ -41,10 +42,10 @@ export async function applyClerk(
       "server-only": "0.0.1",
     };
   });
-  await json("apps/app/package.json", (pkg) => {
+  await json(destination, "apps/app/package.json", (pkg) => {
     pkg.dependencies["@clerk/nextjs"] = "7.9.2";
   });
-  await json("package.json", (pkg) => {
+  await json(destination, "package.json", (pkg) => {
     delete pkg.devDependencies["better-auth"];
     delete pkg.scripts["test:browser"];
     pkg.scripts["test:integration"] = pkg.scripts["test:integration"].replace(
@@ -52,7 +53,7 @@ export async function applyClerk(
       "node --experimental-test-module-mocks "
     );
   });
-  await json("turbo.json", (config) => {
+  await json(destination, "turbo.json", (config) => {
     config.globalEnv = config.globalEnv.filter(
       (key) =>
         !["BETTER_AUTH_SECRET", "RESEND_API_KEY", "EMAIL_FROM"].includes(key)
@@ -106,3 +107,113 @@ export async function applyClerk(
       )
   );
 }
+
+const AUTHJS_VERSION = "5.0.0-beta.32";
+
+export async function applyAuthjs(
+  destination,
+  variant,
+  { lockfile = true } = {}
+) {
+  await cp(variant, destination, {
+    filter: (path) => lockfile || !path.endsWith("package-lock.json"),
+    recursive: true,
+  });
+  for (const path of [
+    "packages/auth/client.ts",
+    "packages/email",
+    "apps/app/src/components/auth-form.tsx",
+    "apps/app/src/app/api/auth/[...all]",
+    "tests/integration/flows.test.ts",
+    "scripts/test-browser.mjs",
+    "tests/browser-seed.ts",
+  ]) {
+    await rm(join(destination, path), { force: true, recursive: true });
+  }
+  await json(destination, "packages/auth/package.json", (pkg) => {
+    pkg.exports = {
+      "./auth": "./auth.ts",
+      "./config": "./config.ts",
+      "./identity": "./identity.ts",
+      "./server": "./server.ts",
+    };
+    pkg.dependencies = {
+      "@repo/database": "*",
+      "next-auth": AUTHJS_VERSION,
+      "server-only": "0.0.1",
+    };
+  });
+  await json(destination, "apps/app/package.json", (pkg) => {
+    pkg.dependencies["next-auth"] = AUTHJS_VERSION;
+  });
+  await json(destination, "package.json", (pkg) => {
+    delete pkg.devDependencies["better-auth"];
+    delete pkg.scripts["test:browser"];
+    pkg.scripts["test:integration"] = pkg.scripts["test:integration"].replace(
+      "node ",
+      "node --experimental-test-module-mocks "
+    );
+  });
+  await json(destination, "turbo.json", (config) => {
+    config.globalEnv = config.globalEnv.filter(
+      (key) =>
+        !["BETTER_AUTH_SECRET", "RESEND_API_KEY", "EMAIL_FROM"].includes(key)
+    );
+    config.globalEnv.push(
+      "AUTH_SECRET",
+      "AUTH_GITHUB_ID",
+      "AUTH_GITHUB_SECRET"
+    );
+  });
+  const envFile = join(destination, "packages/config/env.ts");
+  let env = await readFile(envFile, "utf8");
+  env = env
+    .replace(/export function authEnv\(\) \{[\s\S]*?\n\}/u, "")
+    .replace(/export function emailEnv\(\) \{[\s\S]*?\n\}/u, "");
+  await writeFile(envFile, env);
+  const readme = join(destination, "README.md");
+  await writeFile(
+    readme,
+    `> Generated authentication: **Auth.js**. Start with [Auth.js setup](docs/authentication.md). Better Auth/Resend sections describe the alternative default, not this generated project.\n\n${await readFile(readme, "utf8")}`
+  );
+  const example = join(destination, ".env.example");
+  await writeFile(
+    example,
+    (await readFile(example, "utf8")).replace(
+      /^(BETTER_AUTH_SECRET|RESEND_API_KEY|EMAIL_FROM)=.*\n/gmu,
+      ""
+    ) +
+      "\n# Separate GitHub OAuth app per derived project. Auth.js encrypts the session with AUTH_SECRET.\nAUTH_SECRET=\nAUTH_GITHUB_ID=\nAUTH_GITHUB_SECRET=\n"
+  );
+  const settings = join(
+    destination,
+    "apps/app/src/app/dashboard/settings/page.tsx"
+  );
+  await writeFile(
+    settings,
+    (await readFile(settings, "utf8"))
+      .replace(
+        'href="/forgot-password"',
+        'href="https://github.com/settings/security"'
+      )
+      .replace("Reset your password", "Manage GitHub sign-in and security")
+  );
+  const testScript = join(destination, "scripts/test-database.mjs");
+  await writeFile(
+    testScript,
+    (await readFile(testScript, "utf8"))
+      .replace(
+        '"--conditions=react-server"',
+        '"--experimental-test-module-mocks", "--conditions=react-server"'
+      )
+      .replace(
+        '"tests/integration/flows.test.ts"',
+        '"tests/integration/authjs-data.test.ts"'
+      )
+  );
+}
+
+export const authOverlays = {
+  authjs: applyAuthjs,
+  clerk: applyClerk,
+};

@@ -6,7 +6,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { confirm, isCancel, select, text } from "@clack/prompts";
-import { applyClerk } from "./apply-auth.mjs";
+import { authOverlays } from "./apply-auth.mjs";
 import {
   authentications,
   collectSetup,
@@ -64,13 +64,13 @@ try {
   });
   if (values["list-tools"]) {
     console.log(
-      "Database: neon (default), supabase\nAuthentication: better-auth (default, Resend emails), clerk (managed auth and emails)\nFixed: Next.js, TypeScript, Drizzle, Stripe, Tailwind/shadcn, Ultracite, npm, Turborepo.\nThese four combinations are generated at scaffold time; no provider-switching layer is installed."
+      "Database: neon (default), supabase\nAuthentication: better-auth (default, Resend emails), clerk (managed auth and emails), authjs (Auth.js / NextAuth, GitHub OAuth)\nFixed: Next.js, TypeScript, Drizzle, Stripe, Tailwind/shadcn, Ultracite, npm, Turborepo.\nThese combinations are generated at scaffold time; no provider-switching layer is installed."
     );
     process.exit(0);
   }
   if (values.help) {
     console.log(
-      "Usage: npx feldra@latest create [directory] [--yes] [--name package-name] [--database neon|supabase] [--auth better-auth|clerk]\nEquivalent: npm exec feldra@latest -- create [directory] [--yes] [...]\nInteractive in a terminal; --yes or piped input is noninteractive. Choose a database and authentication tool with arrow keys. --auth defaults to better-auth. --list-tools lists supported tools without creating files. --yes defaults to Neon; use --database supabase to select Supabase. --preset is an alias for --database. Refuses existing destinations. Node >=22.12, npm and Git required."
+      "Usage: npx feldra@latest create [directory] [--yes] [--name package-name] [--database neon|supabase] [--auth better-auth|clerk|authjs]\nEquivalent: npm exec feldra@latest -- create [directory] [--yes] [...]\nInteractive in a terminal; --yes or piped input is noninteractive. Choose a database and authentication tool with arrow keys. --auth defaults to better-auth. --list-tools lists supported tools without creating files. --yes defaults to Neon; use --database supabase to select Supabase. --preset is an alias for --database. Refuses existing destinations. Node >=22.12, npm and Git required."
     );
     process.exit(0);
   }
@@ -119,16 +119,19 @@ try {
       throw new Error(`Bundled template integrity check failed: ${path}`);
     }
   }
-  for (const [path, digest] of Object.entries(manifest.clerkFiles || {})) {
-    if (path.startsWith("/") || path.split("/").includes("..")) {
-      throw new Error("Invalid bundled variant path");
-    }
-    if (
-      createHash("sha256")
-        .update(await readFile(join(source, "variants/clerk", path)))
-        .digest("hex") !== digest
-    ) {
-      throw new Error(`Bundled Clerk integrity check failed: ${path}`);
+  for (const variant of Object.keys(authOverlays)) {
+    const files = manifest[`${variant}Files`] || {};
+    for (const [path, digest] of Object.entries(files)) {
+      if (path.startsWith("/") || path.split("/").includes("..")) {
+        throw new Error("Invalid bundled variant path");
+      }
+      if (
+        createHash("sha256")
+          .update(await readFile(join(source, "variants", variant, path)))
+          .digest("hex") !== digest
+      ) {
+        throw new Error(`Bundled ${variant} integrity check failed: ${path}`);
+      }
     }
   }
   npm(["--version"]);
@@ -163,8 +166,9 @@ try {
     }
     await writeFile(path, `${JSON.stringify(data, null, 2)}\n`);
   }
-  if (setup.auth === "clerk") {
-    await applyClerk(destination, join(source, "variants/clerk"));
+  const applyOverlay = authOverlays[setup.auth];
+  if (applyOverlay) {
+    await applyOverlay(destination, join(source, "variants", setup.auth));
     for (const file of ["package.json", "package-lock.json"]) {
       const path = join(destination, file);
       const data = JSON.parse(await readFile(path, "utf8"));
@@ -189,10 +193,10 @@ try {
     join(destination, "AUTHENTICATION.md"),
     `# ${authentication.label}\n\n${authentication.instructions}\n\nSee docs/authentication.md for implementation details and verification limits.\n`
   );
-  const env = example.replace(
-    "BETTER_AUTH_SECRET=",
-    `BETTER_AUTH_SECRET=${randomBytes(32).toString("base64url")}`
-  );
+  const secret = randomBytes(32).toString("base64url");
+  const env = example
+    .replace("BETTER_AUTH_SECRET=", `BETTER_AUTH_SECRET=${secret}`)
+    .replace("AUTH_SECRET=", `AUTH_SECRET=${secret}`);
   await writeFile(join(destination, ".env.local"), env, {
     flag: "wx",
     mode: 0o600,
@@ -204,7 +208,7 @@ try {
     { flag: "wx" }
   );
   npm(["ci", "--include=dev", "--no-fund"], destination);
-  if (setup.auth === "clerk") {
+  if (applyOverlay) {
     npm(
       [
         "exec",
