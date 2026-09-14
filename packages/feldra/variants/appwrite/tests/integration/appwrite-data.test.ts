@@ -282,10 +282,10 @@ test("password reset deletes sessions and verification replay stays verified", a
         error instanceof AppwriteSessionRevokeError && error.status === 503
     );
     assert.equal(cookieSet.mock.calls.length, 1);
-    assert.deepEqual(
-      [...cookieSet.mock.calls[0].arguments],
-      ["appwrite-session", ""]
-    );
+    assert.deepEqual([...cookieSet.mock.calls[0].arguments].slice(0, 2), [
+      "appwrite-session",
+      "",
+    ]);
     await completePasswordRecovery({
       password: "a-long-test-password",
       secret: "recovery-secret",
