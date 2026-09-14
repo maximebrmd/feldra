@@ -1,6 +1,6 @@
 # Feldra validation
 
-The project and published initializer are both named `feldra`. The workspace is `/Users/maximebourmaud/Personal/feldra`. Historical validation records remain in Git history; old local release archives were moved outside the workspace to `/tmp/feldra-before-rename`.
+The published initializer is `feldra`. The private root package is `feldra-monorepo`. The workspace is `/Users/maximebourmaud/Personal/feldra`. Historical validation records remain in Git history; old local release archives were moved outside the workspace to `/tmp/feldra-before-rename`.
 
 Provider integrations require separate project credentials. Live Clerk authentication and delivery, Neon/Supabase connectivity, Resend delivery, Stripe sandbox flows and public hosting are not implied by local fixture tests. No providers were provisioned and nothing was published.
 

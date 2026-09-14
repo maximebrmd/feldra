@@ -97,7 +97,7 @@ for (const { database, auth } of [
   assert.ok(entries.includes("package/template/packages/auth/server.ts"));
   assert.equal(lock.name, pkg.name);
   assert.equal(lock.packages[""].name, pkg.name);
-  assert.ok(!pkg.dependencies?.["feldra"]);
+  assert.ok(!pkg.dependencies?.feldra);
   assert.ok(!pkg.scripts["initializer:pack"]);
   assert.ok(!pkg.scripts.changeset);
   assert.ok(!pkg.scripts["release:version"]);
