@@ -29,6 +29,7 @@
     "start": "npm run start --workspace app",
     "test": "node --conditions=react-server --import tsx --test tests/*.test.ts",
     "test:browser": "node scripts/test-browser.mjs",
+    "test:coverage": "node --conditions=react-server --import tsx --test --experimental-test-coverage tests/*.test.ts",
     "test:database": "node scripts/test-database.mjs",
     "test:docs": "node --import tsx scripts/test-docs.mjs",
     "test:initializer": "node --test tests/initializer/*.test.mjs",

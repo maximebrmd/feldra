@@ -15,7 +15,7 @@ The rest of [Blume's `.github` directory](https://github.com/haydenbleasel/blume
 | Pull request template | `.github/pull_request_template.md`, with validation, changesets and documentation |
 | Funding | `.github/FUNDING.yml`, disabled until a funding destination is available |
 | Dependabot | Monthly npm and GitHub Actions updates; minor/patch npm updates are grouped |
-| Build, lint, test and typecheck workflows | Separate jobs within `ci.yml`, preserving a shared release/deployment gate |
+| Build, lint, test, coverage and typecheck workflows | Separate jobs within `ci.yml`, preserving a shared release/deployment gate |
 | Release and deploy workflows | `release.yml` and `deploy.yml`, using tested artifacts |
 | Benchmark workflow | Not enabled: Feldra has no benchmark runner or performance baseline |
 | Translation workflow | `translations.yml` checks translation freshness on release PRs and manual runs |
@@ -36,11 +36,11 @@ Run `npm run docs:translate -- --codex` (or `--claude`) with an installed, authe
 
 ## Pull requests and main
 
-`ci.yml` runs on pull requests, pushes to `main`, and manual dispatch. Node 24 and npm 11.19.1 install the committed lockfile with `npm ci`. Independent jobs check lint, types, unit tests, and initializer tests. The distribution job builds and packs the initializer, scaffolds all four auth/database combinations, and runs their existing checks and isolated Docker database fixtures. Better Auth variants also run production browser tests; Clerk uses its existing fixtures without live credentials.
+`ci.yml` runs on pull requests, pushes to `main`, and manual dispatch. Node 24 and npm 11.19.1 install the committed lockfile with `npm ci`. Independent jobs check lint, types, unit tests, coverage, and initializer tests. The distribution job builds and packs the initializer, scaffolds all four auth/database combinations, and runs their existing checks and isolated Docker database fixtures. Better Auth variants also run production browser tests; Clerk uses its existing fixtures without live credentials.
 
-The docs job builds the static site and tests it in Chromium. Successful runs upload `docs` and `initializer` artifacts, including the tarball's SHA-256 checksum, for 14 days. Docs screenshots are uploaded even when a later browser assertion fails. Generated projects do not receive these repository workflows.
+The `build-docs` job builds the static site and tests it in Chromium. Successful runs upload `docs` and `initializer` artifacts, including the tarball's SHA-256 checksum, for 14 days. Docs screenshots are uploaded even when a later browser assertion fails. Generated projects do not receive these repository workflows.
 
-All checks must succeed before release or deployment. Pull requests never publish or deploy. Use the `lint`, `typecheck`, `test`, `test:initializer`, `Build and test distribution`, and `Build and test docs` checks in your main-branch ruleset. Main runs are serialized so an older deployment cannot overtake a newer one; superseded PR runs are canceled.
+All CI jobs must succeed before release or deployment. Pull requests never publish or deploy. Require exactly `lint`, `typecheck`, `test`, `coverage`, `build-docs`, and `translations` in the main-branch status-check ruleset, matching Blume. Additional jobs such as `test:initializer` and `Build and test distribution` still run for product confidence. `translations` reports on `changeset-release/main` PRs and manual dispatch; other PRs skip it. Main runs are serialized so an older deployment cannot overtake a newer one; superseded PR runs are canceled.
 
 ## Release setup
 

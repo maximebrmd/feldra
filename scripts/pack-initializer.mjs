@@ -53,6 +53,8 @@ const files = [
 function omitFromTemplate(path, name) {
   return (
     (path === "tests" && name === "initializer") ||
+    // Repository CI contract; generated projects do not receive GitHub workflows.
+    (path === "tests" && name === "ci-required-checks.test.ts") ||
     (path === "packages" && name === "feldra")
   );
 }

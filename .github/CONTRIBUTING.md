@@ -35,6 +35,7 @@ The docs app, `feldra` workspace, Changesets and GitHub workflows are maintainer
 ```sh
 npm run format             # Apply Ultracite/Biome formatting and fixes
 npm run check              # Lint, workspace types, unit tests and builds
+npm run test:coverage      # Same unit tests as `npm test`, with Node coverage
 npm run test:initializer   # CLI options and release-version tests
 npm run test:database      # Isolated Docker Postgres integration fixtures
 npm run test:browser       # Production app flows in Chromium; Docker required
@@ -51,7 +52,7 @@ Branch from `main`. Describe the problem, resulting behavior and validation in t
 
 For changes shipped in the initializer or generated template, run `npm run changeset`, select `feldra`, and describe the user-facing change. Documentation-only and repository-tooling changes usually do not need a changeset. Update relevant guides when commands, provider setup or behavior change.
 
-CI runs lint, types, tests, production builds, packaged distribution checks and documentation browser checks on pull requests. Dependency updates use the same checks; do not merge a failing dependency PR just because it is automated.
+CI runs lint, types, unit tests, coverage, production builds, packaged distribution checks and documentation browser checks on pull requests. Required GitHub checks are `lint`, `typecheck`, `test`, `coverage`, `build-docs`, and `translations`. Dependency updates use the same checks; do not merge a failing dependency PR just because it is automated.
 
 English documentation is the translation source. Before merging a release PR, run `npm run docs:translate -- --codex` or `--claude`, review the localized guides, and commit them with `apps/docs/blume.translations.json`. `npm run docs:translations:check` verifies freshness without model access. See the [translation workflow](../docs/ci-cd.md#documentation-translations).
 
