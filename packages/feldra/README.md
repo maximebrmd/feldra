@@ -1,52 +1,55 @@
 # feldra
 
-Create an independent Next.js SaaS project inspired by next-forge. Choose Better Auth or Clerk and Neon or Supabase Postgres/Drizzle. Includes Stripe subscriptions, Resend authentication emails with Better Auth, Tailwind/shadcn and Ultracite. Two apps, shared packages, Turborepo and individual accounts, no extra platforms.
+**Create a Feldra SaaS monorepo.** Two Next.js apps, shared packages, and Turborepo — Neon or Supabase, Better Auth or Clerk, and Stripe.
 
 ```sh
 npx feldra@latest create my-new-saas
 ```
 
-Equivalent: `npm exec feldra@latest -- create my-new-saas`. This public command works after publication. Before publication, use the tested tarball:
+Equivalent: `npm exec feldra@latest -- create my-new-saas`. **This package is not published to npm yet.** Until it is, pack the tarball from the [Feldra repository](https://github.com/maximebrmd/feldra) and run:
 
 ```sh
-npm exec --yes --package="/absolute/path/feldra-0.3.0.tgz" -- feldra create "./my new saas" --name my-new-saas
+npm exec --yes --package="/absolute/path/feldra-0.3.0.tgz" -- feldra create my-new-saas
 ```
 
-Node 22.12+ (24 LTS recommended), npm and Git required. Interactive in a terminal; `--yes`/`-y` or piped input runs noninteractively. A directory is required in noninteractive mode. Use arrow keys and Enter to select Neon or Supabase. Pass `--database neon` or `--database supabase` to choose explicitly; noninteractive mode defaults to Neon. `--name` overrides the package name derived from the directory. The destination must not exist. Relative paths and paths with spaces are supported. Tested on macOS; no Windows validation claimed.
+## Features
 
-The versioned, hashed template is bundled in this package. The CLI copies it, sets package/lockfile names, generates `.env.local` with a unique local auth secret for Better Auth, or blank Clerk keys, installs locked dependencies with npm, and initializes a fresh Git repository. Generated projects contain no dependency on this initializer. It never downloads a moving GitHub branch. Failure returns nonzero and preserves any partial destination for inspection.
+- Two Next.js apps: marketing (`apps/web`, port 3000) and authenticated app (`apps/app`, port 3001)
+- Neon or Supabase Postgres with Drizzle
+- Better Auth (Resend emails) or Clerk (managed identity and auth emails)
+- Stripe Checkout, customer portal, webhooks, and server-side paid access
+- Tailwind, used shadcn components, TypeScript, Ultracite, Turborepo, npm workspaces
+- Hashed, versioned template bundled in this package — never a moving GitHub branch
+- `npm ci`, a fresh Git repository, and a generated `.env.local` — no provider provisioning
 
-You must configure separate Neon or Supabase, Resend and Stripe resources for each SaaS. No accounts, databases, live payments, email delivery or deployments are provisioned. The CLI prints exact setup commands; follow the generated `docs/setup.md`, then run `npm run db:migrate` and `npm run dev`.
+## CLI
 
-See generated docs for architecture, tests, deployment, reference commits and manually applying future template fixes. MIT; retain the bundled third-party notices. No automatic project synchronization.
+| Flag | Description |
+| --- | --- |
+| `[directory]` | Destination. Required with `--yes` or non-TTY input. |
+| `--yes`, `-y` | Noninteractive. Defaults to Neon and Better Auth. |
+| `--database neon\|supabase` | Postgres provider. `--preset` is an alias. |
+| `--auth better-auth\|clerk` | Authentication. Default: `better-auth`. |
+| `--name <package-name>` | Override the package name derived from the directory. |
+| `--list-tools` | List choices without creating files. |
+| `--help`, `-h` | Show create usage. |
 
-Generated layout: `apps/web` (marketing, port 3000), `apps/app` (auth/dashboard/API/webhooks, port 3001), and `packages/{auth,database,design-system,email,payments,config}`, plus `turbo.json`. Run `npm run dev` for both apps. Set APP_URL and WEB_URL for cross-app navigation.
-
-For Codex/CI, select Supabase without prompts:
+Interactive in a terminal (arrow keys and Enter). Refuses existing destinations. Relative paths and quoted paths with spaces work. Tested on macOS; no Windows validation claimed.
 
 ```sh
-npx feldra@latest create my-new-saas --yes --database supabase
+npx feldra@latest create my-new-saas --yes --database supabase --auth clerk
 ```
 
-## Choose your tools
+## How it works
 
-The CLI asks separately for database and authentication, then confirms the full selection:
+The CLI verifies the bundled template hashes, copies the template, applies the Clerk overlay when selected, sets package and lockfile names, writes `.env.local` (a random Better Auth secret, or blank Clerk keys), installs with `npm ci`, and initializes Git. Generated projects have no dependency on this package. Failure returns nonzero and preserves any partial destination.
 
-```text
-◇ Which database do you want to use?
-│ ● Neon     ○ Supabase
-◇ Which authentication tool do you want to use?
-│ ● Better Auth — self-hosted identity, Resend emails
-│ ○ Clerk — managed identity and auth emails
-◇ Create my-new-saas with Neon + Better Auth?
-```
+Configure Neon or Supabase, Stripe, and Resend or Clerk yourself. Follow the generated `docs/setup.md`, then `npm run db:migrate` and `npm run dev`. Set `APP_URL` and `WEB_URL` for cross-app navigation.
 
-Pass `--auth clerk` to generate Clerk with either database. `--auth better-auth` is the default. Run `--list-tools` to inspect choices without creating a project. For automation:
+## Compatibility
 
-```sh
-npm exec --yes --package="/absolute/path/feldra-0.3.0.tgz" -- feldra create "./my new saas" --yes --database supabase --auth clerk
-```
+Node 22.12+ (24 LTS recommended), npm, and Git. Docker is only for fixture tests in the generated project.
 
-Clerk projects include Clerk's sign-in, sign-up and account components, server session verification, verified-email enforcement and local user synchronization. They omit Better Auth and Resend: Clerk delivers its own auth emails. Read the generated `AUTHENTICATION.md` and `docs/authentication.md` for exact setup and verification limits. Both authentication implementations preserve user-owned notes and Stripe billing. Existing apps are not automatically migrated between providers.
+## License
 
-The release bundles the Clerk source variant and its resolved npm lockfile alongside the default template, and verifies their hashes before creating files. It installs only the selected implementation. Next.js, TypeScript, Drizzle, Stripe, Tailwind/shadcn, Ultracite, npm and Turborepo remain fixed; unimplemented providers are not offered. npm publication is still pending.
+MIT. Retain the bundled third-party notices. Source: [maximebrmd/feldra](https://github.com/maximebrmd/feldra).
