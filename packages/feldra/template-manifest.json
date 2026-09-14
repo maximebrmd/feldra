@@ -27,7 +27,7 @@
     "packages/auth/server.ts": "3839433224aa544220122734ba9a5ff2d028f73fe4b8791f537d378175f5e45e",
     "packages/auth/sync.ts": "6374e6dfff6e10a50c5db1536707135d88c023398d50985439302973c6bc3ba0",
     "tests/appwrite-identity.test.ts": "8be4070789130ee2e87d1cc9be5bb22ca4b5dc0aa3c53d7712b48edd7704da44",
-    "tests/integration/appwrite-data.test.ts": "c71d64d00d0c886640e8f86b4746301139e74a9718bdf2b0538a94ce0afdabf0"
+    "tests/integration/appwrite-data.test.ts": "4225501286984de031456a6290e1a69bdc06d80e57671170bbdde346fcc3ebed"
   },
   "authjsFiles": {
     "apps/app/src/app/api/auth/[...nextauth]/route.ts": "9b91074b25fbdedec885369fe7858ca9696971633d5af128d2188fe3e7f7a3e3",

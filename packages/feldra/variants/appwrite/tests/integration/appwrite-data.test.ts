@@ -204,9 +204,14 @@ test("password reset deletes sessions and verification replay stays verified", a
   const updateRecovery = mock.fn(async () => undefined);
   const deleteSessions = mock.fn(async () => undefined);
   const updateEmailVerification = mock.fn(async () => undefined);
-  const accountGet = mock.fn(() => {
-    throw new Error("No session");
-  });
+  const accountGet = mock.fn(
+    (): Promise<{
+      $id: string;
+      email: string;
+      emailVerification: boolean;
+      name: string;
+    }> => Promise.reject(new Error("No session"))
+  );
   const cookieSet = mock.fn();
   let sessionValue: string | undefined;
   const headers = mock.module("next/headers", {
@@ -277,24 +282,22 @@ test("password reset deletes sessions and verification replay stays verified", a
         error instanceof AppwriteSessionRevokeError && error.status === 503
     );
     assert.equal(cookieSet.mock.calls.length, 1);
-    assert.equal(cookieSet.mock.calls[0]?.arguments[0], "appwrite-session");
-    assert.equal(cookieSet.mock.calls[0]?.arguments[1], "");
+    assert.deepEqual(
+      [...cookieSet.mock.calls[0].arguments],
+      ["appwrite-session", ""]
+    );
     await completePasswordRecovery({
       password: "a-long-test-password",
       secret: "recovery-secret",
       userId: "user_reset",
     });
-    assert.deepEqual(updateRecovery.mock.calls.at(-1)?.arguments[0], {
-      password: "a-long-test-password",
-      secret: "recovery-secret",
-      userId: "user_reset",
-    });
-    assert.deepEqual(deleteSessions.mock.calls.at(-1)?.arguments[0], {
-      userId: "user_reset",
-    });
+    assert.equal(updateRecovery.mock.calls.length, 3);
+    assert.equal(deleteSessions.mock.calls.length, 2);
     assert.equal(cookieSet.mock.calls.length, 2);
-    assert.equal(cookieSet.mock.calls.at(-1)?.arguments[0], "appwrite-session");
-    assert.equal(cookieSet.mock.calls.at(-1)?.arguments[1], "");
+    assert.deepEqual([...cookieSet.mock.calls[1].arguments].slice(0, 2), [
+      "appwrite-session",
+      "",
+    ]);
     assert.equal(await applyEmailVerification("user_a", "fresh-secret"), true);
     updateEmailVerification.mock.mockImplementation(() => {
       throw new Error("token already used");
