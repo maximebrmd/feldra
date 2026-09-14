@@ -6,7 +6,7 @@ sidebar:
 ---
 ## Better Auth がユーザーの ID を管理します [#better-auth-owns-identity]
 
-どちらのデータベースを選択した場合も、Drizzle アダプターを使用した Better Auth を利用します。Supabase は Postgres としてのみ使用され、Supabase Auth、匿名キー、ブラウザー用データベースクライアントは不要です。
+デフォルトは Drizzle アダプターを使用した Better Auth です。データベースの選択は独立しています。Neon または Supabase の Postgres を選んでも Supabase Auth はインストールされません。Supabase Auth を使う場合は `--auth supabase` を指定してください。
 
 ユーザーはメールアドレスとパスワードで登録し、メールアドレスを確認してからサインインします。アプリケーションにアクセスするには、メールアドレスの確認が必要です。パスワードを忘れた場合のフローとパスワードリセットのフローでは、Resend を通じて有効期限付きのリンクを送信します。
 
@@ -30,7 +30,7 @@ npm run test:database
 
 フィクスチャテストスイートは、ローカルの Postgres を使用して、Better Auth の実際の登録、メールアドレス確認、ログイン、リセット、ログアウト、セッション失効を検証します。テスト中はメール送信をインターセプトします。実際の受信トレイへの配信については、別途、ご自身の Resend アカウントで検証する必要があります。
 
-## 代替の Clerk 構成 [#clerk-alternative]
+## Clerk と Supabase Auth の代替構成 [#clerk-and-supabase-auth-alternatives]
 
 初期化ツールで Clerk を選択するか、`--auth clerk` を指定してください。これにより、Clerk のサインイン、サインアップ、ログアウト、アカウント設定に加え、サーバー側のセッションチェックが生成されます。確認済みのプライマリメールアドレスのみが受け入れられます。ローカルレコードは Clerk のユーザー ID をキーとして管理され、メールアドレスによって自動的に紐付けられることはありません。Stripe のサブスクリプションと非公開メモも、この固定の所有者 ID を維持します。
 
@@ -45,3 +45,7 @@ npm run test:database
 このプロジェクト用の GitHub OAuth アプリを作成してください。ホームページ URL を `APP_URL` に、認可コールバック URL を `APP_URL/api/auth/callback/github` に設定します。`AUTH_GITHUB_ID` と `AUTH_GITHUB_SECRET` を設定してください。初期化ツールはローカルの `AUTH_SECRET` を書き出します。本番用には別の値を生成してください。Auth.js では Resend や Better Auth はインストールされません。メールアドレスの確認とパスワードの復旧は GitHub が担当します。認証情報が不足している場合はアクセスを拒否し、OAuth アプリをプロビジョニングすることはありません。
 
 Auth.js プロジェクトには、専用の認証設定ガイドとローカルのフィクスチャテストが用意されます。実際の GitHub OAuth を検証するには、設定済みの OAuth アプリが必要です。
+
+`--auth supabase` で Supabase Auth を選択してください。これは `--database` とは独立しています。Postgres には Neon を使い、ID 管理には Supabase プロジェクトを使うこともできます。このオーバーレイは `@supabase/ssr` の Cookie セッション、トークンを更新する Next.js プロキシ、保護された各リソースでのサーバー側 `getUser()` チェックを使用します。Supabase プロジェクトでメール確認を有効にし、`NEXT_PUBLIC_SUPABASE_URL` と `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` を設定し、`/api/auth/callback` を登録してください。サービスロールキーは追加しないでください。認証メールは Supabase が送信するため、Resend と Better Auth は含まれません。
+
+Clerk、Auth.js、および Supabase Auth プロジェクトには、専用の認証設定ガイドとローカルのフィクスチャテストが用意されます。実際のログイン、メールアドレス確認、リセット、ログアウトを検証するには、別途、設定済みの開発用インスタンスが必要です。
