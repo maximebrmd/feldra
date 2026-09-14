@@ -25,7 +25,7 @@ Keep RLS enabled on any new tables you add. If you later enable the Data API, ex
 
 ## Finish setup
 
-Fill in Resend and Stripe values as described in [setup](/docs/environment/), then run from the generated project root:
+Fill in authentication and Stripe values as described in [setup](/docs/environment/), then run from the generated project root:
 
 ```sh
 npm run db:migrate
