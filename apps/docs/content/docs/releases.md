@@ -7,7 +7,7 @@ sidebar:
 
 ## Release status
 
-Feldra is the project’s new brand. The initializer package is `feldra` and has not been published to npm. After publication, run `npx feldra create`. Maintainers manage versioning through Changesets.
+Feldra is the project’s new brand. The initializer package is `feldra` and has not been published to npm. The local version stays at **0.1.0** until an explicit public release. After publication, run `npx feldra create`. Maintainers manage versioning through Changesets. Do not merge version PRs that bump past 0.1.0 while unpublished.
 
 ## Release workflow
 
@@ -17,26 +17,27 @@ npm run changeset:status
 npm run release:version
 ```
 
-The version command consumes pending notes, generates `packages/feldra/CHANGELOG.md`, updates the initializer and root versions, and refreshes the lockfile. It does not publish. Test the packed artifact before an explicitly authorized npm publication.
+The version command consumes pending notes, generates `packages/feldra/CHANGELOG.md`, updates the initializer and root versions, and refreshes the lockfile. It does not publish. Leave pending changesets unconsumed until 0.1.0 is authorized for npm. Test the packed artifact before an explicitly authorized npm publication. See [the repository release guide](https://github.com/maximebrmd/feldra/blob/main/docs/releasing.md).
 
 ## Local release history
 
+### 0.1.0 — first public release (not published yet)
 
-### 0.3.0
+Local development history previously numbered 0.2.0/0.3.0 in-tree, never published to npm, plus pending changeset notes:
 
+- **Breaking:** rename the published package and CLI from `create-feldra` to `feldra`. Run `npx feldra create` instead of `npm create feldra`. Bare `npx feldra` prints help listing `create`.
+- Rename the template to Feldra. Update generated project branding, CLI commands, release metadata, tests and documentation. npm publication remains a separate release step.
+- Move the initializer package from `initializer/` to `packages/feldra`.
+- Manage initializer releases with Changesets and generated changelogs. Keep release tooling outside generated SaaS projects and synchronize release versions with the bundled template.
+- Ship a product README in generated projects instead of the source-repository README.
+- Add the standalone Feldra Astro documentation site and exclude its app and tooling from generated SaaS projects. Use a shared TypeScript version compatible with Astro checking.
+- Add independent Better Auth or Clerk selection alongside Neon or Supabase. Bundle Clerk code and a resolved dependency lockfile, remove unused Better Auth/Resend tooling from Clerk projects, preserve server authorization, and document managed authentication setup and live verification limits.
 - Interactive arrow-key Neon/Supabase database selection, plus `--database` for CI.
 - Provider-specific generated setup guidance, environment comments and origin metadata.
 - Enable RLS on all private tables; retain server ownership checks and shared Postgres/Drizzle access.
 - Test both database choices from the packed npm release.
-
-
-### 0.2.0 — unreleased
-
 - Generate a next-forge-style npm monorepo with separate marketing and authenticated Next apps, six source-exported shared packages, and Turborepo.
 - Add terminal setup/review prompts, `--preset neon`, and retain `--yes`/non-TTY automation. No unimplemented provider options.
 - Keep the implemented Neon/Better Auth/Stripe/Resend toolkit and unchanged database migration.
 - Test both production apps, cross-app navigation, the workspace task graph, and the actual packed distribution. Existing generated projects are not modified automatically.
-
-### 0.1.0 — unreleased
-
-Initial single-app SaaS baseline and bundled npm initializer. Superseded by the requested monorepo architecture in 0.2.0.
+- Initial single-app SaaS baseline and bundled npm initializer, later replaced by the monorepo architecture above.

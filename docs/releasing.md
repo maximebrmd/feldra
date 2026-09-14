@@ -2,6 +2,16 @@
 
 Changesets manages the initializer version and `packages/feldra/CHANGELOG.md`. The initializer is a workspace so the CLI can discover it. Apps and shared packages remain private and are not independently versioned or published. Changesets is maintainer tooling; generated SaaS projects do not include it, its scripts, or the `feldra` workspace.
 
+## Hold: first public release is 0.1.0
+
+Stay on **0.1.0** until an explicit order to publish `feldra` to npm. Do not carry a stacked pre-publish version (0.2.0, 0.3.0, 0.4.0, …). Do not merge Changesets version PRs that bump past 0.1.0 while the package is unpublished. The first `npm publish` is **0.1.0**.
+
+Record user-facing work with `npm run changeset` as usual, but leave those files unconsumed until publication is authorized. Running `npm run release:version` or merging a Release PR now would bump above 0.1.0. A version PR that would bump past 0.1.0 should be closed, not merged.
+
+The first publish requires an empty `.changeset/` queue (only `README.md` and `config.json`) so CI publishes 0.1.0 instead of opening a bump PR. After 0.1.0 is on npm, Changesets can version later releases as usual.
+
+CI still runs Changesets on main. With an empty changeset queue and `NPM_PUBLISH_ENABLED` unset or `false`, the release job does not open a version PR and does not publish.
+
 ## Record a change
 
 Install the root lockfile with `npm ci`, then:

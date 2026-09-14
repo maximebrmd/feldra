@@ -135,3 +135,40 @@ test("GitHub check names match the Blume-style required set without a Windows do
   assert.equal(coverageScript.includes("--experimental-test-coverage"), true);
   assert.equal(coverageScript.includes("tests/*.test.ts"), true);
 });
+
+test("release job is quiet when the changeset queue is empty and npm publish is off", () => {
+  const workflow = parse(
+    readFileSync(path.join(repoRoot, ".github/workflows/release.yml"), "utf8")
+  ) as {
+    jobs?: {
+      release?: {
+        steps?: Array<{
+          if?: string;
+          run?: string;
+          uses?: string;
+          with?: { publish?: string; "version-script"?: string };
+        }>;
+      };
+    };
+  };
+  const steps = workflow.jobs?.release?.steps ?? [];
+  const changesets = steps.find((step) =>
+    (step.uses ?? "").startsWith("changesets/action")
+  );
+  assert.ok(changesets);
+  assert.equal(changesets.with?.["version-script"], "npm run release:version");
+  assert.equal(changesets.with?.publish, undefined);
+
+  const publishGuard =
+    "steps.changesets.outputs.has-changesets == 'false' && vars.NPM_PUBLISH_ENABLED == 'true'";
+  const gated = steps.filter(
+    (step) =>
+      (step.uses ?? "").includes("download-artifact") ||
+      (step.run ?? "").includes("docs:translations:check") ||
+      (step.run ?? "").includes("npm publish")
+  );
+  assert.equal(gated.length, 3);
+  for (const step of gated) {
+    assert.equal(step.if, publishGuard);
+  }
+});

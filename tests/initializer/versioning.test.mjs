@@ -25,6 +25,68 @@ async function json(path) {
   return JSON.parse(await readFile(path, "utf8"));
 }
 
+test("unpublished feldra packs as 0.1.0 instead of a stacked pre-publish version", () => {
+  const env = { ...process.env };
+  delete env.npm_config_allow_scripts;
+  delete env.NPM_CONFIG_ALLOW_SCRIPTS;
+  const result = spawnSync(
+    "npm",
+    ["pack", "--dry-run", "--json", "--ignore-scripts"],
+    {
+      cwd: join(root, "packages/feldra"),
+      encoding: "utf8",
+      env,
+    }
+  );
+  assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+  const parsed = JSON.parse(result.stdout);
+  const pack = Array.isArray(parsed) ? parsed[0] : parsed;
+  assert.equal(pack.name, "feldra");
+  assert.equal(pack.version, "0.1.0");
+  assert.equal(pack.filename, "feldra-0.1.0.tgz");
+  assert.notEqual(pack.filename, "feldra-0.4.0.tgz");
+});
+
+test("empty changeset queue leaves unpublished feldra at 0.1.0", async () => {
+  const temp = await mkdtemp(join(tmpdir(), "feldra pin test "));
+  try {
+    await mkdir(join(temp, ".changeset"), { recursive: true });
+    await mkdir(join(temp, "packages/feldra"), { recursive: true });
+    await writeFile(
+      join(temp, "package.json"),
+      JSON.stringify({
+        name: "release-fixture",
+        private: true,
+        type: "module",
+        version: "0.1.0",
+        workspaces: ["packages/*"],
+      })
+    );
+    await writeFile(
+      join(temp, "packages/feldra/package.json"),
+      JSON.stringify({ name: "feldra", version: "0.1.0" })
+    );
+    await copyFile(
+      join(root, ".changeset/config.json"),
+      join(temp, ".changeset/config.json")
+    );
+    run("git", ["init", "--initial-branch=main", "--template="], temp);
+    const empty = spawnSync(process.execPath, [cli, "version"], {
+      cwd: temp,
+      encoding: "utf8",
+    });
+    assert.equal(empty.status, 1);
+    assert.match(`${empty.stdout}${empty.stderr}`, /No unreleased changesets/u);
+    assert.equal(
+      (await json(join(temp, "packages/feldra/package.json"))).version,
+      "0.1.0"
+    );
+    assert.equal((await json(join(temp, "package.json"))).version, "0.1.0");
+  } finally {
+    await rm(temp, { force: true, recursive: true });
+  }
+});
+
 test("real Changesets versions only the initializer, writes changelog and synchronizes locks", async () => {
   const temp = await mkdtemp(join(tmpdir(), "feldra release test "));
   try {
