@@ -1,5 +1,6 @@
 import { requestPasswordRecovery } from "@repo/auth/server";
 import { z } from "zod";
+import { authRateLimit, enforceAuthRateLimit } from "@/lib/auth-rate-limit";
 import { failure, jsonInput, sameOrigin } from "@/lib/http";
 
 export const runtime = "nodejs";
@@ -7,6 +8,7 @@ export const runtime = "nodejs";
 export async function POST(request: Request) {
   try {
     sameOrigin(request);
+    await enforceAuthRateLimit(request, authRateLimit.forgot);
     const input = z
       .strictObject({ email: z.email() })
       .parse(await jsonInput(request));

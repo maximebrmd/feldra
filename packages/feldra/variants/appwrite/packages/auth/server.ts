@@ -1,7 +1,7 @@
 import "server-only";
 import { appUrl } from "@repo/config/env";
 import { cookies } from "next/headers";
-import { Account, Client, ID } from "node-appwrite";
+import { Account, Client, ID, Users } from "node-appwrite";
 import { appwriteEnv } from "./config";
 import { verifiedIdentity } from "./identity";
 import { persistIdentity } from "./sync";
@@ -130,6 +130,16 @@ export async function completeEmailVerification(
   await account.updateEmailVerification({ secret, userId });
 }
 
+export async function applyEmailVerification(userId: string, secret: string) {
+  try {
+    await completeEmailVerification(userId, secret);
+    return true;
+  } catch {
+    const account = await readAppwriteAccount();
+    return Boolean(account?.emailVerification);
+  }
+}
+
 export async function requestPasswordRecovery(email: string) {
   const { account } = createAdminClient();
   await account.createRecovery({ email, url: `${appUrl()}/reset-password` });
@@ -146,6 +156,8 @@ export async function completePasswordRecovery(input: {
     secret: input.secret,
     userId: input.userId,
   });
+  await new Users(adminClient()).deleteSessions({ userId: input.userId });
+  await clearSessionCookie();
 }
 
 export async function destroySession() {

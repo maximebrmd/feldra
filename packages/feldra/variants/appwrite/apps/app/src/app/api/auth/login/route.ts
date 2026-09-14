@@ -6,6 +6,7 @@ import {
 } from "@repo/auth/server";
 import { z } from "zod";
 import { authFailure } from "@/lib/auth-http";
+import { authRateLimit, enforceAuthRateLimit } from "@/lib/auth-rate-limit";
 import { jsonInput, sameOrigin } from "@/lib/http";
 
 export const runtime = "nodejs";
@@ -13,6 +14,7 @@ export const runtime = "nodejs";
 export async function POST(request: Request) {
   try {
     sameOrigin(request);
+    await enforceAuthRateLimit(request, authRateLimit.login);
     const input = z
       .strictObject({
         email: z.email(),

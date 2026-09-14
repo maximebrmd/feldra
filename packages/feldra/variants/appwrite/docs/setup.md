@@ -26,7 +26,7 @@ Every variable in `.env.example` is consumed; there are no browser-exposed secre
 
 Follow [database setup](databases.md) and [Appwrite authentication](authentication.md). Configure your keys, run `npm run db:migrate`, then `npm run dev`. In the Appwrite console enable email/password, require email verification, and configure the auth SMTP/platform sender. Add this app origin to Appwrite platforms. Test signup, verification, login, password recovery, logout and onboarding against your own development project before launch. This project never provisions Appwrite automatically.
 
-The API key used to create sessions bypasses Appwrite's client IP rate limits. Keep it server-only and treat login/signup as privileged application endpoints.
+The API key used to create sessions bypasses Appwrite's client IP rate limits. Keep it server-only. Login, signup, password recovery and verification resend are limited per client IP in the `rate_limit` table (5 sign-in/sign-up and 3 recovery/resend attempts per 60 seconds).
 
 ## Stripe
 

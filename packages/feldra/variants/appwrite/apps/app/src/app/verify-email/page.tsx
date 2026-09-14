@@ -1,4 +1,5 @@
-import { completeEmailVerification } from "@repo/auth/server";
+import { applyEmailVerification, readAppwriteAccount } from "@repo/auth/server";
+import { redirect } from "next/navigation";
 import { AuthForm } from "@/components/auth-form";
 export default async function Page({
   searchParams,
@@ -6,15 +7,14 @@ export default async function Page({
   searchParams: Promise<{ secret?: string; userId?: string }>;
 }) {
   const { secret, userId } = await searchParams;
-  let invalid = false;
-  let verified = false;
   if (secret && userId) {
-    try {
-      await completeEmailVerification(userId, secret);
-      verified = true;
-    } catch {
-      invalid = true;
+    if (await applyEmailVerification(userId, secret)) {
+      redirect("/verify-email");
     }
+    return <AuthForm invalid mode="verify" />;
   }
-  return <AuthForm invalid={invalid} mode="verify" verified={verified} />;
+  const account = await readAppwriteAccount();
+  return (
+    <AuthForm mode="verify" verified={Boolean(account?.emailVerification)} />
+  );
 }
