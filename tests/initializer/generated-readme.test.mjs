@@ -103,6 +103,48 @@ test("Supabase Auth generation prepends a banner onto the product README", async
     const readme = await readFile(join(destination, "README.md"), "utf8");
     assert.match(readme, /^> Generated authentication: \*\*Supabase Auth\*\*/u);
     assertProductReadme(readme);
+    const rootPkg = JSON.parse(
+      await readFile(join(destination, "package.json"), "utf8")
+    );
+    assert.equal(rootPkg.devDependencies?.["better-auth"], undefined);
+    assert.equal(rootPkg.scripts["test:browser"], undefined);
+    assert.match(
+      rootPkg.scripts["test:integration"],
+      /--experimental-test-module-mocks/u
+    );
+    const authPkg = JSON.parse(
+      await readFile(join(destination, "packages/auth/package.json"), "utf8")
+    );
+    assert.equal(authPkg.dependencies["@supabase/ssr"], "0.12.7");
+    assert.equal(authPkg.dependencies["@supabase/supabase-js"], "2.116.0");
+    assert.deepEqual(authPkg.exports, {
+      "./client": "./client.ts",
+      "./config": "./config.ts",
+      "./identity": "./identity.ts",
+      "./server": "./server.ts",
+    });
+    const appPkg = JSON.parse(
+      await readFile(join(destination, "apps/app/package.json"), "utf8")
+    );
+    assert.equal(appPkg.dependencies["@supabase/ssr"], "0.12.7");
+    const example = await readFile(join(destination, ".env.example"), "utf8");
+    assert.match(example, /^NEXT_PUBLIC_SUPABASE_URL=$/mu);
+    assert.match(example, /^NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$/mu);
+    assert.doesNotMatch(example, /^BETTER_AUTH_SECRET=/mu);
+    assert.doesNotMatch(example, /^RESEND_API_KEY=/mu);
+    const turbo = JSON.parse(
+      await readFile(join(destination, "turbo.json"), "utf8")
+    );
+    assert.ok(turbo.globalEnv.includes("NEXT_PUBLIC_SUPABASE_URL"));
+    assert.ok(turbo.globalEnv.includes("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"));
+    assert.ok(!turbo.globalEnv.includes("BETTER_AUTH_SECRET"));
+    assert.ok(!turbo.globalEnv.includes("RESEND_API_KEY"));
+    const testDatabase = await readFile(
+      join(destination, "scripts/test-database.mjs"),
+      "utf8"
+    );
+    assert.match(testDatabase, /tests\/integration\/supabase-data\.test\.ts/u);
+    assert.doesNotMatch(testDatabase, /tests\/integration\/flows\.test\.ts/u);
   } finally {
     await rm(destination, { force: true, recursive: true });
   }
