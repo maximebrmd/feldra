@@ -9,7 +9,7 @@ npx feldra@latest create my-new-saas
 Equivalent: `npm exec feldra@latest -- create my-new-saas`. **This package is not published to npm yet.** Until it is, pack the tarball from the [Feldra repository](https://github.com/maximebrmd/feldra) and run:
 
 ```sh
-npm exec --yes --package="/absolute/path/feldra-0.3.0.tgz" -- feldra create my-new-saas
+npm exec --yes --package="/absolute/path/feldra-0.1.0.tgz" -- feldra create my-new-saas
 ```
 
 ## Features

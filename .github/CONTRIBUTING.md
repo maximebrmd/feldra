@@ -58,4 +58,6 @@ English documentation is the translation source. Before merging a release PR, ru
 
 ## Releases and deployment
 
-Changesets prepares a version PR after successful main builds. Once trusted publishing is enabled, merging that PR publishes the exact tarball validated by CI. Docs deployment also uses CI's tested artifact. See [release instructions](../docs/releasing.md) and [CI/CD setup](../docs/ci-cd.md) for account configuration and activation.
+Stay on **0.1.0** until an explicit public npm release. Do not merge Changesets version PRs that bump past 0.1.0 while unpublished; the first `npm publish` is **0.1.0**. See [release instructions](../docs/releasing.md).
+
+Changesets prepares a version PR after successful main builds. Once trusted publishing is enabled, merging that PR publishes the exact tarball validated by CI. Docs deployment also uses CI's tested artifact. See [CI/CD setup](../docs/ci-cd.md) for account configuration and activation.

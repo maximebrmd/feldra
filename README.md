@@ -19,14 +19,14 @@ After npm publication:
 npx feldra@latest create my-new-saas
 ```
 
-Equivalent: `npm exec feldra@latest -- create my-new-saas`. **The `feldra` package is not on npm yet** — do not run the public command until it is published.
+Equivalent: `npm exec feldra@latest -- create my-new-saas`. **The `feldra` package is not on npm yet** — the repository stays at **0.1.0** until an explicit public release. Do not run the public command until it is published.
 
 Until then, pack and run the tested tarball from this repository:
 
 ```sh
 npm ci
 npm run initializer:pack
-npm exec --yes --package="$(pwd)/feldra-0.3.0.tgz" -- feldra create my-new-saas
+npm exec --yes --package="$(pwd)/feldra-0.1.0.tgz" -- feldra create my-new-saas
 ```
 
 In a terminal, the CLI asks for the directory and package name, then offers arrow-key selectors for **Neon** or **Supabase** and **Better Auth** or **Clerk**. `--yes` or non-TTY input is noninteractive and requires a directory. Existing destinations are refused, even if empty. Quoted paths with spaces work; `--name` overrides the derived package name.
