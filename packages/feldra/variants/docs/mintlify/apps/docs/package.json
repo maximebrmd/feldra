@@ -1,0 +1,10 @@
+{
+  "name": "docs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node ./check-docs.mjs",
+    "dev": "npx --yes mint@4.2.891 dev --no-open --port 4321"
+  }
+}

@@ -29,7 +29,7 @@ npm run initializer:pack
 npm exec --yes --package="$(pwd)/feldra-0.1.0.tgz" -- feldra create my-new-saas
 ```
 
-In a terminal, the CLI asks for the directory and package name, then offers arrow-key selectors for **Neon** or **Supabase** and **Better Auth**, **Clerk**, **Auth.js**, or **Supabase Auth**. `--yes` or non-TTY input is noninteractive and requires a directory. Existing destinations are refused, even if empty. Quoted paths with spaces work; `--name` overrides the derived package name.
+In a terminal, the CLI asks for the directory and package name, then offers arrow-key selectors for **Neon** or **Supabase**, **Better Auth**, **Clerk**, **Auth.js**, or **Supabase Auth**, and **Blume**, **Mintlify**, or **Fumadocs**. `--yes` or non-TTY input is noninteractive and requires a directory. Existing destinations are refused, even if empty. Quoted paths with spaces work; `--name` overrides the derived package name.
 
 Then connect your own providers and run:
 
@@ -47,6 +47,7 @@ Open marketing at `http://localhost:3000` and the app at `http://localhost:3001`
 - **Two Next.js apps** — marketing and pricing on port 3000; auth, dashboard, APIs, and webhooks on port 3001.
 - **Postgres you choose** — Neon or Supabase. Both use Drizzle and SQL migrations. Database choice is independent of authentication.
 - **Authentication you choose** — Better Auth (default, Resend emails), Clerk (managed identity and auth emails), Auth.js (NextAuth, GitHub OAuth), or Supabase Auth, independently of the database. Supabase Auth needs a Supabase project URL and publishable key even when Postgres is Neon.
+- **Documentation you choose** — Blume (default), Mintlify, or Fumadocs. This repository's product docs stay on Blume.
 - **Stripe billing** — Checkout, customer portal, signed webhooks, and a server-side paid-access gate. Individual accounts and user-level billing.
 - **Shared packages** — auth, database, design-system (used shadcn Button/Input and Tailwind), email, payments, and config, coordinated with Turborepo and npm workspaces.
 - **Hashed template** — the CLI copies a versioned, integrity-checked bundle. It never downloads a moving GitHub branch.
@@ -62,28 +63,30 @@ Organizations, CMS, analytics, AI, queues, and automatic template sync are inten
 | Command / flag | Description |
 | --- | --- |
 | `feldra create [directory]` | Scaffold a project (interactive in a TTY). |
-| `--yes`, `-y` | Noninteractive. Requires a directory. Defaults to Neon and Better Auth. |
+| `--yes`, `-y` | Noninteractive. Requires a directory. Defaults to Neon, Better Auth, and Blume. |
 | `--database neon\|supabase` | Choose Postgres. `--preset` is an alias. |
 | `--auth better-auth\|clerk\|authjs\|supabase` | Choose authentication. Default: `better-auth`. |
+| `--docs blume\|mintlify\|fumadocs` | Choose the generated documentation app. Default: `blume`. |
 | `--name <package-name>` | Override the package name derived from the directory. |
 | `--list-tools` | Print supported tools without creating files. |
 | `--help`, `-h` | Show create usage. |
 
 ```sh
-npx feldra@latest create my-new-saas --yes --database supabase --auth clerk
+npx feldra@latest create my-new-saas --yes --database supabase --auth clerk --docs fumadocs
 ```
 
 See [packages/feldra/README.md](packages/feldra/README.md) for the npm-facing CLI notes.
 
 ## How it works
 
-The CLI verifies the bundled template (and auth overlays) against SHA-256 hashes, copies it to a new directory, applies the selected auth variant, rewrites package and lockfile names, writes `.env.local` (a random Better Auth or Auth.js secret, or blank Clerk / Supabase Auth keys), runs `npm ci`, and initializes a new Git repository. Failure returns nonzero and leaves any partial destination for inspection.
+The CLI verifies the bundled template (and auth, Mintlify, and Fumadocs overlays) against SHA-256 hashes, copies it to a new directory, applies the selected auth and docs variants, rewrites package and lockfile names, writes `.env.local` (a random Better Auth or Auth.js secret, or blank Clerk / Supabase Auth keys), runs `npm ci`, and initializes a new Git repository. Failure returns nonzero and leaves any partial destination for inspection.
 
 ```text
 my-new-saas/
 ├── apps/
 │   ├── web/                 # Marketing and pricing · localhost:3000
-│   └── app/                 # Auth, dashboard, APIs and webhooks · localhost:3001
+│   ├── app/                 # Auth, dashboard, APIs and webhooks · localhost:3001
+│   └── docs/                # Generated Blume, Mintlify, or Fumadocs · localhost:4321
 ├── packages/
 │   ├── auth/                # Better Auth, Clerk, Auth.js, or Supabase Auth
 │   ├── database/            # Drizzle schema, SQL migrations, Postgres client
@@ -103,7 +106,7 @@ See [architecture](docs/architecture.md), [setup](docs/setup.md), [databases](do
 
 ## Deployment
 
-Generated apps are two Next.js deployments from one repository (`apps/web` and `apps/app`). Set `WEB_URL` and `APP_URL` to separate HTTPS origins. Provider setup, restricted keys, and live verification are in [docs/setup.md](docs/setup.md). This repository's documentation site is a separate static app in `apps/docs` and is excluded from generated projects.
+Generated apps are two Next.js deployments from one repository (`apps/web` and `apps/app`). Set `WEB_URL` and `APP_URL` to separate HTTPS origins. Provider setup, restricted keys, and live verification are in [docs/setup.md](docs/setup.md). This repository's product documentation site stays on Blume in `apps/docs`. Generated projects receive their own `apps/docs` app — Blume by default, or Mintlify or Fumadocs when selected.
 
 ## Compatibility
 
@@ -117,7 +120,7 @@ Generated apps are two Next.js deployments from one repository (`apps/web` and `
 
 ## Development
 
-This repository is a monorepo: the published package lives in `packages/feldra`, the SaaS template is the workspace apps and `@repo/*` packages, and `apps/docs` is the Feldra documentation site built with Blume (`npm run docs:dev` → http://localhost:4321).
+This repository is a monorepo: the published package lives in `packages/feldra`, the SaaS template is the workspace apps and `@repo/*` packages, and `apps/docs` is the Feldra product documentation site built with Blume (`npm run docs:dev` → http://localhost:4321). Dual-maintaining Mintlify or Fumadocs for this in-repo site is out of scope; those frameworks are choices for generated projects.
 
 ```sh
 npm ci
@@ -129,7 +132,7 @@ npm run initializer:pack   # Validate and write feldra-VERSION.tgz
 
 Optional fixture tests need Docker: `npm run test:database`, `npm run test:browser`.
 
-See [CONTRIBUTING](.github/CONTRIBUTING.md), [releasing](docs/releasing.md), and [CI/CD](docs/ci-cd.md). Generated projects do not include this repository's Changesets, docs app, or GitHub workflows; they receive a product README rather than this file.
+See [CONTRIBUTING](.github/CONTRIBUTING.md), [releasing](docs/releasing.md), and [CI/CD](docs/ci-cd.md). Generated projects do not include this repository's Changesets or GitHub workflows; they receive a product README and a chosen documentation app rather than this file.
 
 ## License
 

@@ -44,8 +44,8 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-node
       - run: npx --no-install playwright install --with-deps chromium
-      # Packs once, then checks all six database/auth combinations, including
-      # isolated Postgres fixtures and the Better Auth production browser flows.
+      # Packs once, then checks all six database/auth combinations with default
+      # Blume docs, plus one Mintlify and one Fumadocs docs build.
       - run: npm run initializer:test
       - name: Record artifact checksum
         run: sha256sum feldra-*.tgz > SHA256SUMS

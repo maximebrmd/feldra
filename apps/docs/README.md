@@ -49,7 +49,7 @@ Adapted from `haydenbleasel/blume` at commit `1328384c0d355fe395408ff7c07dd95249
 
 ## Template boundary and dependencies
 
-The documentation application and its tooling are excluded from initializer releases. Generated SaaS projects have no Blume or Astro dependency. The root pack script also removes documentation-only dependency overrides.
+This repository's documentation application stays on Blume. Generated SaaS projects receive a separate docs app from `packages/feldra/variants/docs`: Blume by default, or Mintlify or Fumadocs when `--docs` is selected. This in-repo site is not dual-maintained as Mintlify or Fumadocs. The generated Blume app does not include this site's custom homepage components, translations, or Wrangler config.
 
 Blume includes optional integrations in its dependency tree even when disabled. Compatible overrides remove vulnerable legacy Astro, lodash-es and routing dependencies. npm audit still reports the upstream `image-size@2.0.2` ICNS/JXL/HEIF parsing advisories (and the aggregate Blume warning); npm currently offers no patched image-size release. This static site uses only a trusted local PNG, accepts no image uploads, and ships no image-processing server. Recheck upstream before expanding supported inputs. TypeScript 6.0.3 supplies the JavaScript compiler API required by Astro's checker.
 

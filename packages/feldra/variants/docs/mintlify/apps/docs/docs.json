@@ -1,0 +1,19 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Docs",
+  "description": "Documentation for this Feldra-generated SaaS.",
+  "colors": {
+    "primary": "#284f39",
+    "light": "#376446",
+    "dark": "#21352a"
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting started",
+        "pages": ["introduction", "setup", "architecture"]
+      }
+    ]
+  }
+}

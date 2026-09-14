@@ -13,6 +13,7 @@ import {
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { authOverlays } from "../packages/feldra/bin/apply-auth.mjs";
+import { applyDocs } from "../packages/feldra/bin/apply-docs.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const release = join(root, "packages/feldra");
@@ -102,20 +103,17 @@ delete pkg.scripts.changeset;
 delete pkg.scripts["changeset:status"];
 delete pkg.scripts["release:version"];
 delete pkg.scripts["release:sync"];
-delete pkg.scripts["docs:dev"];
 delete pkg.scripts["docs:translate"];
 delete pkg.scripts["docs:translations:check"];
-delete pkg.scripts["docs:build"];
 delete pkg.scripts["test:docs"];
 delete pkg.devDependencies["@changesets/cli"];
-// These overrides belong to the repository-only Blume documentation app.
-delete pkg.overrides["@scalar/astro"];
-delete pkg.overrides["@vercel/routing-utils"];
-delete pkg.overrides["lodash-es"];
 await writeFile(
   join(target, "package.json"),
   `${JSON.stringify(pkg, null, 2)}\n`
 );
+await cp(join(release, "variants/docs/blume"), join(target, "apps/docs"), {
+  recursive: true,
+});
 // Let npm prune release-only packages and links from the generated lockfile.
 run(
   ["install", "--package-lock-only", "--ignore-scripts", "--no-fund"],
@@ -127,42 +125,64 @@ for (const app of ["app", "web"]) {
     '/// <reference types="next" />\n/// <reference types="next/image-types/global" />\n'
   );
 }
-// Resolve each auth overlay's dependency tree at release time, not during scaffolding.
-const variantFiles = {};
-for (const [name, apply] of Object.entries(authOverlays)) {
-  const variant = join(release, "variants", name);
-  const staging = await mkdtemp(join(tmpdir(), `feldra-${name}-lock-`));
+async function hashTree(treeRoot, path = "") {
+  const hashes = {};
+  for (const entry of await readdir(join(treeRoot, path), {
+    withFileTypes: true,
+  })) {
+    const file = path ? `${path}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) {
+      Object.assign(hashes, await hashTree(treeRoot, file));
+    } else {
+      hashes[file] = createHash("sha256")
+        .update(await readFile(join(treeRoot, file)))
+        .digest("hex");
+    }
+  }
+  return hashes;
+}
+async function resolveLockfile(apply, destFile) {
+  const staging = await mkdtemp(join(tmpdir(), "feldra-overlay-lock-"));
   try {
     await cp(target, staging, { recursive: true });
-    await apply(staging, variant, { lockfile: false });
+    await apply(staging);
     run(
       ["install", "--package-lock-only", "--ignore-scripts", "--no-fund"],
       staging
     );
-    await copyFile(
-      join(staging, "package-lock.json"),
-      join(variant, "package-lock.json")
-    );
+    await copyFile(join(staging, "package-lock.json"), destFile);
   } finally {
     await rm(staging, { force: true, recursive: true });
   }
-  const hashes = {};
-  async function hashVariant(path = "") {
-    for (const entry of await readdir(join(variant, path), {
-      withFileTypes: true,
-    })) {
-      const file = path ? `${path}/${entry.name}` : entry.name;
-      if (entry.isDirectory()) {
-        await hashVariant(file);
-      } else {
-        hashes[file] = createHash("sha256")
-          .update(await readFile(join(variant, file)))
-          .digest("hex");
-      }
-    }
+}
+// Resolve overlay lockfiles at release time, not during scaffolding.
+const variantFiles = {};
+for (const [name, apply] of Object.entries(authOverlays)) {
+  const variant = join(release, "variants", name);
+  await resolveLockfile(
+    (staging) => apply(staging, variant, { lockfile: false }),
+    join(variant, "package-lock.json")
+  );
+  variantFiles[`${name}Files`] = await hashTree(variant);
+}
+for (const docsName of ["mintlify", "fumadocs"]) {
+  const docsVariant = join(release, "variants/docs", docsName);
+  await resolveLockfile(
+    (staging) => applyDocs(staging, docsVariant, docsName, { lockfile: false }),
+    join(docsVariant, "package-lock.json")
+  );
+  for (const [authName, apply] of Object.entries(authOverlays)) {
+    await resolveLockfile(
+      async (staging) => {
+        await apply(staging, join(release, "variants", authName), {
+          lockfile: false,
+        });
+        await applyDocs(staging, docsVariant, docsName, { lockfile: false });
+      },
+      join(docsVariant, `package-lock.${authName}.json`)
+    );
   }
-  await hashVariant();
-  variantFiles[`${name}Files`] = hashes;
+  variantFiles[`${docsName}Files`] = await hashTree(docsVariant);
 }
 const hashes = {};
 async function hash(path = "") {

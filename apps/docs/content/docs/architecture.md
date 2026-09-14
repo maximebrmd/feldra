@@ -11,6 +11,7 @@ sidebar:
 apps/
   web/                  Marketing and pricing · port 3000
   app/                  Authenticated UI, APIs, webhooks · port 3001
+  docs/                 Documentation · port 4321
 packages/
   auth/                 Better Auth, Clerk, or Supabase Auth
   config/               App name, URLs, plans, environment validation
@@ -22,7 +23,7 @@ turbo.json
 package.json
 ```
 
-The template repository also has this Astro documentation app at `apps/docs`. It is a separate documentation deployment and is excluded from generated SaaS projects.
+Generated projects include `apps/docs` — Blume by default, or Mintlify or Fumadocs when selected. This Feldra product site is a separate Blume app in this repository; it is not the app copied into generated projects.
 
 ## Deployable boundaries
 

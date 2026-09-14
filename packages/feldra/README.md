@@ -1,6 +1,6 @@
 # feldra
 
-**Create a Feldra SaaS monorepo.** Two Next.js apps, shared packages, and Turborepo — Neon or Supabase, Better Auth, Clerk, Auth.js, or Supabase Auth, and Stripe.
+**Create a Feldra SaaS monorepo.** Two Next.js apps, shared packages, and Turborepo — Neon or Supabase, Better Auth, Clerk, Auth.js, or Supabase Auth, Stripe, and Blume, Mintlify, or Fumadocs docs.
 
 ```sh
 npx feldra@latest create my-new-saas
@@ -17,6 +17,7 @@ npm exec --yes --package="/absolute/path/feldra-0.1.0.tgz" -- feldra create my-n
 - Two Next.js apps: marketing (`apps/web`, port 3000) and authenticated app (`apps/app`, port 3001)
 - Neon or Supabase Postgres with Drizzle
 - Better Auth (Resend emails), Clerk (managed identity and auth emails), Auth.js (NextAuth, GitHub OAuth), or Supabase Auth
+- Blume (default), Mintlify, or Fumadocs documentation app
 - Stripe Checkout, customer portal, webhooks, and server-side paid access
 - Tailwind, used shadcn components, TypeScript, Ultracite, Turborepo, npm workspaces
 - Hashed, versioned template bundled in this package — never a moving GitHub branch
@@ -27,9 +28,10 @@ npm exec --yes --package="/absolute/path/feldra-0.1.0.tgz" -- feldra create my-n
 | Flag | Description |
 | --- | --- |
 | `[directory]` | Destination. Required with `--yes` or non-TTY input. |
-| `--yes`, `-y` | Noninteractive. Defaults to Neon and Better Auth. |
+| `--yes`, `-y` | Noninteractive. Defaults to Neon, Better Auth, and Blume. |
 | `--database neon\|supabase` | Postgres provider. `--preset` is an alias. |
 | `--auth better-auth\|clerk\|authjs\|supabase` | Authentication. Default: `better-auth`. |
+| `--docs blume\|mintlify\|fumadocs` | Documentation app. Default: `blume`. |
 | `--name <package-name>` | Override the package name derived from the directory. |
 | `--list-tools` | List choices without creating files. |
 | `--help`, `-h` | Show create usage. |
@@ -37,14 +39,14 @@ npm exec --yes --package="/absolute/path/feldra-0.1.0.tgz" -- feldra create my-n
 Interactive in a terminal (arrow keys and Enter). Refuses existing destinations. Relative paths and quoted paths with spaces work. Tested on macOS; no Windows validation claimed.
 
 ```sh
-npx feldra@latest create my-new-saas --yes --database supabase --auth clerk
+npx feldra@latest create my-new-saas --yes --database supabase --auth clerk --docs fumadocs
 ```
 
 ## How it works
 
-The CLI verifies the bundled template hashes, copies the template, applies the Clerk, Auth.js, or Supabase Auth overlay when selected, sets package and lockfile names, writes `.env.local` (a random Better Auth or Auth.js secret, or blank Clerk / Supabase Auth keys), installs with `npm ci`, and initializes Git. Generated projects have no dependency on this package. Failure returns nonzero and preserves any partial destination.
+The CLI verifies the bundled template hashes, copies the template, applies the Clerk, Auth.js, or Supabase Auth overlay when selected, applies the Mintlify or Fumadocs overlay when selected (Blume is the default docs app in the template), sets package and lockfile names, writes `.env.local` (a random Better Auth or Auth.js secret, or blank Clerk / Supabase Auth keys), installs with `npm ci`, and initializes Git. Generated projects have no dependency on this package. Failure returns nonzero and preserves any partial destination.
 
-Configure Neon or Supabase, Stripe, and Resend, Clerk, GitHub OAuth, or Supabase Auth yourself. Follow the generated `docs/setup.md`, then `npm run db:migrate` and `npm run dev`. Set `APP_URL` and `WEB_URL` for cross-app navigation. Auth and database are independent; `--auth supabase` still needs a Supabase project URL and publishable key.
+Configure Neon or Supabase, Stripe, and Resend, Clerk, GitHub OAuth, or Supabase Auth yourself. Follow the generated `docs/setup.md`, then `npm run db:migrate` and `npm run dev`. Run `npm run docs:dev` for the documentation app at http://localhost:4321. Set `APP_URL` and `WEB_URL` for cross-app navigation. Auth and database are independent; `--auth supabase` still needs a Supabase project URL and publishable key. The Feldra repository's own product docs stay on Blume; generated apps choose Blume, Mintlify, or Fumadocs.
 
 ## Compatibility
 

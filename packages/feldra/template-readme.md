@@ -1,6 +1,6 @@
 # Feldra
 
-**A complete foundation for your next SaaS.** Two Next.js apps, shared packages, and Turborepo — Neon or Supabase, Better Auth, Clerk, Auth.js, or Supabase Auth, and Stripe.
+**A complete foundation for your next SaaS.** Two Next.js apps, shared packages, and Turborepo — Neon or Supabase, Better Auth, Clerk, Auth.js, or Supabase Auth, Stripe, and a Blume, Mintlify, or Fumadocs documentation app.
 
 This project was generated with Feldra. It is an independent Git repository with locked npm dependencies and no runtime dependency on the initializer. No provider accounts, databases, or deployments were provisioned.
 
@@ -23,6 +23,7 @@ Open marketing at `http://localhost:3000` and the app at `http://localhost:3001`
 - **Postgres you choose** — Neon or Supabase. Both use Drizzle and SQL migrations. Database choice is independent of authentication.
 - **Authentication you choose** — Better Auth (default, Resend emails), Clerk (managed identity and auth emails), Auth.js (NextAuth, GitHub OAuth), or Supabase Auth, independently of the database.
 - **Stripe billing** — Checkout, customer portal, signed webhooks, and a server-side paid-access gate. Individual accounts and user-level billing.
+- **Documentation you choose** — Blume (default), Mintlify, or Fumadocs. `npm run docs:dev` serves `apps/docs` at http://localhost:4321.
 - **Shared packages** — auth, database, design-system (used shadcn Button/Input and Tailwind), email, payments, and config, coordinated with Turborepo and npm workspaces.
 - **Tested workflow** — Ultracite, TypeScript, unit tests, production builds, optional Docker Postgres fixtures, and browser checks.
 - **Example product surface** — signup, verification, login, password reset, onboarding, profile settings, and clearly marked private notes CRUD. `/api/notes/export` is Pro-only.
@@ -35,7 +36,8 @@ Organizations, CMS, analytics, AI, queues, and automatic template sync are inten
 .
 ├── apps/
 │   ├── web/                 # Marketing and pricing · localhost:3000
-│   └── app/                 # Auth, dashboard, APIs and webhooks · localhost:3001
+│   ├── app/                 # Auth, dashboard, APIs and webhooks · localhost:3001
+│   └── docs/                # Blume, Mintlify, or Fumadocs · localhost:4321
 ├── packages/
 │   ├── auth/                # Better Auth, Clerk, Auth.js, or Supabase Auth
 │   ├── database/            # Drizzle schema, SQL migrations, Postgres client
@@ -59,6 +61,7 @@ See [architecture](docs/architecture.md), [setup](docs/setup.md), [databases](do
 npm run check              # Lint, workspace types, unit tests, both production builds
 npm run db:migrate
 npm run dev
+npm run docs:dev           # Documentation app · localhost:4321
 ```
 
 Optional fixture tests need Docker: `npm run test:database`, `npm run test:browser`.

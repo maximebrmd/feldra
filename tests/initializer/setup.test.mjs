@@ -8,6 +8,7 @@ test("noninteractive defaults to Neon and derives a valid name from spaces", asy
     {
       auth: "better-auth",
       directory: "./a project with spaces",
+      docs: "blume",
       name: "a-project-with-spaces",
       preset: "neon",
     }
@@ -26,6 +27,14 @@ test("interactive selector offers both databases and preserves Supabase selectio
         if (prompt.message.includes("authentication")) {
           return "better-auth";
         }
+        if (prompt.message.includes("documentation")) {
+          assert.deepEqual(
+            prompt.options.map((option) => option.value),
+            ["blume", "mintlify", "fumadocs"]
+          );
+          assert.equal(prompt.initialValue, "blume");
+          return "blume";
+        }
         assert.deepEqual(
           prompt.options.map((option) => option.value),
           ["neon", "supabase"]
@@ -39,6 +48,7 @@ test("interactive selector offers both databases and preserves Supabase selectio
   assert.deepEqual(setup, {
     auth: "better-auth",
     directory: "./my SaaS",
+    docs: "blume",
     name: "custom-saas",
     preset: "supabase",
   });
@@ -54,7 +64,13 @@ test("explicit Supabase works without prompting; legacy preset remains supported
 test("interactive cancellation stops setup", async () => {
   await assert.rejects(
     collectSetup(
-      { auth: "better-auth", database: "neon", directory: "new", name: "new" },
+      {
+        auth: "better-auth",
+        database: "neon",
+        directory: "new",
+        docs: "blume",
+        name: "new",
+      },
       { confirm: async () => false }
     ),
     /Canceled/u
@@ -93,6 +109,9 @@ test("Auth.js is explicit and remains selectable beside Better Auth and Clerk", 
     {
       confirm: () => true,
       select: (prompt) => {
+        if (prompt.message.includes("documentation")) {
+          return "blume";
+        }
         const values = prompt.options.map((option) => option.value);
         assert.ok(values.includes("better-auth"));
         assert.ok(values.includes("clerk"));
@@ -138,6 +157,9 @@ test("interactive selector offers Better Auth, Clerk, Auth.js and Supabase Auth"
     {
       confirm: async () => true,
       select: (prompt) => {
+        if (prompt.message.includes("documentation")) {
+          return "blume";
+        }
         assert.deepEqual(
           prompt.options.map((option) => option.value),
           ["authjs", "better-auth", "clerk", "supabase"]
@@ -148,4 +170,41 @@ test("interactive selector offers Better Auth, Clerk, Auth.js and Supabase Auth"
     }
   );
   assert.equal(setup.auth, "supabase");
+});
+
+test("docs defaults to Blume and unknown documentation choices fail before creating files", async () => {
+  assert.equal((await collectSetup({ directory: "new" })).docs, "blume");
+  assert.equal(
+    (await collectSetup({ directory: "new", docs: "mintlify" })).docs,
+    "mintlify"
+  );
+  assert.equal(
+    (await collectSetup({ directory: "new", docs: "fumadocs" })).docs,
+    "fumadocs"
+  );
+  await assert.rejects(
+    collectSetup({ directory: "new", docs: "docusaurus" }),
+    /Choose --docs/u
+  );
+});
+
+test("interactive selector offers documentation frameworks and preserves Fumadocs", async () => {
+  const setup = await collectSetup(
+    { auth: "better-auth", database: "neon", directory: "new", name: "new" },
+    {
+      confirm: (prompt) => {
+        assert.match(prompt.message, /Fumadocs/u);
+        return true;
+      },
+      select: (prompt) => {
+        assert.match(prompt.message, /documentation/u);
+        assert.deepEqual(
+          prompt.options.map((option) => option.value),
+          ["blume", "mintlify", "fumadocs"]
+        );
+        return "fumadocs";
+      },
+    }
+  );
+  assert.equal(setup.docs, "fumadocs");
 });
