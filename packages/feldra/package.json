@@ -21,7 +21,7 @@
   "author": "Maxime Bourmaud",
   "type": "module",
   "bin": {
-    "feldra": "bin/create.mjs"
+    "feldra": "bin/feldra.mjs"
   },
   "files": [
     "bin/",

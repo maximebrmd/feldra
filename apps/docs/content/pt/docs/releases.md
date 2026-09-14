@@ -6,7 +6,7 @@ sidebar:
 ---
 ## Status da versão [#release-status]
 
-Feldra é a nova marca do projeto. O pacote inicializador é `feldra` e ainda não foi publicado no npm. Após a publicação, execute `npx feldra` ou `npm exec feldra`. Os mantenedores gerenciam o versionamento com Changesets.
+Feldra é a nova marca do projeto. O pacote inicializador é `feldra` e ainda não foi publicado no npm. Após a publicação, execute `npx feldra create`. Os mantenedores gerenciam o versionamento com Changesets.
 
 ## Fluxo de lançamento [#release-workflow]
 

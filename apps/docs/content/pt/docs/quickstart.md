@@ -27,7 +27,7 @@ npm run initializer:pack
 Isso valida o código-fonte e grava `feldra-VERSION.tgz` na raiz do repositório. Substitua VERSION abaixo pela versão em `packages/feldra/package.json`:
 
 ```sh
-npm exec --yes --package="./feldra-VERSION.tgz" -- feldra my-new-saas
+npm exec --yes --package="./feldra-VERSION.tgz" -- feldra create my-new-saas
 ```
 
 Use as teclas de seta e Enter para escolher **Neon** ou **Supabase**. O inicializador instala as dependências, grava os arquivos de ambiente locais e inicializa um novo repositório Git. Ele recusa um destino existente, mesmo que esteja vazio.
@@ -55,7 +55,7 @@ Abra **localhost:3000** para acessar o site de marketing e **localhost:3001** pa
 Quando o pacote atual for publicado, a criação de projetos passa a ser:
 
 ```sh
-npx feldra@latest my-new-saas
+npx feldra@latest create my-new-saas
 ```
 
 Não use o comando público até que o pacote seja explicitamente publicado. Um único comando cria a estrutura do projeto e instala as dependências; ele não cria contas em provedores nem configura credenciais.

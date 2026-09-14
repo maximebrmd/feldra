@@ -7,7 +7,7 @@ sidebar:
 
 ## Release status
 
-Feldra is the project’s new brand. The initializer package is `feldra` and has not been published to npm. After publication, run `npx feldra` or `npm exec feldra`. Maintainers manage versioning through Changesets.
+Feldra is the project’s new brand. The initializer package is `feldra` and has not been published to npm. After publication, run `npx feldra create`. Maintainers manage versioning through Changesets.
 
 ## Release workflow
 

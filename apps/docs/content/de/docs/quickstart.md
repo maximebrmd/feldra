@@ -27,7 +27,7 @@ npm run initializer:pack
 Damit wird der Quellcode validiert und `feldra-VERSION.tgz` im Stammverzeichnis des Repositorys erstellt. Ersetze VERSION unten durch die Version aus `packages/feldra/package.json`:
 
 ```sh
-npm exec --yes --package="./feldra-VERSION.tgz" -- feldra my-new-saas
+npm exec --yes --package="./feldra-VERSION.tgz" -- feldra create my-new-saas
 ```
 
 Wähle mit den Pfeiltasten und der Eingabetaste **Neon** oder **Supabase** aus. Der Initialisierer installiert Abhängigkeiten, schreibt lokale Umgebungsdateien und initialisiert ein neues Git-Repository. Er lehnt ein bereits vorhandenes Zielverzeichnis ab, selbst wenn es leer ist.
@@ -55,7 +55,7 @@ npm run dev
 Sobald das aktuelle Paket veröffentlicht ist, erstellst du Projekte so:
 
 ```sh
-npx feldra@latest my-new-saas
+npx feldra@latest create my-new-saas
 ```
 
 Verwende den öffentlichen Befehl erst, wenn das Paket ausdrücklich veröffentlicht wurde. Ein einziger Befehl erstellt das Projektgerüst und installiert die Abhängigkeiten; er erstellt keine Anbieterkonten und konfiguriert keine Zugangsdaten.

@@ -6,7 +6,7 @@ sidebar:
 ---
 ## Veröffentlichungsstatus [#release-status]
 
-Feldra ist die neue Marke des Projekts. Das Initializer-Paket heißt `feldra` und wurde noch nicht auf npm veröffentlicht. Nach der Veröffentlichung: `npx feldra` oder `npm exec feldra`. Die Maintainer verwalten die Versionierung mit Changesets.
+Feldra ist die neue Marke des Projekts. Das Initializer-Paket heißt `feldra` und wurde noch nicht auf npm veröffentlicht. Nach der Veröffentlichung: `npx feldra create`. Die Maintainer verwalten die Versionierung mit Changesets.
 
 ## Veröffentlichungsablauf [#release-workflow]
 

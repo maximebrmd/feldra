@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- **Breaking:** rename the published package and CLI from `create-feldra` to `feldra`. Run `npx feldra` / `npm exec feldra` instead of `npm create feldra`.
+- **Breaking:** rename the published package and CLI from `create-feldra` to `feldra`. Run `npx feldra create` instead of `npm create feldra`. Bare `npx feldra` prints help.
 
 ## 0.3.0
 

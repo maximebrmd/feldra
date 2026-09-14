@@ -39,4 +39,4 @@ Contas individuais e cobrança por usuário são a base. Organizações, IA, fil
 
 Acesse o [guia de início rápido](/docs/quickstart/) para criar seu primeiro projeto independente ou explore a [arquitetura](/docs/architecture/) antes de começar.
 
-> Feldra é o novo nome do projeto. O repositório no GitHub é `maximebrmd/feldra`. O pacote inicializador é `feldra`. Após a publicação, execute `npx feldra` ou `npm exec feldra`.
+> Feldra é o novo nome do projeto. O repositório no GitHub é `maximebrmd/feldra`. O pacote inicializador é `feldra`. Após a publicação, execute `npx feldra create`.

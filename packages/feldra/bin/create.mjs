@@ -70,7 +70,7 @@ try {
   }
   if (values.help) {
     console.log(
-      "Usage: npx feldra@latest [directory] [--yes] [--name package-name] [--database neon|supabase] [--auth better-auth|clerk]\nEquivalent: npm exec feldra@latest -- [directory] [--yes] [...]\nInteractive in a terminal; --yes or piped input is noninteractive. Choose a database and authentication tool with arrow keys. --auth defaults to better-auth. --list-tools lists supported tools without creating files. --yes defaults to Neon; use --database supabase to select Supabase. --preset is an alias for --database. Refuses existing destinations. Node >=22.12, npm and Git required."
+      "Usage: npx feldra@latest create [directory] [--yes] [--name package-name] [--database neon|supabase] [--auth better-auth|clerk]\nEquivalent: npm exec feldra@latest -- create [directory] [--yes] [...]\nInteractive in a terminal; --yes or piped input is noninteractive. Choose a database and authentication tool with arrow keys. --auth defaults to better-auth. --list-tools lists supported tools without creating files. --yes defaults to Neon; use --database supabase to select Supabase. --preset is an alias for --database. Refuses existing destinations. Node >=22.12, npm and Git required."
     );
     process.exit(0);
   }

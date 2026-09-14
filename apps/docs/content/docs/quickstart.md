@@ -28,7 +28,7 @@ npm run initializer:pack
 This validates the source and writes `feldra-VERSION.tgz` in the repository root. Replace VERSION below with the version in `packages/feldra/package.json`:
 
 ```sh
-npm exec --yes --package="./feldra-VERSION.tgz" -- feldra my-new-saas
+npm exec --yes --package="./feldra-VERSION.tgz" -- feldra create my-new-saas
 ```
 
 Use the arrow keys and Enter to choose **Neon** or **Supabase**. The initializer installs dependencies, writes local environment files, and initializes a fresh Git repository. It refuses an existing destination, even if it is empty.
@@ -56,10 +56,10 @@ Open **localhost:3000** for marketing and **localhost:3001** for the authenticat
 Once the current package is published, project creation becomes:
 
 ```sh
-npx feldra@latest my-new-saas
+npx feldra@latest create my-new-saas
 ```
 
-Equivalent: `npm exec feldra@latest -- my-new-saas`. Do not use the public command until the package is explicitly published. One command scaffolds and installs; it does not create provider accounts or configure credentials.
+Equivalent: `npm exec feldra@latest -- create my-new-saas`. Do not use the public command until the package is explicitly published. One command scaffolds and installs; it does not create provider accounts or configure credentials.
 
 ## Choose authentication
 

@@ -41,4 +41,4 @@ Einzelkonten und Abrechnung auf Nutzerebene bilden die Grundlage. Organisationen
 
 Mit dem [Schnellstart](/docs/quickstart/) erstellst du dein erstes eigenständiges Projekt. Oder erkunde die [Architektur](/docs/architecture/), bevor du loslegst.
 
-> Feldra ist der neue Name des Projekts. Das GitHub-Repository ist `maximebrmd/feldra`. Das Initializer-Paket heißt `feldra`. Nach der Veröffentlichung: `npx feldra` oder `npm exec feldra`.
+> Feldra ist der neue Name des Projekts. Das GitHub-Repository ist `maximebrmd/feldra`. Das Initializer-Paket heißt `feldra`. Nach der Veröffentlichung: `npx feldra create`.

@@ -40,4 +40,4 @@ Individual accounts and user-level billing are the baseline. Organizations, AI, 
 
 Go to the [quickstart](/docs/quickstart/) to create your first independent project, or explore the [architecture](/docs/architecture/) before you begin.
 
-> Feldra is the project’s new name. The GitHub repository is `maximebrmd/feldra`. The initializer package is `feldra`. After publication, run `npx feldra` or `npm exec feldra`.
+> Feldra is the project’s new name. The GitHub repository is `maximebrmd/feldra`. The initializer package is `feldra`. After publication, run `npx feldra create`.

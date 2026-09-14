@@ -44,7 +44,7 @@ Replace VERSION with `packages/feldra/package.json`'s version. The name returned
 Before publication, use the tested local artifact:
 
 ```sh
-npm exec --yes --package="/absolute/path/feldra-VERSION.tgz" -- feldra "./my new saas" --name my-new-saas
+npm exec --yes --package="/absolute/path/feldra-VERSION.tgz" -- feldra create "./my new saas" --name my-new-saas
 ```
 
-The public commands `npx feldra@latest my-new-saas` and `npm exec feldra@latest -- my-new-saas` only work after publication. Provider credentials still need configuration in each generated project.
+The public commands `npx feldra@latest create my-new-saas` and `npm exec feldra@latest -- create my-new-saas` only work after publication. Provider credentials still need configuration in each generated project.

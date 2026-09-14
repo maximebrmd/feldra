@@ -7,20 +7,20 @@ A next-forge-style SaaS monorepo with **two Next.js apps, shared packages and Tu
 After npm publication, run the interactive initializer:
 
 ```sh
-npx feldra@latest
+npx feldra@latest create
 ```
 
 Or give the destination and skip prompts for Codex/CI:
 
 ```sh
-npx feldra@latest my-new-saas --yes --database neon
+npx feldra@latest create my-new-saas --yes --database neon
 ```
 
-Equivalent: `npm exec feldra@latest -- my-new-saas --yes --database neon`. Until publication, from this base repository:
+Equivalent: `npm exec feldra@latest -- create my-new-saas --yes --database neon`. Until publication, from this base repository:
 
 ```sh
 npm run initializer:pack
-npm exec --yes --package="$(pwd)/feldra-0.3.0.tgz" -- feldra my-new-saas
+npm exec --yes --package="$(pwd)/feldra-0.3.0.tgz" -- feldra create my-new-saas
 ```
 
 In a terminal, the initializer asks for the directory and package name and offers an arrow-key database selector before confirmation. Use arrow keys and Enter to choose **Neon** or **Supabase**. Both keep Better Auth and Drizzle; Supabase supplies Postgres only. `--yes` or non-TTY input uses noninteractive mode and requires a directory. A quoted path containing spaces works; `--name` overrides the derived package name. Existing destinations are refused, even if empty.
