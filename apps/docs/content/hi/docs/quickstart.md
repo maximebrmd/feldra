@@ -24,10 +24,10 @@ npm ci
 npm run initializer:pack
 ```
 
-यह सोर्स को सत्यापित करता है और रिपॉज़िटरी के मूल फ़ोल्डर में `create-feldra-VERSION.tgz` लिखता है। नीचे VERSION को `packages/feldra/package.json` में दिए गए संस्करण से बदलें:
+यह सोर्स को सत्यापित करता है और रिपॉज़िटरी के मूल फ़ोल्डर में `feldra-VERSION.tgz` लिखता है। नीचे VERSION को `packages/feldra/package.json` में दिए गए संस्करण से बदलें:
 
 ```sh
-npm exec --yes --package="./create-feldra-VERSION.tgz" -- create-feldra my-new-saas
+npm exec --yes --package="./feldra-VERSION.tgz" -- feldra create my-new-saas
 ```
 
 **Neon** या **Supabase** चुनने के लिए तीर कुंजियों और Enter का उपयोग करें। इनिशियलाइज़र डिपेंडेंसी इंस्टॉल करता है, स्थानीय एनवायरनमेंट फ़ाइलें लिखता है और एक नई Git रिपॉज़िटरी आरंभ करता है। यह पहले से मौजूद गंतव्य को स्वीकार नहीं करता, भले ही वह खाली हो।
@@ -55,7 +55,7 @@ npm run dev
 वर्तमान पैकेज प्रकाशित होने के बाद, प्रोजेक्ट बनाने का कमांड यह होगा:
 
 ```sh
-npm create feldra@latest my-new-saas
+npx feldra@latest create my-new-saas
 ```
 
 जब तक पैकेज स्पष्ट रूप से प्रकाशित न कर दिया जाए, सार्वजनिक कमांड का उपयोग न करें। एक ही कमांड प्रोजेक्ट का ढाँचा तैयार करता है और इंस्टॉल करता है; यह प्रदाता खाते नहीं बनाता और न ही क्रेडेंशियल कॉन्फ़िगर करता है।

@@ -48,7 +48,7 @@ test("real Changesets versions only the initializer, writes changelog and synchr
     );
     await writeFile(
       join(temp, "packages/feldra/package.json"),
-      JSON.stringify({ name: "create-feldra", version: "0.3.0" })
+      JSON.stringify({ name: "feldra", version: "0.3.0" })
     );
     await writeFile(
       join(temp, "packages/private/package.json"),
@@ -64,7 +64,7 @@ test("real Changesets versions only the initializer, writes changelog and synchr
     );
     await writeFile(
       join(temp, ".changeset/test-release.md"),
-      '---\n"create-feldra": patch\n---\n\nMake the release workflow reproducible.\n'
+      '---\n"feldra": patch\n---\n\nMake the release workflow reproducible.\n'
     );
     run("git", ["init", "--initial-branch=main", "--template="], temp);
     run(

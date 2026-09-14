@@ -6,7 +6,7 @@ sidebar:
 ---
 Cada versão do inicializador inclui um monorepo testado e um arquivo de lock do npm. A geração do projeto não faz nenhum download do GitHub. `template-origin.json` registra a versão, o preset e o hash do conteúdo. Faça você mesmo o commit do estado inicial de cada projeto gerado para comparar depois. Os pacotes internos @repo pertencem àquele projeto e não são baixados do template original.
 
-Personalize `packages/config/index.ts`, os textos do app, os metadados e as notas de exemplo. Cada projeto tem seus próprios recursos de provedores e ambiente. Nunca distribua `.env.local` nem credenciais reais. Os projetos gerados não dependem de create-feldra e não mudam automaticamente quando ele é atualizado.
+Personalize `packages/config/index.ts`, os textos do app, os metadados e as notas de exemplo. Cada projeto tem seus próprios recursos de provedores e ambiente. Nunca distribua `.env.local` nem credenciais reais. Os projetos gerados não dependem de feldra e não mudam automaticamente quando ele é atualizado.
 
 Para correções futuras, publique uma nova versão do inicializador com os arquivos afetados, as migrações e a validação no histórico de alterações. Gere projetos temporários com as versões antiga e nova, examine as diferenças relevantes e aplique manualmente um patch revisado. Resolva as personalizações com cuidado; execute lint/verificação de tipos/testes/build e as verificações com os provedores reais daquele projeto. Aplique as novas migrações em ordem, nunca reescreva uma migração já aplicada. Não há sincronização automática nem camada de intercâmbio entre provedores.
 

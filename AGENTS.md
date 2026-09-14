@@ -3,7 +3,7 @@
 This file is the project's committed home for project-intrinsic agent knowledge: build, test, release, architecture, and sharp-edge notes that should travel with the code.
 
 - Add durable project-specific notes here as they are discovered through real work.
-- `create-feldra` lives at `packages/feldra` (published name and CLI unchanged). See `.github/CONTRIBUTING.md` and `docs/releasing.md`.
+- Published initializer is `feldra` at `packages/feldra` (`npx feldra create`). Root package.json is private `feldra-monorepo`. See `.github/CONTRIBUTING.md` and `docs/releasing.md`.
 
 ## Maintaining this file
 

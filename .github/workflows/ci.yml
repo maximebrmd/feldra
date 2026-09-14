@@ -39,12 +39,12 @@ jobs:
       # isolated Postgres fixtures and the Better Auth production browser flows.
       - run: npm run initializer:test
       - name: Record artifact checksum
-        run: sha256sum create-feldra-*.tgz > SHA256SUMS
+        run: sha256sum feldra-*.tgz > SHA256SUMS
       - uses: actions/upload-artifact@v7
         with:
           name: initializer
           path: |
-            create-feldra-*.tgz
+            feldra-*.tgz
             SHA256SUMS
           if-no-files-found: error
           retention-days: 14

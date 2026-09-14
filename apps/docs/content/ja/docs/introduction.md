@@ -39,4 +39,4 @@ Feldraは、SaaSに欠かせない要素を、自分で所有するワークス�
 
 [クイックスタート](/docs/quickstart/)に進んで最初の独立したプロジェクトを作成するか、始める前に[アーキテクチャ](/docs/architecture/)を確認してください。
 
-> Feldraは、このプロジェクトの新しい名前です。GitHubリポジトリは`maximebrmd/feldra`です。初期化ツールは`create-feldra`です。公開後に、npmコマンドを利用できるようになります。
+> Feldraは、このプロジェクトの新しい名前です。GitHubリポジトリは`maximebrmd/feldra`です。初期化パッケージは`feldra`です。公開後は `npx feldra create` を実行します。

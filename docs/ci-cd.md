@@ -45,7 +45,7 @@ All checks must succeed before release or deployment. Pull requests never publis
 ## Release setup
 
 1. In GitHub Settings → Actions → General, allow GitHub Actions to create pull requests. Changesets opens or updates a version PR after successful pushes to main. Its `release:version` command synchronizes the initializer, root version, and lockfile.
-2. Publish the first `create-feldra` version from the downloaded, tested CI tarball using your npm account, if the package does not yet exist. Confirm package ownership before publishing. This bootstrap is needed before configuring an npm trusted publisher.
+2. Publish the first `feldra` version from the downloaded, tested CI tarball using your npm account, if the package does not yet exist. Confirm package ownership before publishing. This bootstrap is needed before configuring an npm trusted publisher.
 3. In the npm package's trusted publisher settings, select GitHub Actions: owner `maximebrmd`, repository `feldra`, workflow filename **`ci.yml`**, no environment, and allow `npm publish`. npm validates the calling workflow identity; `ci.yml` calls the reusable `release.yml`. See [npm trusted publishing](https://docs.npmjs.com/trusted-publishers).
 4. Set the GitHub repository Actions variable `NPM_PUBLISH_ENABLED` to `true` to activate automated publication. No `NPM_TOKEN` is used; the workflow grants OIDC permission and publishes with provenance.
 

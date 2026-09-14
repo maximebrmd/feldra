@@ -59,7 +59,7 @@ export async function collectSetup(options, prompts) {
   }
   if (!directory?.trim()) {
     throw new Error(
-      "Provide a destination in noninteractive mode: npm create feldra@latest my-new-saas -- --yes"
+      "Provide a destination in noninteractive mode: npx feldra@latest create my-new-saas --yes"
     );
   }
   const defaultName = basename(resolve(directory))

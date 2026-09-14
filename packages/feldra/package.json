@@ -1,5 +1,5 @@
 {
-  "name": "create-feldra",
+  "name": "feldra",
   "version": "0.3.0",
   "description": "Create a Feldra SaaS monorepo with Neon or Supabase, Better Auth or Clerk, and Stripe.",
   "keywords": [
@@ -21,7 +21,7 @@
   "author": "Maxime Bourmaud",
   "type": "module",
   "bin": {
-    "create-feldra": "bin/create.mjs"
+    "feldra": "bin/feldra.mjs"
   },
   "files": [
     "bin/",
