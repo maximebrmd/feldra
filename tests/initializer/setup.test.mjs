@@ -104,3 +104,48 @@ test("Auth.js is explicit and remains selectable beside Better Auth and Clerk", 
   );
   assert.equal(setup.auth, "authjs");
 });
+
+test("Supabase Auth is an independent choice from the database provider", async () => {
+  assert.equal(
+    (await collectSetup({ auth: "supabase", directory: "new" })).auth,
+    "supabase"
+  );
+  assert.equal(
+    (
+      await collectSetup({
+        auth: "supabase",
+        database: "neon",
+        directory: "new",
+      })
+    ).preset,
+    "neon"
+  );
+  assert.equal(
+    (
+      await collectSetup({
+        auth: "supabase",
+        database: "supabase",
+        directory: "new",
+      })
+    ).preset,
+    "supabase"
+  );
+});
+
+test("interactive selector offers Better Auth, Clerk, Auth.js and Supabase Auth", async () => {
+  const setup = await collectSetup(
+    { database: "neon", directory: "new", name: "new" },
+    {
+      confirm: async () => true,
+      select: (prompt) => {
+        assert.deepEqual(
+          prompt.options.map((option) => option.value),
+          ["authjs", "better-auth", "clerk", "supabase"]
+        );
+        assert.equal(prompt.initialValue, "better-auth");
+        return "supabase";
+      },
+    }
+  );
+  assert.equal(setup.auth, "supabase");
+});

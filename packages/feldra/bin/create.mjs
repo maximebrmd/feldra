@@ -64,13 +64,13 @@ try {
   });
   if (values["list-tools"]) {
     console.log(
-      "Database: neon (default), supabase\nAuthentication: better-auth (default, Resend emails), clerk (managed auth and emails), authjs (Auth.js / NextAuth, GitHub OAuth)\nFixed: Next.js, TypeScript, Drizzle, Stripe, Tailwind/shadcn, Ultracite, npm, Turborepo.\nThese combinations are generated at scaffold time; no provider-switching layer is installed."
+      "Database: neon (default), supabase\nAuthentication: better-auth (default, Resend emails), clerk (managed auth and emails), authjs (Auth.js / NextAuth, GitHub OAuth), supabase (Supabase Auth; independent of --database)\nFixed: Next.js, TypeScript, Drizzle, Stripe, Tailwind/shadcn, Ultracite, npm, Turborepo.\nThese combinations are generated at scaffold time; no provider-switching layer is installed."
     );
     process.exit(0);
   }
   if (values.help) {
     console.log(
-      "Usage: npx feldra@latest create [directory] [--yes] [--name package-name] [--database neon|supabase] [--auth better-auth|clerk|authjs]\nEquivalent: npm exec feldra@latest -- create [directory] [--yes] [...]\nInteractive in a terminal; --yes or piped input is noninteractive. Choose a database and authentication tool with arrow keys. --auth defaults to better-auth. --list-tools lists supported tools without creating files. --yes defaults to Neon; use --database supabase to select Supabase. --preset is an alias for --database. Refuses existing destinations. Node >=22.12, npm and Git required."
+      "Usage: npx feldra@latest create [directory] [--yes] [--name package-name] [--database neon|supabase] [--auth better-auth|clerk|authjs|supabase]\nEquivalent: npm exec feldra@latest -- create [directory] [--yes] [...]\nInteractive in a terminal; --yes or piped input is noninteractive. Choose a database and authentication tool with arrow keys. --auth defaults to better-auth. --list-tools lists supported tools without creating files. --yes defaults to Neon; use --database supabase to select Supabase. --preset is an alias for --database. Auth and database are independent; --auth supabase still needs a Supabase project URL and publishable key. Refuses existing destinations. Node >=22.12, npm and Git required."
     );
     process.exit(0);
   }

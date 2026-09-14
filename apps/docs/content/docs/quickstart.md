@@ -31,7 +31,7 @@ This validates the source and writes `feldra-VERSION.tgz` in the repository root
 npm exec --yes --package="./feldra-VERSION.tgz" -- feldra create my-new-saas
 ```
 
-Use the arrow keys and Enter to choose **Neon** or **Supabase**, then **Better Auth**, **Clerk**, or **Auth.js**. The initializer installs dependencies, writes local environment files, and initializes a fresh Git repository. It refuses an existing destination, even if it is empty.
+Use the arrow keys and Enter to choose **Neon** or **Supabase**, then **Better Auth**, **Clerk**, **Auth.js**, or **Supabase Auth**. The initializer installs dependencies, writes local environment files, and initializes a fresh Git repository. It refuses an existing destination, even if it is empty.
 
 For a noninteractive run, append `--yes --database supabase` after the project name. Both relative paths and quoted paths containing spaces work.
 
@@ -41,7 +41,7 @@ For a noninteractive run, append `--yes --database supabase` after the project n
 cd my-new-saas
 ```
 
-Fill in `.env.local` using the generated `DATABASE.md` and the [environment guide](/docs/environment/). A fresh local Better Auth or Auth.js secret is already generated, or Clerk keys are left blank; remaining provider credentials must be configured separately.
+Fill in `.env.local` using the generated `DATABASE.md` and the [environment guide](/docs/environment/). A fresh local Better Auth or Auth.js secret is already generated, or Clerk / Supabase Auth keys are left blank; remaining provider credentials must be configured separately.
 
 ```sh
 npm run db:migrate
@@ -63,6 +63,6 @@ Equivalent: `npm exec feldra@latest -- create my-new-saas`. Do not use the publi
 
 ## Choose authentication
 
-After selecting a database, choose **Better Auth** (default), **Clerk**, or **Auth.js**. Better Auth uses Resend for verification and reset emails. Clerk uses its managed components and email delivery. Auth.js uses GitHub OAuth. Clerk and Auth.js projects omit Better Auth and Resend.
+After selecting a database, choose **Better Auth** (default), **Clerk**, **Auth.js**, or **Supabase Auth**. Better Auth uses Resend for verification and reset emails. Clerk uses its managed components and email delivery. Auth.js uses GitHub OAuth. Supabase Auth uses the Supabase Auth API and is independent of the database choice. Clerk, Auth.js, and Supabase Auth projects omit Better Auth and Resend.
 
-For CI, add `--auth better-auth`, `--auth clerk`, or `--auth authjs` to the local initializer command. Combine any of these with `--database neon` or `--database supabase`. `--list-tools` lists supported choices without creating files. Follow the generated `AUTHENTICATION.md` before testing live authentication. These choices create independent projects; they do not migrate existing users between services.
+For CI, add `--auth better-auth`, `--auth clerk`, `--auth authjs`, or `--auth supabase` to the local initializer command. Combine any of these with `--database neon` or `--database supabase`. `--list-tools` lists supported choices without creating files. Follow the generated `AUTHENTICATION.md` before testing live authentication. These choices create independent projects; they do not migrate existing users between services.

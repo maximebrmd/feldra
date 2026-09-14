@@ -26,6 +26,7 @@ Follow [provider setup](../docs/setup.md) to configure a local app, then run `np
 | `packages/feldra/bin` | `feldra` CLI (`npx feldra create`) and provider selection |
 | `packages/feldra/variants/clerk` | Clerk template overlay and generated dependency lockfile |
 | `packages/feldra/variants/authjs` | Auth.js template overlay and generated dependency lockfile |
+| `packages/feldra/variants/supabase` | Supabase Auth template overlay and generated dependency lockfile |
 | `scripts/pack-initializer.mjs` | Template allowlist, manifests and npm tarball packaging |
 | `tests` | Unit, initializer and database integration tests |
 

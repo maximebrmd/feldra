@@ -6,7 +6,7 @@ Each workspace declares what it imports. Internal `@repo/*` dependencies link to
 | --- | --- | --- |
 | `app` | `@repo/auth`, `@repo/config`, `@repo/database`, `@repo/design-system`, `@repo/payments`, `drizzle-orm`, `next`, `react`, `react-dom`, `server-only`, `zod` | Authenticated UI and app-owned API routes. |
 | `web` | `@repo/config`, `@repo/design-system`, `next`, `react`, `react-dom` | Public marketing and pricing. |
-| `@repo/auth` | `@better-auth/drizzle-adapter`, `@repo/config`, `@repo/database`, `@repo/email`, `better-auth`, `react`, `server-only` | Better Auth server/client and shared persistence/email. |
+| `@repo/auth` | `@better-auth/drizzle-adapter`, `@repo/config`, `@repo/database`, `@repo/email`, `better-auth`, `react`, `server-only` | Better Auth server/client and shared persistence/email. Clerk and Supabase Auth overlays replace this package. |
 | `@repo/config` | `server-only`, `zod` | Branding, plans, URL and environment validation. |
 | `@repo/database` | `@repo/config`, `drizzle-orm`, `pg`, `server-only` | Typed Postgres access, schema and transactions. |
 | `@repo/design-system` | `@radix-ui/react-slot`, `class-variance-authority`, `clsx`, `react`, `tailwind-merge` | Used shadcn components and class utilities. |

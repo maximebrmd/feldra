@@ -6,7 +6,7 @@ sidebar:
 ---
 ## Better Auth verwaltet Identitäten [#better-auth-owns-identity]
 
-Beide Datenbankoptionen verwenden Better Auth mit dem Drizzle-Adapter. Supabase wird ausschließlich als Postgres verwendet; Supabase Auth, ein anonymer Schlüssel oder ein Datenbankclient im Browser sind nicht erforderlich.
+Standard ist Better Auth mit dem Drizzle-Adapter. Die Datenbankwahl ist unabhängig: Neon oder Supabase Postgres installiert kein Supabase Auth. Wähle `--auth supabase`, wenn du Supabase Auth nutzen möchtest.
 
 Nutzer registrieren sich mit E-Mail-Adresse und Passwort, bestätigen ihre E-Mail-Adresse und melden sich an. Für den Zugriff auf die Anwendung ist die Bestätigung erforderlich. Die Abläufe für vergessene Passwörter und das Zurücksetzen von Passwörtern versenden zeitlich begrenzte Links über Resend.
 
@@ -30,7 +30,7 @@ npm run test:database
 
 Die Fixture-Testsuite prüft die tatsächlichen Better-Auth-Abläufe für Registrierung, E-Mail-Bestätigung, Anmeldung, Zurücksetzen des Passworts, Abmeldung und Sitzungswiderruf mit lokalem Postgres. Sie fängt den E-Mail-Versand in Tests ab. Die tatsächliche Zustellung im Posteingang musst du weiterhin mit deinem Resend-Konto überprüfen.
 
-## Clerk als Alternative [#clerk-alternative]
+## Clerk- und Supabase-Auth-Alternativen [#clerk-and-supabase-auth-alternatives]
 
 Wähle Clerk im Initialisierungsassistenten aus oder übergib `--auth clerk`. Dadurch werden Anmeldung, Registrierung, Abmeldung und Kontoeinstellungen mit Clerk sowie serverseitige Sitzungsprüfungen generiert. Nur eine verifizierte primäre E-Mail-Adresse wird akzeptiert; lokale Datensätze werden anhand der Clerk-Nutzer-ID zugeordnet und niemals automatisch anhand der E-Mail-Adresse verknüpft. Stripe-Abonnements und private Notizen behalten diese stabile Eigentümer-ID.
 
@@ -45,3 +45,7 @@ Wähle Auth.js im Initialisierungsassistenten aus oder übergib `--auth authjs`.
 Erstelle eine GitHub-OAuth-App für dieses Projekt. Setze die Homepage-URL auf `APP_URL` und die Autorisierungs-Callback-URL auf `APP_URL/api/auth/callback/github`. Setze `AUTH_GITHUB_ID` und `AUTH_GITHUB_SECRET`. Der Initialisierer schreibt ein lokales `AUTH_SECRET`; erzeuge einen eigenen Produktionswert. Auth.js installiert weder Resend noch Better Auth; GitHub übernimmt E-Mail-Bestätigung und Passwortwiederherstellung. Bei fehlenden Zugangsdaten wird der Zugriff verweigert und keine OAuth-App bereitgestellt.
 
 Auth.js-Projekte erhalten eine eigene Anleitung zur Einrichtung der Authentifizierung und lokale Fixture-Tests. Die tatsächliche GitHub-OAuth-Anmeldung erfordert weiterhin eine konfigurierte OAuth-App.
+
+Wähle Supabase Auth mit `--auth supabase`. Das ist unabhängig von `--database`: du kannst Neon für Postgres behalten und trotzdem ein Supabase-Projekt für Identitäten nutzen. Das Overlay verwendet Cookie-Sitzungen von `@supabase/ssr`, einen Next.js-Proxy zum Aktualisieren der Tokens und serverseitige `getUser()`-Prüfungen an jeder geschützten Ressource. Bestätige E-Mail im Supabase-Projekt, setze `NEXT_PUBLIC_SUPABASE_URL` und `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` und registriere `/api/auth/callback`. Füge niemals den Service-Role-Schlüssel hinzu. Supabase versendet Authentifizierungs-E-Mails; Resend und Better Auth entfallen.
+
+Clerk-, Auth.js- und Supabase-Auth-Projekte erhalten eine eigene Anleitung zur Einrichtung der Authentifizierung und lokale Fixture-Tests. Die tatsächlichen Abläufe für Anmeldung, E-Mail-Bestätigung, Zurücksetzen des Passworts und Abmeldung erfordern weiterhin eine konfigurierte Entwicklungsinstanz.

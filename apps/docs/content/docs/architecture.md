@@ -12,7 +12,7 @@ apps/
   web/                  Marketing and pricing · port 3000
   app/                  Authenticated UI, APIs, webhooks · port 3001
 packages/
-  auth/                 Better Auth server and client
+  auth/                 Better Auth, Clerk, or Supabase Auth
   config/               App name, URLs, plans, environment validation
   database/             Drizzle schema and migrations
   design-system/        Used shadcn components and shared styles

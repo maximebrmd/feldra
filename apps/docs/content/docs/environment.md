@@ -7,13 +7,15 @@ sidebar:
 
 ## Local environment
 
-The initializer creates `.env.local` from `.env.example` and generates a fresh Better Auth secret. Provider fields remain empty. They are validated when used, so missing configuration fails explicitly.
+The initializer creates `.env.local` from `.env.example` and generates a fresh Better Auth secret when that is the selected authentication. Clerk and Supabase Auth projects receive blank provider keys instead. Fields are validated when used, so missing configuration fails explicitly.
 
 | Variable | What to configure |
 | --- | --- |
 | `WEB_URL` | Marketing origin; locally `http://localhost:3000` |
 | `APP_URL` | Application origin; locally `http://localhost:3001` |
-| `BETTER_AUTH_SECRET` | Generated local secret; use a different production secret |
+| `BETTER_AUTH_SECRET` | Generated local secret for Better Auth; omitted from Clerk and Supabase Auth projects |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` / `CLERK_SECRET_KEY` | Clerk overlay only |
+| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase Auth overlay only; never the service role key |
 | `DATABASE_URL` | Pooled Postgres connection from your provider |
 | `DATABASE_URL_UNPOOLED` | Direct migration connection, or Supabase session pooler on IPv4 |
 | `RESEND_API_KEY` | Key for your own Resend account |

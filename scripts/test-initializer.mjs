@@ -43,6 +43,8 @@ for (const { database, auth } of [
   { auth: "clerk", database: "supabase" },
   { auth: "authjs", database: "neon" },
   { auth: "authjs", database: "supabase" },
+  { auth: "supabase", database: "neon" },
+  { auth: "supabase", database: "supabase" },
 ]) {
   const temp = await mkdtemp(join(tmpdir(), "feldra packed test "));
   run(
@@ -85,6 +87,14 @@ for (const { database, auth } of [
     auth === "authjs"
   );
   assert.equal(
+    Boolean(lock.packages["node_modules/@supabase/ssr"]),
+    auth === "supabase"
+  );
+  assert.equal(
+    Boolean(lock.packages["node_modules/@supabase/supabase-js"]),
+    auth === "supabase"
+  );
+  assert.equal(
     Boolean(lock.packages["node_modules/better-auth"]),
     auth === "better-auth"
   );
@@ -108,15 +118,16 @@ for (const { database, auth } of [
     assert.match(readme, /^> Generated authentication: \*\*Clerk\*\*/u);
   } else if (auth === "authjs") {
     assert.match(readme, /^> Generated authentication: \*\*Auth\.js\*\*/u);
+  } else if (auth === "supabase") {
+    assert.match(readme, /^> Generated authentication: \*\*Supabase Auth\*\*/u);
   } else {
     assert.doesNotMatch(
       readme,
-      /Generated authentication: \*\*(Clerk|Auth\.js)\*\*/u
+      /Generated authentication: \*\*(Clerk|Auth\.js|Supabase Auth)\*\*/u
     );
   }
   assert.ok(!pkg.dependencies?.["@clack/prompts"]);
   assert.ok(!pkg.devDependencies?.["@clack/prompts"]);
-  assert.ok(!lock.packages["node_modules/@supabase/supabase-js"]);
   assert.deepEqual(pkg.workspaces, ["apps/*", "packages/*"]);
   assert.ok(entries.includes("package/template/turbo.json"));
   assert.ok(entries.includes("package/template/apps/web/package.json"));
@@ -145,9 +156,16 @@ for (const { database, auth } of [
       local,
       /BETTER_AUTH_SECRET|RESEND_API_KEY|CLERK_SECRET_KEY/u
     );
-  } else {
+  } else if (auth === "clerk") {
     assert.match(local, /CLERK_SECRET_KEY=\n/u);
     assert.doesNotMatch(local, /BETTER_AUTH_SECRET|RESEND_API_KEY/u);
+  } else {
+    assert.match(local, /NEXT_PUBLIC_SUPABASE_URL=\n/u);
+    assert.match(local, /NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=\n/u);
+    assert.doesNotMatch(
+      local,
+      /BETTER_AUTH_SECRET|RESEND_API_KEY|CLERK_SECRET_KEY/u
+    );
   }
   assert.match(local, /DATABASE_URL=\n/u);
   assert.match(local, /STRIPE_SECRET_KEY=\n/u);
