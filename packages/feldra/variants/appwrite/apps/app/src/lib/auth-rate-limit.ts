@@ -13,10 +13,7 @@ export const authRateLimit = {
 } as const;
 
 function clientIp(request: Request) {
-  const forwarded =
-    request.headers.get("x-vercel-forwarded-for") ??
-    request.headers.get("x-forwarded-for") ??
-    "";
+  const forwarded = request.headers.get("x-vercel-forwarded-for") ?? "";
   return forwarded.split(",")[0]?.trim() || "unknown";
 }
 

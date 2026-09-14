@@ -15,19 +15,19 @@
     "apps/app/src/components/auth-form.tsx": "e93d9b703da1ad2bd76b7a56589d29f9b53d56354896291316c6f2e8840f7272",
     "apps/app/src/components/logout.tsx": "728b996b9c44df51539c628f101baa8ac2810a2c25d1af6b4fd17662b711af36",
     "apps/app/src/lib/auth-http.ts": "b5b496b2450bf1291f37cc4b74a0abe049a975961750b35bf22ad9309d6e81d6",
-    "apps/app/src/lib/auth-rate-limit.ts": "83e3e64dfe199cffdc8709951e7d3ffdfefe4fa0c9bbd91231a51053cb801f3b",
+    "apps/app/src/lib/auth-rate-limit.ts": "8e070e5149fedb4c66200a4dc2920fc33a1623952e2fc6069fde6704226404e9",
     "apps/app/src/lib/page-user.ts": "1723180170bd4bf0fe813b4b898ba501125ee4787ba90b9dcc639bdb13e97932",
     "apps/app/src/lib/session.ts": "327764ed44d555a927b617657e1cda054ebf145e4fedb7ede0e731f04e597730",
     "apps/app/src/proxy.ts": "6278fd37f38ce2bdb4d18e7f40c61620b5bb9b1853f640a4348dc7025b881647",
     "docs/authentication.md": "5ba2aa0ec21b7fb04f4614d9b995a268f43b01085b50d35078d7ce0683b6b139",
-    "docs/setup.md": "e6b7bb3408a8e4effb23aebd5877af3cdf465904050dcfe47a2c8a8402e2be0f",
+    "docs/setup.md": "017f8c1a7e80cea586de9dccaaec1bd84c18652b00cc746f63b191d650dfc2e9",
     "package-lock.json": "95f527286d43ccc53759eb22134d868716625fc1e53c75c5717e08cb3eae20f0",
     "packages/auth/config.ts": "62011bdfaaed85d10b820022543596ff3189d583fc761968ed17da324419f320",
     "packages/auth/identity.ts": "78e39a6ee79959dec6e5c20317b4da35b70a1da24bf8a9053759be4b937b3467",
     "packages/auth/server.ts": "3839433224aa544220122734ba9a5ff2d028f73fe4b8791f537d378175f5e45e",
     "packages/auth/sync.ts": "6374e6dfff6e10a50c5db1536707135d88c023398d50985439302973c6bc3ba0",
     "tests/appwrite-identity.test.ts": "8be4070789130ee2e87d1cc9be5bb22ca4b5dc0aa3c53d7712b48edd7704da44",
-    "tests/integration/appwrite-data.test.ts": "231911c2fcc8c39cc8ccd66c636f459721b6eb273b79617fc648c255559b8e22"
+    "tests/integration/appwrite-data.test.ts": "c71d64d00d0c886640e8f86b4746301139e74a9718bdf2b0538a94ce0afdabf0"
   },
   "authjsFiles": {
     "apps/app/src/app/api/auth/[...nextauth]/route.ts": "9b91074b25fbdedec885369fe7858ca9696971633d5af128d2188fe3e7f7a3e3",

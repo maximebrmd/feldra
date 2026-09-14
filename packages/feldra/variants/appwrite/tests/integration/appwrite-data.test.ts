@@ -121,6 +121,25 @@ test("Appwrite auth rate limits are stored per client IP and reset after the win
   });
 });
 
+test("spoofed X-Forwarded-For does not reset Appwrite auth rate limits", async () => {
+  const { enforceAuthRateLimit } = await import(
+    "../../apps/app/src/lib/auth-rate-limit"
+  );
+  const { HttpError } = await import("../../apps/app/src/lib/http");
+  const name = `xff-${randomUUID()}`;
+  function request(forwardedFor: string) {
+    return new Request("http://localhost:3001/api/auth/login", {
+      headers: { "x-forwarded-for": forwardedFor },
+      method: "POST",
+    });
+  }
+  await enforceAuthRateLimit(request("203.0.113.1"), { max: 1, name });
+  await assert.rejects(
+    () => enforceAuthRateLimit(request("198.51.100.2"), { max: 1, name }),
+    (error: unknown) => error instanceof HttpError && error.status === 429
+  );
+});
+
 test("login stops calling Appwrite after the per-IP limit", async () => {
   const { mock } = await import("node:test");
   process.env.APP_URL = "http://localhost:3001";
