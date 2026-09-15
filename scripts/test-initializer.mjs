@@ -31,6 +31,72 @@ function assertFlagDecision(project, environmentValue, expected) {
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.stdout, String(expected));
 }
+const unconfiguredAuthEnv = {
+  authjs: {
+    AUTH_GITHUB_ID: "",
+    AUTH_GITHUB_SECRET: "",
+    AUTH_SECRET: "",
+  },
+  appwrite: {
+    APPWRITE_API_KEY: "",
+    NEXT_PUBLIC_APPWRITE_ENDPOINT: "",
+    NEXT_PUBLIC_APPWRITE_PROJECT_ID: "",
+  },
+  clerk: {
+    CLERK_SECRET_KEY: "",
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "",
+  },
+  supabase: {
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: "",
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "",
+    NEXT_PUBLIC_SUPABASE_URL: "",
+  },
+};
+function assertFlagsRuntime(project, auth) {
+  const result = spawnSync(
+    process.execPath,
+    [
+      "--conditions=react-server",
+      "--import",
+      "tsx",
+      "--input-type=module",
+      "--eval",
+      `const { NextRequest } = await import("next/server");
+const { default: proxy } = await import("./apps/app/src/proxy.ts");
+const { GET } = await import("./apps/app/src/app/.well-known/vercel/flags/route.ts");
+const { createAccessProof } = await import("flags");
+const flagsPath = "/.well-known/vercel/flags";
+const request = (path, authorization) => new NextRequest(\`http://localhost:3001\${path}\`, { headers: authorization ? { Authorization: authorization } : {} });
+const discover = (authorization) => GET(request(flagsPath, authorization));
+const absent = await discover();
+if (absent.status !== 401) throw new Error(\`Absent Flags authorization returned \${absent.status}\`);
+const invalid = await discover("Bearer invalid");
+if (invalid.status !== 401) throw new Error(\`Invalid Flags authorization returned \${invalid.status}\`);
+const proof = await createAccessProof(process.env.FLAGS_SECRET);
+const authorized = await discover(\`Bearer \${proof}\`);
+if (authorized.status !== 200) throw new Error(\`Valid Flags authorization returned \${authorized.status}\`);
+const data = await authorized.json();
+if (data.definitions?.["show-beta-feature"]?.defaultValue !== false) throw new Error("Flags discovery omitted the example definition");
+const discoveryProxy = await proxy(request(flagsPath));
+if (discoveryProxy.status !== 200) throw new Error(\`Flags discovery was blocked by the auth proxy with \${discoveryProxy.status}\`);
+const applicationProxy = await proxy(request("/dashboard"));
+if (applicationProxy.status !== 503) throw new Error(\`Application route lost provider protection: \${applicationProxy.status}\`);
+const nestedProxy = await proxy(request(\`\${flagsPath}/child\`));
+if (nestedProxy.status !== 503) throw new Error(\`Non-exact Flags path lost provider protection: \${nestedProxy.status}\`);`,
+    ],
+    {
+      cwd: project,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        FLAGS_SECRET: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        SHOW_BETA_FEATURE: "false",
+        ...unconfiguredAuthEnv[auth],
+      },
+    }
+  );
+  assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+}
 run("npm", ["run", "initializer:pack"], root, {
   ...process.env,
   FELDRA_INITIALIZER_TEST_PACK: "1",
@@ -78,6 +144,10 @@ for (const { database, auth, flags } of [
   { auth: "appwrite", database: "neon" },
   { auth: "appwrite", database: "supabase" },
   { auth: "better-auth", database: "neon", flags: "vercel" },
+  { auth: "clerk", database: "neon", flags: "vercel" },
+  { auth: "authjs", database: "neon", flags: "vercel" },
+  { auth: "supabase", database: "neon", flags: "vercel" },
+  { auth: "appwrite", database: "neon", flags: "vercel" },
 ]) {
   const temp = await mkdtemp(join(tmpdir(), "feldra packed test "));
   run(
@@ -222,6 +292,9 @@ for (const { database, auth, flags } of [
       await readFile(join(project, "docs/feature-flags.md"), "utf8"),
       /provider-agnostic/u
     );
+    if (auth !== "better-auth") {
+      assertFlagsRuntime(project, auth);
+    }
   } else {
     assert.doesNotMatch(local, /FLAGS_SECRET|SHOW_BETA_FEATURE/u);
     assert.ok(
