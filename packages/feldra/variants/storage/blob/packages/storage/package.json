@@ -7,7 +7,8 @@
   "exports": {
     ".": "./index.ts",
     "./client": "./client.ts",
-    "./keys": "./keys.ts"
+    "./keys": "./keys.ts",
+    "./server": "./server.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

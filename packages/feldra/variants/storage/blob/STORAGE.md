@@ -29,6 +29,24 @@ For private storage, set `access: "private"` and deliver files through an authen
 Client uploads require an authenticated server route that uses Vercel Blob's `handleUpload()` flow. Keep the token in that server route and pass only the route URL to the browser.
 
 ```ts
+import { handleUpload, type HandleUploadBody } from "@repo/storage/server";
+import { NextResponse } from "next/server";
+
+export async function POST(request: Request) {
+  const body = (await request.json()) as HandleUploadBody;
+  const jsonResponse = await handleUpload({
+    body,
+    request,
+    onBeforeGenerateToken: async () => ({
+      allowedContentTypes: ["image/jpeg", "image/png", "image/webp"],
+    }),
+    onUploadCompleted: async () => {},
+  });
+  return NextResponse.json(jsonResponse);
+}
+```
+
+```ts
 "use client";
 
 import { upload } from "@repo/storage/client";
