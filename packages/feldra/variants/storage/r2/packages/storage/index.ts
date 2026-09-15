@@ -19,6 +19,8 @@ const leadingSlash = /^\/+/u;
 const trailingSlash = /\/+$/u;
 const periodSegment = /^(?:\.|\.\.)$/u;
 const urlLikeKey = /:\/\//u;
+const absoluteUrl =
+  /^[A-Za-z][A-Za-z\d+.-]*:\/\/[^/?#]*(\/[^?#]*)?(?:[?#]|$)/u;
 
 export interface PutBlobResult {
   contentDisposition: string | undefined;
@@ -79,6 +81,14 @@ function publicUrlPrefix(base: URL) {
   return base.pathname.replace(trailingSlash, "") || "/";
 }
 
+function rawUrlPathname(input: string) {
+  const match = absoluteUrl.exec(input);
+  if (!match) {
+    throw new Error("R2 object URL is invalid.");
+  }
+  return match[1] ?? "/";
+}
+
 function keyFromInput(
   input: string,
   env: ReturnType<typeof storageEnv>
@@ -86,6 +96,7 @@ function keyFromInput(
   if (!input.includes("://")) {
     return keyFromPathname(input);
   }
+  const rawPathname = rawUrlPathname(input);
   const url = new URL(input);
   if (!env.R2_PUBLIC_URL) {
     throw new Error(
@@ -101,11 +112,11 @@ function keyFromInput(
   const prefix = publicUrlPrefix(publicBase);
   let relativePath: string | undefined;
   if (prefix === "/") {
-    relativePath = url.pathname.replace(leadingSlash, "");
-  } else if (url.pathname === prefix) {
+    relativePath = rawPathname.replace(leadingSlash, "");
+  } else if (rawPathname === prefix) {
     relativePath = "";
-  } else if (url.pathname.startsWith(prefix + "/")) {
-    relativePath = url.pathname.slice(prefix.length + 1);
+  } else if (rawPathname.startsWith(prefix + "/")) {
+    relativePath = rawPathname.slice(prefix.length + 1);
   }
   if (relativePath === undefined) {
     throw new Error(

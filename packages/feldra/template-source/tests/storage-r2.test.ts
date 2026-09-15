@@ -71,6 +71,10 @@ test(
           ),
         /URL-like/u
       );
+      await assert.rejects(
+        () => del("https://cdn.example.test/assets/a/%2e%2e/b"),
+        /path segments/u
+      );
       assert.equal(send.mock.callCount(), validCallCount);
     } finally {
       send.mock.restore();
