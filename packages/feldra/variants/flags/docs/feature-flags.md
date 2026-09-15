@@ -34,6 +34,6 @@ Do not import this package into client components. Pass only the resulting value
 
 ## Flags Explorer and providers
 
-The application exposes `/.well-known/vercel/flags` for the Flags Explorer. It is protected by `FLAGS_SECRET`; configure the same secret in the environment used by the linked Vercel project before using toolbar overrides.
+The application exposes `/.well-known/vercel/flags` for the Flags Explorer. The exact discovery endpoint is exempt from application login/provider-bootstrap interception and is protected by `FLAGS_SECRET`; other application routes remain protected by the selected authentication variant. Configure the same secret in the environment used by the linked Vercel project before using toolbar overrides.
 
 The default package has no provider dependency. When runtime rollouts are needed, add the provider adapter documented by the Flags SDK, then replace the example `decide` function and document its credentials here. Never commit provider keys or reuse another project's resources.

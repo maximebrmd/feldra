@@ -46,7 +46,7 @@ npx feldra@latest create my-new-saas --yes --database supabase --auth clerk --do
 
 ## How it works
 
-The CLI verifies the bundled template hashes, copies the template, applies the selected auth, feature-flags, and documentation overlays, sets package and lockfile names, writes `.env.local` (provider secrets plus an independent `FLAGS_SECRET` when selected), installs with `npm ci`, and initializes Git. Generated projects have no dependency on this package. Failure returns nonzero and preserves any partial destination.
+The CLI verifies the bundled template and auth, flags, Mintlify, and Fumadocs overlay hashes, copies the template, applies the selected auth, feature-flags, and documentation overlays, sets package and lockfile names, writes `.env.local` (provider secrets plus an independent `FLAGS_SECRET` when selected), installs with `npm ci`, and initializes Git. Generated projects have no dependency on this package. Failure returns nonzero and preserves any partial destination.
 
 Configure Neon or Supabase, Stripe, and Resend, Clerk, GitHub OAuth, Supabase Auth, or Appwrite yourself. Follow the generated `docs/setup.md`, then `npm run db:migrate` and `npm run dev`. Run `npm run docs:dev` for the documentation app at http://localhost:4321. Set `APP_URL` and `WEB_URL` for cross-app navigation. Auth and database are independent; `--auth supabase` still needs a Supabase project URL and publishable key. The Feldra repository's own product docs stay on Blume; generated apps choose Blume, Mintlify, or Fumadocs.
 

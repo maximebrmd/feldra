@@ -32,15 +32,15 @@ function assertFlagDecision(project, environmentValue, expected) {
   assert.equal(result.stdout, String(expected));
 }
 const unconfiguredAuthEnv = {
-  authjs: {
-    AUTH_GITHUB_ID: "",
-    AUTH_GITHUB_SECRET: "",
-    AUTH_SECRET: "",
-  },
   appwrite: {
     APPWRITE_API_KEY: "",
     NEXT_PUBLIC_APPWRITE_ENDPOINT: "",
     NEXT_PUBLIC_APPWRITE_PROJECT_ID: "",
+  },
+  authjs: {
+    AUTH_GITHUB_ID: "",
+    AUTH_GITHUB_SECRET: "",
+    AUTH_SECRET: "",
   },
   clerk: {
     CLERK_SECRET_KEY: "",
@@ -385,8 +385,9 @@ for (const { database, auth, flags } of [
   );
 }
 // Auth×database already covers default Blume, including turbo docs build via
-// `npm run check`. Mintlify and Fumadocs are packed and built once each rather
-// than multiplying the auth/database/docs fixture matrix.
+// `npm run check`. Vercel Flags fixtures cover each auth with Neon, and
+// Mintlify and Fumadocs are packed and built once each rather than multiplying
+// the auth/database/docs/flags fixture matrix.
 for (const docs of ["mintlify", "fumadocs"]) {
   const temp = await mkdtemp(join(tmpdir(), `feldra ${docs} docs `));
   run(
