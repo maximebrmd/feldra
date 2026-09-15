@@ -23,6 +23,18 @@ const root = resolve(import.meta.dirname, "..");
 const release = join(root, "packages/feldra");
 const target = join(release, "template");
 const generatedPackageManager = "npm@11.19.1";
+const generatedScriptFiles = new Set([
+  "packages/feldra/template-source/scripts/test-browser.mjs",
+  "packages/feldra/template-source/scripts/test-database.mjs",
+]);
+function npmScript(command) {
+  return command
+    .replace(
+      /^bun run --filter ([^ ]+) ([^ ]+)/u,
+      "npm run $2 --workspace $1"
+    )
+    .replaceAll("bun run", "npm run");
+}
 function run(command, args, cwd) {
   const env = { ...process.env };
   delete env.npm_config_allow_scripts;
@@ -112,7 +124,15 @@ async function copy(sourcePath, destinationPath = sourcePath) {
     const dest =
       destinationPath === ".gitignore" ? "gitignore" : destinationPath;
     await mkdir(join(target, dest, ".."), { recursive: true });
-    await copyFile(join(root, sourcePath), join(target, dest));
+    if (generatedScriptFiles.has(sourcePath)) {
+      const contents = await readFile(join(root, sourcePath), "utf8");
+      await writeFile(
+        join(target, dest),
+        contents.replaceAll('"bun"', '"npm"').replaceAll('"bunx"', '"npx"')
+      );
+    } else {
+      await copyFile(join(root, sourcePath), join(target, dest));
+    }
   }
 }
 for (const [sourcePath, destinationPath] of files) {
@@ -133,6 +153,12 @@ delete pkg.scripts["docs:translate"];
 delete pkg.scripts["docs:translations:check"];
 delete pkg.scripts["test:docs"];
 delete pkg.devDependencies["@changesets/cli"];
+pkg.scripts = Object.fromEntries(
+  Object.entries(pkg.scripts).map(([name, command]) => [
+    name,
+    npmScript(command),
+  ])
+);
 await writeFile(
   join(target, "package.json"),
   `${JSON.stringify(pkg, null, 2)}\n`

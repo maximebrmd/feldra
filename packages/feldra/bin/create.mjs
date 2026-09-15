@@ -29,7 +29,7 @@ const source = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const packedTemplateSentinel = "apps/docs/blume.config.ts";
 function packedTemplateError(cause) {
   return new Error(
-    "Packed template is missing or stale (expected template/apps/docs/blume.config.ts and the hashed files listed in template-manifest.json). packages/feldra/template/ is generated and gitignored. From the monorepo root, run `npm run initializer:pack`, then retry `npm exec --workspace packages/feldra -- feldra create …`. Published npm packages already include the template.",
+    "Packed template is missing or stale (expected template/apps/docs/blume.config.ts and the hashed files listed in template-manifest.json). packages/feldra/template/ is generated and gitignored. From the monorepo root, run `bun run initializer:pack`, then retry `bun run packages/feldra/bin/feldra.mjs create …`. Published npm packages already include the template.",
     { cause }
   );
 }
@@ -210,7 +210,7 @@ try {
     const bytes = await readPackedPath(join(source, "template", path));
     if (createHash("sha256").update(bytes).digest("hex") !== digest) {
       throw new Error(
-        `Bundled template integrity check failed: ${path}. Packed template is missing or stale. From the monorepo root, run \`npm run initializer:pack\`.`
+        `Bundled template integrity check failed: ${path}. Packed template is missing or stale. From the monorepo root, run \`bun run initializer:pack\`.`
       );
     }
   }

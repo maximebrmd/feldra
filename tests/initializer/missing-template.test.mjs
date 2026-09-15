@@ -45,7 +45,7 @@ function createWithMissingTemplate(pkg, dest) {
 function assertMissingTemplateError(result) {
   assert.notEqual(result.status, 0, `${result.stdout}\n${result.stderr}`);
   assert.match(result.stderr, /missing or stale/iu);
-  assert.match(result.stderr, /npm run initializer:pack/u);
+  assert.match(result.stderr, /bun run initializer:pack/u);
   assert.doesNotMatch(result.stderr, /^feldra: ENOENT:/mu);
 }
 
