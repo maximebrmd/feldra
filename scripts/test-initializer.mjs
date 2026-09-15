@@ -11,6 +11,26 @@ function run(command, args, cwd = root, env = process.env) {
     throw new Error(`${command} ${args.join(" ")} failed (${result.status})`);
   }
 }
+const clerkLockfile = join(
+  root,
+  "packages/feldra/variants/clerk/package-lock.json"
+);
+const packedTemplateLockfile = join(
+  root,
+  "packages/feldra/template/package-lock.json"
+);
+const clerkSharedDependencyPath = "node_modules/postcss";
+const staleClerkSharedDependencyPath = "node_modules/next/node_modules/postcss";
+const clerkDependencyNames = [
+  "node_modules/@clerk/backend",
+  "node_modules/@clerk/react",
+  "node_modules/@clerk/shared",
+];
+function clerkDependencyVersions(lockfile) {
+  return Object.fromEntries(
+    clerkDependencyNames.map((name) => [name, lockfile.packages[name].version])
+  );
+}
 function assertFlagDecision(project, environmentValue, expected) {
   const result = spawnSync(
     process.execPath,
@@ -97,10 +117,41 @@ if (nestedProxy.status !== 503) throw new Error(\`Non-exact Flags path lost prov
   );
   assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
 }
-run("npm", ["run", "initializer:pack"], root, {
-  ...process.env,
-  FELDRA_INITIALIZER_TEST_PACK: "1",
-});
+const originalClerkLockfile = await readFile(clerkLockfile, "utf8");
+const originalClerkLock = JSON.parse(originalClerkLockfile);
+const clerkVersionsBeforePack = clerkDependencyVersions(originalClerkLock);
+const staleClerkLock = JSON.parse(originalClerkLockfile);
+const staleSharedDependency =
+  staleClerkLock.packages[staleClerkSharedDependencyPath];
+assert.ok(staleSharedDependency);
+assert.notDeepEqual(
+  staleSharedDependency,
+  staleClerkLock.packages[clerkSharedDependencyPath]
+);
+staleClerkLock.packages[clerkSharedDependencyPath] = staleSharedDependency;
+await writeFile(clerkLockfile, `${JSON.stringify(staleClerkLock, null, 2)}\n`);
+try {
+  run("npm", ["run", "initializer:pack"], root, {
+    ...process.env,
+    FELDRA_INITIALIZER_TEST_PACK: "1",
+  });
+  const packedTemplateLock = JSON.parse(
+    await readFile(packedTemplateLockfile, "utf8")
+  );
+  const packedClerkLock = JSON.parse(await readFile(clerkLockfile, "utf8"));
+  assert.deepEqual(
+    packedClerkLock.packages[clerkSharedDependencyPath],
+    packedTemplateLock.packages[clerkSharedDependencyPath],
+    "overlay packaging must retain the refreshed template dependency"
+  );
+  assert.deepEqual(
+    clerkDependencyVersions(packedClerkLock),
+    clerkVersionsBeforePack,
+    "initializer packaging must retain the committed Clerk dependency seed"
+  );
+} finally {
+  await writeFile(clerkLockfile, originalClerkLockfile);
+}
 const version = JSON.parse(
   await readFile(join(root, "packages/feldra/package.json"), "utf8")
 ).version;

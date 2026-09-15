@@ -167,6 +167,27 @@ async function resolveLockfile(apply, destFile) {
   const staging = await mkdtemp(join(tmpdir(), "feldra-overlay-lock-"));
   try {
     await cp(target, staging, { recursive: true });
+    const lockfilePath = join(staging, "package-lock.json");
+    const lockfile = JSON.parse(await readFile(lockfilePath, "utf8"));
+    try {
+      const overlayLockfile = JSON.parse(await readFile(destFile, "utf8"));
+      const packages = lockfile.packages ?? {};
+      if (lockfile.packages === undefined || lockfile.packages === null) {
+        lockfile.packages = packages;
+      }
+      for (const [path, packageInfo] of Object.entries(
+        overlayLockfile.packages ?? {}
+      )) {
+        if (!(path in packages)) {
+          packages[path] = packageInfo;
+        }
+      }
+    } catch (error) {
+      if (error.code !== "ENOENT") {
+        throw error;
+      }
+    }
+    await writeFile(lockfilePath, `${JSON.stringify(lockfile, null, 2)}\n`);
     await apply(staging);
     run(
       ["install", "--package-lock-only", "--ignore-scripts", "--no-fund"],
