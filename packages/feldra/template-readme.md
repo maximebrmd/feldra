@@ -1,6 +1,6 @@
 # Feldra
 
-**A complete foundation for your next SaaS.** Two Next.js apps, shared packages, and Turborepo — Neon or Supabase, Better Auth, Clerk, Auth.js, Supabase Auth, or Appwrite, Stripe, and a Blume, Mintlify, or Fumadocs documentation app.
+**A complete foundation for your next SaaS.** Two Next.js apps, shared packages, and Turborepo — Neon or Supabase, Better Auth, Clerk, Auth.js, Supabase Auth, or Appwrite, Cloudflare R2 or Vercel Blob storage, Stripe, and a Blume, Mintlify, or Fumadocs documentation app.
 
 This project was generated with Feldra. It is an independent Git repository with locked npm dependencies and no runtime dependency on the initializer. No provider accounts, databases, or deployments were provisioned.
 
@@ -8,7 +8,7 @@ This project was generated with Feldra. It is an independent Git repository with
 
 Needs **Node.js 22.12 or newer** (24 LTS recommended), **npm**, and **Git**. Docker is only for isolated database and browser fixture tests.
 
-Fill `.env.local` using generated `DATABASE.md`, `AUTHENTICATION.md`, and [docs/setup.md](docs/setup.md), then:
+Fill `.env.local` using generated `DATABASE.md`, `AUTHENTICATION.md`, `STORAGE.md`, and [docs/setup.md](docs/setup.md), then:
 
 ```sh
 npm run db:migrate
@@ -22,9 +22,10 @@ Open marketing at `http://localhost:3000` and the app at `http://localhost:3001`
 - **Two Next.js apps** — marketing and pricing on port 3000; auth, dashboard, APIs, and webhooks on port 3001.
 - **Postgres you choose** — Neon or Supabase. Both use Drizzle and SQL migrations. Database choice is independent of authentication.
 - **Authentication you choose** — Better Auth (default, Resend emails), Clerk (managed identity and auth emails), Auth.js (NextAuth, GitHub OAuth), Supabase Auth, or Appwrite, independently of the database.
+- **Storage you choose** — Cloudflare R2 (default, S3-compatible) or Vercel Blob. See `STORAGE.md`; server credentials stay out of browser code.
 - **Stripe billing** — Checkout, customer portal, signed webhooks, and a server-side paid-access gate. Individual accounts and user-level billing.
 - **Documentation you choose** — Blume (default), Mintlify, or Fumadocs. `npm run docs:dev` serves `apps/docs` at http://localhost:4321.
-- **Shared packages** — auth, database, design-system (used shadcn Button/Input and Tailwind), email, payments, and config, coordinated with Turborepo and npm workspaces.
+- **Shared packages** — auth, database, design-system (used shadcn Button/Input and Tailwind), email, payments, storage, and config, coordinated with Turborepo and npm workspaces.
 - **Tested workflow** — Ultracite, TypeScript, unit tests, production builds, optional Docker Postgres fixtures, and browser checks.
 - **Example product surface** — signup, verification, login, password reset, onboarding, profile settings, and clearly marked private notes CRUD. `/api/notes/export` is Pro-only.
 
@@ -44,6 +45,7 @@ Organizations, CMS, analytics, AI, queues, and automatic template sync are inten
 │   ├── design-system/       # Used shadcn Button/Input and shared Tailwind styles
 │   ├── email/               # Resend authentication emails (Better Auth)
 │   ├── payments/            # Stripe Checkout, portal, reconciliation and paid gate
+│   ├── storage/             # Cloudflare R2 or Vercel Blob object storage
 │   └── config/              # Branding, plan configuration and validated environment
 ├── tests/                   # Cross-package integration and policy tests
 ├── turbo.json
@@ -51,9 +53,9 @@ Organizations, CMS, analytics, AI, queues, and automatic template sync are inten
 └── .env.example
 ```
 
-Both apps consume configuration and UI packages. The authenticated app consumes the server packages; marketing has no database, auth, or payment runtime dependency. Packages export TypeScript source that Next compiles.
+Both apps consume configuration and UI packages. The authenticated app consumes the server packages; marketing has no database, auth, payment, or storage runtime dependency. Packages export TypeScript source that Next compiles.
 
-See [architecture](docs/architecture.md), [setup](docs/setup.md), [databases](docs/databases.md), and [authentication](docs/authentication.md).
+See [architecture](docs/architecture.md), [setup](docs/setup.md), [databases](docs/databases.md), [authentication](docs/authentication.md), and `STORAGE.md`.
 
 ## Development
 

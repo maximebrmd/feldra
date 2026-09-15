@@ -18,6 +18,7 @@ import {
   applyFlags,
   flagsLockfileName,
 } from "../packages/feldra/bin/apply-flags.mjs";
+import { storageOverlays } from "../packages/feldra/bin/apply-storage.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const release = join(root, "packages/feldra");
@@ -220,6 +221,17 @@ async function resolveLockfile(apply, destFile) {
 }
 // Resolve overlay lockfiles at release time, not during scaffolding.
 const variantFiles = {};
+for (const [name, apply] of Object.entries(storageOverlays)) {
+  const variant = join(release, "variants/storage", name);
+  // Storage is applied independently from auth/docs. Its lockfile is resolved
+  // by create.mjs after all selected overlays have been combined.
+  await resolveLockfile(
+    (staging) => apply(staging, variant, { lockfile: false }),
+    join(variant, "package-lock.json")
+  );
+  const manifestName = `storage${name[0].toUpperCase()}${name.slice(1)}Files`;
+  variantFiles[manifestName] = await hashTree(variant);
+}
 for (const [name, apply] of Object.entries(authOverlays)) {
   const variant = join(release, "variants", name);
   await resolveLockfile(

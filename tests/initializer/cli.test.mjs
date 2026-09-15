@@ -44,6 +44,7 @@ test("create --help documents npx feldra create flags", () => {
     result.stdout,
     /--auth better-auth\|clerk\|authjs\|supabase\|appwrite/u
   );
+  assert.match(result.stdout, /--storage r2\|blob/u);
   assert.match(result.stdout, /--docs blume\|mintlify\|fumadocs/u);
   assert.match(result.stdout, /--flags none\|vercel/u);
   assert.doesNotMatch(result.stdout, /Unknown command/u);
@@ -58,6 +59,8 @@ test("create --list-tools prints supported tools without creating files", () => 
   assert.match(result.stdout, /authjs/u);
   assert.match(result.stdout, /supabase/u);
   assert.match(result.stdout, /appwrite/u);
+  assert.match(result.stdout, /r2/u);
+  assert.match(result.stdout, /blob/u);
   assert.match(result.stdout, /blume/u);
   assert.match(result.stdout, /mintlify/u);
   assert.match(result.stdout, /fumadocs/u);

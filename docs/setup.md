@@ -17,12 +17,20 @@ Every variable in `.env.example` is consumed; there are no browser-exposed secre
 | DATABASE_URL_UNPOOLED | Direct Postgres URL for migrations (Supabase session pooler on IPv4-only networks). |
 | RESEND_API_KEY | Dedicated Resend `re_…` key with permission to send from your domain. |
 | EMAIL_FROM | Bare email address on your verified sender domain, e.g. `accounts@your-domain.com`. |
+| R2_ACCOUNT_ID / R2_BUCKET_NAME | Cloudflare account and bucket selected for this generated project. |
+| R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY | Bucket-scoped R2 Object Read & Write credentials; server-only, never `NEXT_PUBLIC_`. |
+| R2_ENDPOINT / R2_PUBLIC_URL | Optional R2 S3 endpoint override and public/custom object URL. See `STORAGE.md`. |
+| BLOB_READ_WRITE_TOKEN | Server-only Vercel Blob token when `--storage blob` was selected. |
 | STRIPE_SECRET_KEY | Prefer a dedicated restricted `rk_test_…` / `rk_live_…` key; SDK also accepts `sk_…`. |
 | STRIPE_PRO_PRICE_ID | Recurring price ID for this project's Pro product. |
 | STRIPE_WEBHOOK_SECRET | Signing secret for this exact endpoint; local CLI and production secrets differ. |
 | STRIPE_LIVE_MODE | `false` in sandbox, `true` only in live mode. Signed event mode must match. |
 
 Better Auth uses APP_URL directly, so there is no second independent BETTER_AUTH_URL to drift. Rate limiting persists in Postgres. The trusted client IP header is `x-vercel-forwarded-for`, which Vercel supplies. For another host, change `advanced.ipAddress` in `packages/auth/server.ts` to that host's documented, sanitized header/trusted proxies. Never trust a header that clients can spoof. If no trusted IP is available, Better Auth uses a shared conservative per-path bucket; configure the proxy before launch.
+
+## Object storage
+
+Every generated project includes `@repo/storage` with one provider selected at scaffold time: Cloudflare R2 by default or Vercel Blob with `--storage blob`. Read the generated `STORAGE.md` for the selected provider's bucket, token, public URL, private-file, and client-upload setup. Storage credentials are server-only; browser uploads use Vercel's token route or R2 presigned URLs. The initializer never provisions a bucket, token, CORS policy, or deployment.
 
 ## Database and authentication
 

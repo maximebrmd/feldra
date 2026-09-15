@@ -1,4 +1,22 @@
 {
+  "storageBlobFiles": {
+    "STORAGE.md": "0607ed8830b8cab70cee7085bd201fbc0cf5427ecbb50be3d1e34518b02a5f9f",
+    "package-lock.json": "e61003feb5a7546808901e5ed1ad12ce3012087a89138f2eca3a300741fd644b",
+    "packages/storage/client.ts": "5622400467c17c79cf14666db48e272dc5ed520e77a3c5f2e53855da2dfba140",
+    "packages/storage/index.ts": "5c3fa7a54e7872067e37e9fe5efef88e64dd415f80b91f0bcb28c8b12fac6d53",
+    "packages/storage/keys.ts": "abbe5db93ec1e653a03d1bbd90342c2c7ddae6ee2904fdc9a565598abb84b55a",
+    "packages/storage/package.json": "e359c37cd7be0bfde5320129e954bbe6df4de9465837ca685ae06c14c94ada59",
+    "packages/storage/tsconfig.json": "716d299ef0e71f9555b06529000c2db8cf7122bdd52350a29d451a75862c7861"
+  },
+  "storageR2Files": {
+    "STORAGE.md": "12c10c34244f53ee15afd915368fc72262aa507ba1b5978455c7edb17be7709a",
+    "package-lock.json": "b951954ce47fefcb596d9a056a25cc7e63c1edf93fa1959b6a47f763d37e95f7",
+    "packages/storage/client.ts": "e94919b23d6ca61276dcfbe4909dfe9faebaae37c02d37b8c6782fa51dd1981a",
+    "packages/storage/index.ts": "75eef7ac23006d0231ad7c41d65d75698f6c385ad1b9232f52a7f1456461fb5b",
+    "packages/storage/keys.ts": "d926de991e32f389e8d1e0b563d6a50b42637577c8cc359435284280a8297325",
+    "packages/storage/package.json": "0b71c57c9a2d6ba164df0de2348861954eeea78cd80a29295171799c90642da0",
+    "packages/storage/tsconfig.json": "716d299ef0e71f9555b06529000c2db8cf7122bdd52350a29d451a75862c7861"
+  },
   "appwriteFiles": {
     "apps/app/src/app/api/auth/forgot/route.ts": "f1bcb4fadb98ac0f295ad27aa73b2f32bb946c85d956c79caec1312f4ba78948",
     "apps/app/src/app/api/auth/login/route.ts": "8cb8d6b1fb73587964d6e01f6e63ee3cbfd5b8c653d1a6a31f6dc88d17d202cb",
@@ -216,7 +234,7 @@
     "apps/web/tsconfig.json": "28856da8012749d973c7cd700882f271b1cd1f06d0caca3b37ef2eeeb258d342",
     "biome.jsonc": "14f06e37079dc44e746d3a048ea8b4c239800e9edfc5188143c8d072f308ad29",
     "CHANGELOG.md": "19b97bb6e23b2db2bbde920b9ef4a2a5c4c2677c19ffa800deb80afc6aee0bf9",
-    "docs/architecture.md": "bab8720dffca266fe4e4aeac88a677fcf4f3d346500b36beb99ed764595ad2e7",
+    "docs/architecture.md": "83e7d998fa15485add65d686307d38685c0eae0d47710f8a7a7edef53d003eae",
     "docs/authentication.md": "be571e5875de019963150847f23f0753543e1115f82e6344c0bbf416464855bd",
     "docs/ci-cd.md": "12910e7cd422bea5ae7e964f0ce96e3147d87a8498100f4adf931d7b84568a9c",
     "docs/databases.md": "9455dfeb2d0149b84669e6afb1848245f4d26cad1863f2ed57b56bd930952a13",
@@ -224,7 +242,7 @@
     "docs/maintenance.md": "9e3d0f2ff451f6a693b61468e9c0f3c797bf7dae4cc70a5705bba9dcae96011f",
     "docs/references.md": "7aabaf0a8c7491bc9bac7c32ee434884d99fa1554555b0bb81835f057bfbf0bf",
     "docs/releasing.md": "5c50035ecf36cad24f56e3a1c8ff1d4267d71f11e3a450d0001db99406132f41",
-    "docs/setup.md": "3a6ed7183fedd282f3f86b4de265402e4610fb3fe7fcbe3b521b9461be853f1f",
+    "docs/setup.md": "50e1ec039958a384feb62954e7841c47819b3a418e4607087d504f14fa7aa3f3",
     "gitignore": "10384d11de849508f21300062767ae7b7032c47f6f1257a75e19835699ab3669",
     "LICENSE": "b16335a31310aa3f1e645ba18bc8d4bd4e8b2aeb9ee79f36f61b46a209ed45b0",
     "package-lock.json": "af84402ed23ea16b48974cbdcd6f3bc442475e475f056db307bcb5a4f75be832",
@@ -264,7 +282,7 @@
     "packages/payments/src/service.ts": "dadc6270f1375fb7d46cbae1348c6621078c4f384529c18b4d64038fdcad51f2",
     "packages/payments/src/stripe.ts": "8e562b52d871c0e687bcb5a00cf437f0a3834c822693251aaaa82963a1886458",
     "packages/payments/tsconfig.json": "716d299ef0e71f9555b06529000c2db8cf7122bdd52350a29d451a75862c7861",
-    "README.md": "ea3f6a94fc5cf11e3e77040abc8fb995aa285bb9549438f91163252b9ed8b756",
+    "README.md": "54d20d4ff33bf97ef797434b5e721db2ffccd76d2b78ac07086df276e3b1b6e3",
     "scripts/test-browser.mjs": "6f19ae0bf31db3262bf806c97ceadef05295d6b5bc81ccb945c4c890efb0b069",
     "scripts/test-database.mjs": "d8d4a96c4e41048984d90eab1bae6e0a22407ed56fea38ab4b938bf52fe5bdd5",
     "tests/browser-seed.ts": "2791172bf50da6f49a1dbcc132488907d45b80bea5f909d71f1d2072cb250860",
@@ -276,6 +294,6 @@
     "tsconfig.json": "ff0eabcf9857d1a71847fe8ee7faa9a6b9d88ff3ee7d490f1c574bcb00cee21b",
     "turbo.json": "47f8c5db4280e0c7a285175484fe2abc89fc4fedbb1dd39b011a03b94de367d1"
   },
-  "templateSha256": "bec558f1064477388508907f393646f27dda619e07846fe032b8170314025134",
+  "templateSha256": "ce66a888e5cd9b165ae1f7df76259136a181a13401458b9ab74bb1de0f884866",
   "version": "0.1.0"
 }

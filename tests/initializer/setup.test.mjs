@@ -12,6 +12,7 @@ test("noninteractive defaults to Neon and derives a valid name from spaces", asy
       flags: "none",
       name: "a-project-with-spaces",
       preset: "neon",
+      storage: "r2",
     }
   );
 });
@@ -25,6 +26,14 @@ test("interactive selector offers both databases and preserves Supabase selectio
         return true;
       },
       select: (prompt) => {
+        if (prompt.message.includes("storage")) {
+          assert.deepEqual(
+            prompt.options.map((option) => option.value),
+            ["r2", "blob"]
+          );
+          assert.equal(prompt.initialValue, "r2");
+          return "r2";
+        }
         if (prompt.message.includes("authentication")) {
           assert.deepEqual(
             prompt.options.map((option) => option.value),
@@ -65,6 +74,7 @@ test("interactive selector offers both databases and preserves Supabase selectio
     flags: "none",
     name: "custom-saas",
     preset: "supabase",
+    storage: "r2",
   });
 });
 test("explicit Supabase works without prompting; legacy preset remains supported", async () => {
@@ -74,6 +84,23 @@ test("explicit Supabase works without prompting; legacy preset remains supported
       "supabase"
     );
   }
+});
+
+test("storage defaults to R2 and accepts the Blob choice and provider aliases", async () => {
+  assert.equal((await collectSetup({ directory: "new" })).storage, "r2");
+  assert.equal(
+    (await collectSetup({ directory: "new", storage: "blob" })).storage,
+    "blob"
+  );
+  assert.equal(
+    (await collectSetup({ directory: "new", storage: "vercel-blob" })).storage,
+    "blob"
+  );
+  assert.equal(
+    (await collectSetup({ directory: "new", storage: "cloudflare-r2" }))
+      .storage,
+    "r2"
+  );
 });
 test("interactive cancellation stops setup", async () => {
   await assert.rejects(
@@ -86,7 +113,7 @@ test("interactive cancellation stops setup", async () => {
         flags: "none",
         name: "new",
       },
-      { confirm: async () => false }
+      { confirm: async () => false, select: async () => "r2" }
     ),
     /Canceled/u
   );
@@ -99,6 +126,10 @@ test("unknown providers, conflicting flags and missing paths fail explicitly", a
   await assert.rejects(
     collectSetup({ database: "neon", directory: "new", preset: "supabase" }),
     /must agree/u
+  );
+  await assert.rejects(
+    collectSetup({ directory: "new", storage: "unknown" }),
+    /Choose --storage/u
   );
   await assert.rejects(collectSetup({}), /Provide a destination/u);
 });
@@ -128,6 +159,9 @@ test("Auth.js is explicit and remains selectable beside Better Auth and Clerk", 
     {
       confirm: () => true,
       select: (prompt) => {
+        if (prompt.message.includes("storage")) {
+          return "r2";
+        }
         if (prompt.message.includes("documentation")) {
           return "blume";
         }
@@ -180,6 +214,9 @@ test("interactive selector offers Better Auth, Clerk, Auth.js, Supabase Auth and
     {
       confirm: async () => true,
       select: (prompt) => {
+        if (prompt.message.includes("storage")) {
+          return "r2";
+        }
         if (prompt.message.includes("documentation")) {
           return "blume";
         }
@@ -240,6 +277,9 @@ test("interactive selector offers documentation frameworks and preserves Fumadoc
         return true;
       },
       select: (prompt) => {
+        if (prompt.message.includes("storage")) {
+          return "r2";
+        }
         if (prompt.message.includes("feature-flags")) {
           return "none";
         }

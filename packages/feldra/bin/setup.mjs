@@ -18,6 +18,21 @@ export const databases = {
   },
 };
 
+export const storageProviders = {
+  blob: {
+    hint: "Managed file storage · Vercel Blob",
+    instructions:
+      "Create a Vercel Blob store for this project and set its server-only BLOB_READ_WRITE_TOKEN in .env.local. Use a private store for user documents and a public store only for files that are safe to serve to anyone with the URL.",
+    label: "Vercel Blob",
+  },
+  r2: {
+    hint: "S3-compatible object storage · Cloudflare R2 (default)",
+    instructions:
+      "Create a bucket-scoped Cloudflare R2 Object Read & Write token and set R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME, and (for public URLs) R2_PUBLIC_URL in .env.local. Keep the access key and secret server-only.",
+    label: "Cloudflare R2",
+  },
+};
+
 export const authentications = {
   appwrite: {
     hint: "Managed identity and auth emails · separate Appwrite project required",
@@ -101,6 +116,15 @@ function requireChoice(value, table, message) {
   return value;
 }
 
+const storageAliases = {
+  "cloudflare-r2": "r2",
+  "vercel-blob": "blob",
+};
+
+function normalizeStorage(value) {
+  return storageAliases[value] ?? value;
+}
+
 async function pickChoice(
   value,
   prompts,
@@ -143,6 +167,12 @@ export async function collectSetup(options, prompts) {
     options.database || options.preset,
     databases,
     "Choose --database neon or --database supabase."
+  );
+  let storage = normalizeStorage(options.storage);
+  storage = requireChoice(
+    storage,
+    storageProviders,
+    "Choose --storage r2 or --storage blob."
   );
   let docs = requireChoice(
     options.docs,
@@ -193,6 +223,12 @@ export async function collectSetup(options, prompts) {
     fallback: "neon",
     message: "Which database do you want to use?",
   });
+  storage = await pickChoice(storage, prompts, {
+    choices: storageProviders,
+    fallback: "r2",
+    message: "Which storage provider do you want to use?",
+    order: ["r2", "blob"],
+  });
   authentication = await pickChoice(authentication, prompts, {
     choices: authentications,
     fallback: "better-auth",
@@ -215,7 +251,7 @@ export async function collectSetup(options, prompts) {
     prompts &&
     !(await prompts.confirm({
       initialValue: true,
-      message: `Create ${name} with ${databases[database].label} + ${authentications[authentication].label} + ${docsFrameworks[docs].label} + ${featureFlags[flags].label}?`,
+      message: `Create ${name} with ${databases[database].label} + ${authentications[authentication].label} + ${storageProviders[storage].label} + ${docsFrameworks[docs].label} + ${featureFlags[flags].label}?`,
     }))
   ) {
     throw new Error("Canceled. No project files were created.");
@@ -227,5 +263,6 @@ export async function collectSetup(options, prompts) {
     flags,
     name,
     preset: database,
+    storage,
   };
 }
