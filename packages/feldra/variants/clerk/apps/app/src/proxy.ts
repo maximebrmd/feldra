@@ -3,6 +3,7 @@ import { clerkConfigured } from "@repo/auth/config";
 import { appUrl } from "@repo/config/env";
 import type { NextFetchEvent, NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+
 const flagsDiscoveryPath = "/.well-known/vercel/flags";
 export default function proxy(request: NextRequest, event: NextFetchEvent) {
   if (request.nextUrl.pathname === flagsDiscoveryPath) {

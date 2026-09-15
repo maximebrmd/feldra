@@ -2,6 +2,7 @@ import { auth } from "@repo/auth/auth";
 import { authConfigured } from "@repo/auth/config";
 import type { NextFetchEvent, NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+
 const flagsDiscoveryPath = "/.well-known/vercel/flags";
 
 const sessionProxy = auth((_request: NextRequest, _event: NextFetchEvent) =>
