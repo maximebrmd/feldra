@@ -5,14 +5,17 @@
   "license": "MIT",
   "type": "module",
   "workspaces": [
-    "apps/docs",
-    "packages/feldra"
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
     "build": "turbo run build",
     "changeset": "changeset",
     "changeset:status": "changeset status",
     "check": "npm run lint && npm run typecheck && npm test && npm run build",
+    "db:generate": "npm run db:generate --workspace @repo/database",
+    "db:migrate": "npm run db:migrate --workspace @repo/database",
+    "dev": "turbo run dev",
     "docs:build": "npm run build --workspace docs",
     "docs:dev": "npm run dev --workspace docs",
     "docs:translate": "npm run translate --workspace docs --",
@@ -23,13 +26,20 @@
     "lint": "ultracite check",
     "release:sync": "node scripts/sync-release-version.mjs",
     "release:version": "changeset version && npm run release:sync",
+    "start": "npm run start --workspace app",
     "test": "node --conditions=react-server --import tsx --test tests/*.test.ts",
+    "test:browser": "node scripts/test-browser.mjs",
     "test:coverage": "node --conditions=react-server --import tsx --test --experimental-test-coverage tests/*.test.ts",
+    "test:database": "node scripts/test-database.mjs",
     "test:docs": "node --import tsx scripts/test-docs.mjs",
     "test:initializer": "node --test tests/initializer/*.test.mjs",
+    "test:integration": "node --conditions=react-server --import tsx --test tests/integration/*.test.ts",
     "typecheck": "turbo run typecheck && tsc --noEmit"
   },
   "overrides": {
+    "@esbuild-kit/core-utils": {
+      "esbuild": "0.25.12"
+    },
     "@scalar/astro": {
       "astro": "7.3.2"
     },
@@ -42,14 +52,21 @@
     "@biomejs/biome": "2.5.13",
     "@changesets/cli": "3.0.2",
     "@playwright/test": "1.63.0",
+    "@repo/auth": "*",
+    "@repo/database": "*",
+    "@repo/payments": "*",
     "@types/node": "26.5.1",
+    "@types/pg": "8.23.1",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
+    "better-auth": "1.7.4",
+    "drizzle-orm": "0.45.2",
+    "pg": "8.23.0",
+    "stripe": "22.6.2",
     "tsx": "4.23.13",
     "turbo": "2.10.12",
     "typescript": "6.0.3",
-    "ultracite": "7.11.1",
-    "yaml": "2.9.1"
+    "ultracite": "7.11.1"
   },
   "packageManager": "npm@11.19.1",
   "engines": {

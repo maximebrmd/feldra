@@ -20,6 +20,7 @@ import { applyDocs } from "../../packages/feldra/bin/apply-docs.mjs";
 
 const root = resolve(import.meta.dirname, "../..");
 const release = join(root, "packages/feldra");
+const templateSource = join(release, "template-source");
 
 function assertProductReadme(readme) {
   assert.match(readme, /npm run db:migrate/u);
@@ -71,7 +72,14 @@ test("Auth.js generation prepends a banner onto the product README", async () =>
     ];
     for (const path of copies) {
       await mkdir(join(destination, dirname(path)), { recursive: true });
-      await copyFile(join(root, path), join(destination, path));
+      const source =
+        path === "package.json" ||
+        path.startsWith("apps/") ||
+        path.startsWith("packages/") ||
+        path.startsWith("scripts/")
+          ? templateSource
+          : root;
+      await copyFile(join(source, path), join(destination, path));
     }
     await copyFile(
       join(release, "template-readme.md"),
@@ -103,7 +111,14 @@ test("Supabase Auth generation prepends a banner onto the product README", async
     ];
     for (const path of copies) {
       await mkdir(join(destination, dirname(path)), { recursive: true });
-      await copyFile(join(root, path), join(destination, path));
+      const source =
+        path === "package.json" ||
+        path.startsWith("apps/") ||
+        path.startsWith("packages/") ||
+        path.startsWith("scripts/")
+          ? templateSource
+          : root;
+      await copyFile(join(source, path), join(destination, path));
     }
     await copyFile(
       join(release, "template-readme.md"),
@@ -177,7 +192,14 @@ test("Appwrite generation prepends a banner onto the product README", async () =
     ];
     for (const path of copies) {
       await mkdir(join(destination, dirname(path)), { recursive: true });
-      await copyFile(join(root, path), join(destination, path));
+      const source =
+        path === "package.json" ||
+        path.startsWith("apps/") ||
+        path.startsWith("packages/") ||
+        path.startsWith("scripts/")
+          ? templateSource
+          : root;
+      await copyFile(join(source, path), join(destination, path));
     }
     await copyFile(
       join(release, "template-readme.md"),
@@ -218,7 +240,14 @@ test("Clerk generation prepends a banner onto the product README", async () => {
     ];
     for (const path of copies) {
       await mkdir(join(destination, dirname(path)), { recursive: true });
-      await copyFile(join(root, path), join(destination, path));
+      const source =
+        path === "package.json" ||
+        path.startsWith("apps/") ||
+        path.startsWith("packages/") ||
+        path.startsWith("scripts/")
+          ? templateSource
+          : root;
+      await copyFile(join(source, path), join(destination, path));
     }
     await copyFile(
       join(release, "template-readme.md"),

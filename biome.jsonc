@@ -11,10 +11,11 @@
       "!!.next",
       "!!packages/feldra/template",
       "!!drizzle/meta",
+      "!!packages/feldra/template-source/packages/database/drizzle/meta",
       "!!.agents",
       "!!skills-lock.json",
       "!!package-lock.json",
-      "!!**/package-lock.clerk.json",
+      "!!**/package-lock.*.json",
       "!!test-results",
       "!!playwright-report",
       "!!**/.next",
@@ -38,7 +39,9 @@
         "scripts/**",
         "packages/feldra/bin/**",
         "packages/feldra/variants/**/*.mjs",
+        "packages/feldra/template-source/scripts/**",
         "tests/**",
+        "packages/feldra/template-source/tests/**",
         "packages/database/scripts/**"
       ],
       "linter": {

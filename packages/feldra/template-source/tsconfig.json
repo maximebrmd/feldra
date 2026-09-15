@@ -1,5 +1,10 @@
 {
   "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./apps/app/src/*"]
+    }
+  },
   "include": ["tests/**/*.ts"],
   "exclude": ["node_modules", "packages/feldra/template", "my-new-saas"]
 }
