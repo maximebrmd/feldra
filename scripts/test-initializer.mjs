@@ -11,6 +11,20 @@ function run(command, args, cwd = root, env = process.env) {
     throw new Error(`${command} ${args.join(" ")} failed (${result.status})`);
   }
 }
+const clerkLockfile = join(
+  root,
+  "packages/feldra/variants/clerk/package-lock.json"
+);
+const clerkDependencyNames = [
+  "node_modules/@clerk/backend",
+  "node_modules/@clerk/react",
+  "node_modules/@clerk/shared",
+];
+function clerkDependencyVersions(lockfile) {
+  return Object.fromEntries(
+    clerkDependencyNames.map((name) => [name, lockfile.packages[name].version])
+  );
+}
 function assertFlagDecision(project, environmentValue, expected) {
   const result = spawnSync(
     process.execPath,
@@ -97,10 +111,18 @@ if (nestedProxy.status !== 503) throw new Error(\`Non-exact Flags path lost prov
   );
   assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
 }
+const clerkVersionsBeforePack = clerkDependencyVersions(
+  JSON.parse(await readFile(clerkLockfile, "utf8"))
+);
 run("npm", ["run", "initializer:pack"], root, {
   ...process.env,
   FELDRA_INITIALIZER_TEST_PACK: "1",
 });
+assert.deepEqual(
+  clerkDependencyVersions(JSON.parse(await readFile(clerkLockfile, "utf8"))),
+  clerkVersionsBeforePack,
+  "initializer packaging must retain the committed Clerk dependency seed"
+);
 const version = JSON.parse(
   await readFile(join(root, "packages/feldra/package.json"), "utf8")
 ).version;

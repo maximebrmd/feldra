@@ -167,6 +167,14 @@ async function resolveLockfile(apply, destFile) {
   const staging = await mkdtemp(join(tmpdir(), "feldra-overlay-lock-"));
   try {
     await cp(target, staging, { recursive: true });
+    // Seed re-resolution from the committed variant lockfile, not live registry state.
+    try {
+      await copyFile(destFile, join(staging, "package-lock.json"));
+    } catch (error) {
+      if (error.code !== "ENOENT") {
+        throw error;
+      }
+    }
     await apply(staging);
     run(
       ["install", "--package-lock-only", "--ignore-scripts", "--no-fund"],
