@@ -22,20 +22,27 @@ import {
 const root = resolve(import.meta.dirname, "..");
 const release = join(root, "packages/feldra");
 const target = join(release, "template");
-function run(args, cwd) {
+const generatedPackageManager = "npm@11.19.1";
+function run(command, args, cwd) {
   const env = { ...process.env };
   delete env.npm_config_allow_scripts;
   delete env.NPM_CONFIG_ALLOW_SCRIPTS;
-  const result = spawnSync("npm", args, { cwd, env, stdio: "inherit" });
+  const result = spawnSync(command, args, { cwd, env, stdio: "inherit" });
   if (result.error || result.status !== 0) {
-    throw new Error(`npm ${args.join(" ")} failed`);
+    throw new Error(`${command} ${args.join(" ")} failed`);
   }
+}
+function bun(args, cwd) {
+  run("bun", args, cwd);
+}
+function npm(args, cwd) {
+  run("npm", args, cwd);
 }
 const templateOnly = process.argv.includes("--template-only");
 const initializerTestPack = process.env.FELDRA_INITIALIZER_TEST_PACK === "1";
 if (!(templateOnly || initializerTestPack)) {
-  run(["run", "check"], root);
-  run(["run", "test:initializer"], root);
+  bun(["run", "check"], root);
+  bun(["run", "test:initializer"], root);
 }
 await rm(target, { force: true, recursive: true });
 await mkdir(target);
@@ -114,6 +121,7 @@ for (const [sourcePath, destinationPath] of files) {
 await copyFile(join(release, "template-readme.md"), join(target, "README.md"));
 await copyFile(join(release, "CHANGELOG.md"), join(target, "CHANGELOG.md"));
 const pkg = JSON.parse(await readFile(join(target, "package.json"), "utf8"));
+pkg.packageManager = generatedPackageManager;
 delete pkg.scripts["initializer:pack"];
 delete pkg.scripts["initializer:test"];
 delete pkg.scripts["test:initializer"];
@@ -133,7 +141,7 @@ await cp(join(release, "variants/docs/blume"), join(target, "apps/docs"), {
   recursive: true,
 });
 // Let npm prune release-only packages and links from the generated lockfile.
-run(
+npm(
   ["install", "--package-lock-only", "--ignore-scripts", "--no-fund"],
   target
 );
@@ -189,7 +197,7 @@ async function resolveLockfile(apply, destFile) {
     }
     await writeFile(lockfilePath, `${JSON.stringify(lockfile, null, 2)}\n`);
     await apply(staging);
-    run(
+    npm(
       ["install", "--package-lock-only", "--ignore-scripts", "--no-fund"],
       staging
     );
@@ -280,4 +288,4 @@ await writeFile(
   join(release, "template-manifest.json"),
   `${JSON.stringify({ ...variantFiles, files: hashes, templateSha256: createHash("sha256").update(JSON.stringify(hashes)).digest("hex"), version }, null, 2)}\n`
 );
-run(["pack", "--pack-destination", root], release);
+npm(["pack", "--pack-destination", root], release);

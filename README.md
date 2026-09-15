@@ -11,7 +11,7 @@
 
 ## Quickstart
 
-Feldra needs **Node.js 22.12 or newer** (24 LTS recommended), **npm**, and **Git**. Docker is only for isolated database and browser fixture tests.
+The Feldra repository needs **Node.js 22.12 or newer** (24 LTS recommended), **Bun 1.4.0**, and **Git**. Generated projects use npm and their locked `package-lock.json`. Docker is only for isolated database and browser fixture tests.
 
 After npm publication:
 
@@ -24,9 +24,9 @@ Equivalent: `npm exec feldra@latest -- create my-new-saas`. **The `feldra` packa
 Until then, pack and create from this repository:
 
 ```sh
-npm ci
-npm run initializer:pack
-npm exec --workspace packages/feldra -- feldra create my-new-saas
+bun install
+bun run initializer:pack
+bun run packages/feldra/bin/feldra.mjs create my-new-saas
 ```
 
 Equivalent tarball path: `npm exec --yes --package="$(pwd)/feldra-0.1.0.tgz" -- feldra create my-new-saas`. `packages/feldra/template/` is gitignored and produced by pack. A workspace create from this checkout auto-packs a missing template; the tarball path still needs pack.
@@ -52,7 +52,7 @@ Open marketing at `http://localhost:3000` and the app at `http://localhost:3001`
 - **Documentation you choose** — Blume (default), Mintlify, or Fumadocs. This repository's product docs stay on Blume.
 - **Optional feature flags** — `--flags vercel` adds a provider-agnostic `@repo/feature-flags` package, Flags Explorer route, and setup guide; the default has no flags package.
 - **Stripe billing** — Checkout, customer portal, signed webhooks, and a server-side paid-access gate. Individual accounts and user-level billing.
-- **Shared packages** — auth, database, design-system (used shadcn Button/Input and Tailwind), email, payments, and config, coordinated with Turborepo and npm workspaces.
+- **Shared packages** — auth, database, design-system (used shadcn Button/Input and Tailwind), email, payments, and config, coordinated with Turborepo and Bun workspaces.
 - **Hashed template** — the CLI copies a versioned, integrity-checked bundle. It never downloads a moving GitHub branch.
 - **No provider provisioning** — you create Neon/Supabase, Resend, Clerk, GitHub OAuth, Supabase Auth, or Appwrite, and Stripe resources yourself. The CLI prints exact next steps.
 - **Independent projects** — a fresh Git repository, locked npm dependencies, and no leftover dependency on the initializer.
@@ -117,27 +117,27 @@ Generated apps are two Next.js deployments from one repository (`apps/web` and `
 | Requirement | Supported |
 | --- | --- |
 | Node | 22.12+ (24 LTS recommended) |
-| Package manager | npm |
+| Package manager | Bun 1.4.0 (repository); npm (generated projects) |
 | Git | Required to initialize the generated repository |
 | Docker | Only for isolated database and browser fixture tests |
 | OS | Tested on macOS; no Windows validation claimed |
 
 ## Development
 
-This repository is a small npm workspace: `packages/feldra` is the published initializer and `apps/docs` is the Feldra product documentation site built with Blume (`npm run docs:dev` → http://localhost:4321). The generated SaaS source is kept under `packages/feldra/template-source` and packed into the independent project template; it is not a root workspace. Dual-maintaining Mintlify or Fumadocs for this in-repo site is out of scope; those frameworks are choices for generated projects.
+This repository is a small Bun workspace: `packages/feldra` is the published initializer and `apps/docs` is the Feldra product documentation site built with Blume (`bun run docs:dev` → http://localhost:4321). The generated SaaS source is kept under `packages/feldra/template-source` and packed into the independent project template; it is not a root workspace. Dual-maintaining Mintlify or Fumadocs for this in-repo site is out of scope; those frameworks are choices for generated projects.
 
 ```sh
-npm ci
-npm run check              # Lint, root types/tests, and the docs build
-npm run docs:dev
-npm run docs:build
-npm run initializer:pack   # Write packages/feldra/template/ and feldra-VERSION.tgz
-npm exec --workspace packages/feldra -- feldra create my-new-saas
+bun install
+bun run check              # Lint, root types/tests, and the docs build
+bun run docs:dev
+bun run docs:build
+bun run initializer:pack   # Write packages/feldra/template/ and feldra-VERSION.tgz
+bun run packages/feldra/bin/feldra.mjs create my-new-saas
 ```
 
 See [Quickstart](#quickstart) for the gitignored template and local create.
 
-`npm run initializer:test` also checks the generated project matrix, including its optional Docker fixtures.
+`bun run initializer:test` also checks the generated project matrix, including its optional Docker fixtures.
 
 See [CONTRIBUTING](.github/CONTRIBUTING.md), [releasing](docs/releasing.md), and [CI/CD](docs/ci-cd.md). Generated projects do not include this repository's Changesets or GitHub workflows; they receive a product README and a chosen documentation app rather than this file.
 

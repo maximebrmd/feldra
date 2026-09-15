@@ -131,7 +131,7 @@ assert.notDeepEqual(
 staleClerkLock.packages[clerkSharedDependencyPath] = staleSharedDependency;
 await writeFile(clerkLockfile, `${JSON.stringify(staleClerkLock, null, 2)}\n`);
 try {
-  run("npm", ["run", "initializer:pack"], root, {
+  run("bun", ["run", "initializer:pack"], root, {
     ...process.env,
     FELDRA_INITIALIZER_TEST_PACK: "1",
   });

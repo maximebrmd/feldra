@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-node
-      - run: npm run "${{ matrix.command }}"
+      - run: bun run "${{ matrix.command }}"
 
   coverage:
     name: coverage
@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-node
-      - run: npm run test:coverage
+      - run: bun run test:coverage
 
   distribution:
     name: Build and test distribution
@@ -43,11 +43,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-node
-      - run: npx --no-install playwright install --with-deps chromium
+      - run: bunx --no-install playwright install --with-deps chromium
       # Packs once, then checks all auth/database combinations with default
       # Blume docs, Vercel Flags fixtures for each auth with Neon, plus one
       # Mintlify and one Fumadocs docs build.
-      - run: npm run initializer:test
+      - run: bun run initializer:test
       - name: Record artifact checksum
         run: sha256sum feldra-*.tgz > SHA256SUMS
       - uses: actions/upload-artifact@v7
@@ -68,17 +68,17 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup-node
-      - run: npm run docs:build
-      - run: npx --no-install playwright install --with-deps chromium
+      - run: bun run docs:build
+      - run: bunx --no-install playwright install --with-deps chromium
       - name: Test documentation site
         shell: bash
         run: |
-          npm run preview --workspace docs > /tmp/feldra-docs.log 2>&1 &
+          bun run --filter docs preview > /tmp/feldra-docs.log 2>&1 &
           preview_pid=$!
           trap 'kill "$preview_pid" || true; cat /tmp/feldra-docs.log' EXIT
           for _ in {1..60}; do
             if curl --fail --silent http://127.0.0.1:4321/ > /dev/null; then
-              npm run test:docs
+              bun run test:docs
               exit 0
             fi
             sleep 1

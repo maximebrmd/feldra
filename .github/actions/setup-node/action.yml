@@ -1,13 +1,13 @@
 name: Set up Feldra
-description: Install the supported Node runtime and locked npm dependencies
+description: Install the supported Node and Bun runtimes and locked dependencies
 runs:
   using: composite
   steps:
     - uses: actions/setup-node@v7
       with:
         node-version: '24'
-        cache: npm
+    - uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: 1.4.0
     - shell: bash
-      run: npm install --global npm@11.19.1
-    - shell: bash
-      run: npm ci --no-fund
+      run: bun install --frozen-lockfile

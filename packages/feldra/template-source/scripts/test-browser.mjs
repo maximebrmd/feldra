@@ -77,8 +77,8 @@ try {
     STRIPE_SECRET_KEY: "",
     WEB_URL: webURL,
   };
-  run("npm", ["run", "build"], env);
-  run("npm", ["run", "db:migrate"], env);
+  run("bun", ["run", "build"], env);
+  run("bun", ["run", "db:migrate"], env);
   run(
     process.execPath,
     ["--conditions=react-server", "--import", "tsx", "tests/browser-seed.ts"],
@@ -114,7 +114,7 @@ try {
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
   assert.ok(ready, "Next server ready");
-  run("npx", ["--no-install", "playwright", "install", "chromium"]);
+  run("bunx", ["--no-install", "playwright", "install", "chromium"]);
   browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ baseURL });
   const errors = [];

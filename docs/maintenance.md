@@ -1,6 +1,6 @@
 # Reusing and updating the template
 
-Each initializer release bundles a tested monorepo and npm lockfile. Scaffolding performs no GitHub download. `template-origin.json` records the version, preset and content digest. Commit each generated project's initial state yourself for later comparison. The internal @repo packages belong to that project and are not downloaded from the original template.
+Each initializer release bundles a tested monorepo and npm lockfile for generated projects; this repository itself uses `bun.lock`. Scaffolding performs no GitHub download. `template-origin.json` records the version, preset and content digest. Commit each generated project's initial state yourself for later comparison. The internal @repo packages belong to that project and are not downloaded from the original template.
 
 Customize `packages/config/index.ts`, app copy, metadata and the example notes. Each project owns its provider resources and environment. Never distribute `.env.local` or real credentials. Generated projects have no dependency on feldra and do not automatically change when it updates.
 

@@ -57,7 +57,7 @@ try {
     DATABASE_URL_UNPOOLED: url,
     TEST_DATABASE_URL: url,
   };
-  run("npm", ["run", "db:migrate"], env);
+  run("bun", ["run", "db:migrate"], env);
   run(
     process.execPath,
     [

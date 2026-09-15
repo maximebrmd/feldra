@@ -12,17 +12,17 @@
     "build": "turbo run build",
     "changeset": "changeset",
     "changeset:status": "changeset status",
-    "check": "npm run lint && npm run typecheck && npm test && npm run build",
-    "docs:build": "npm run build --workspace docs",
-    "docs:dev": "npm run dev --workspace docs",
-    "docs:translate": "npm run translate --workspace docs --",
-    "docs:translations:check": "npm run translate:check --workspace docs",
+    "check": "bun run lint && bun run typecheck && bun run test && bun run build",
+    "docs:build": "bun run --filter docs build",
+    "docs:dev": "bun run --filter docs dev",
+    "docs:translate": "bun run --filter docs translate --",
+    "docs:translations:check": "bun run --filter docs translate:check",
     "format": "ultracite fix",
     "initializer:pack": "node scripts/pack-initializer.mjs",
     "initializer:test": "node scripts/test-initializer.mjs",
     "lint": "ultracite check",
     "release:sync": "node scripts/sync-release-version.mjs",
-    "release:version": "changeset version && npm run release:sync",
+    "release:version": "bun run changeset version && bun run release:sync",
     "test": "node --conditions=react-server --import tsx --test tests/*.test.ts",
     "test:coverage": "node --conditions=react-server --import tsx --test --experimental-test-coverage tests/*.test.ts",
     "test:docs": "node --import tsx scripts/test-docs.mjs",
@@ -51,7 +51,7 @@
     "ultracite": "7.11.1",
     "yaml": "2.9.1"
   },
-  "packageManager": "npm@11.19.1",
+  "packageManager": "bun@1.4.0",
   "engines": {
     "node": ">=22.12.0"
   }
