@@ -45,6 +45,7 @@ test("create --help documents npx feldra create flags", () => {
     /--auth better-auth\|clerk\|authjs\|supabase\|appwrite/u
   );
   assert.match(result.stdout, /--docs blume\|mintlify\|fumadocs/u);
+  assert.match(result.stdout, /--flags none\|vercel/u);
   assert.doesNotMatch(result.stdout, /Unknown command/u);
 });
 
@@ -60,6 +61,7 @@ test("create --list-tools prints supported tools without creating files", () => 
   assert.match(result.stdout, /blume/u);
   assert.match(result.stdout, /mintlify/u);
   assert.match(result.stdout, /fumadocs/u);
+  assert.match(result.stdout, /Feature flags: none.*vercel/u);
 });
 
 test("create --help documents the supabase auth choice", () => {

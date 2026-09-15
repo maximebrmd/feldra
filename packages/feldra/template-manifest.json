@@ -95,6 +95,28 @@
     "tests/integration/supabase-data.test.ts": "1d598912ef3200490b7b612cfad52be7a259f713bdb17077be4acafbef24dd4b",
     "tests/supabase-identity.test.ts": "256e1af2539dbd6d9d87247da1ca1dfed8b01a92b10e6dafb5a4712b769168b3"
   },
+  "flagsFiles": {
+    "apps/app/src/app/.well-known/vercel/flags/route.ts": "21101af56515129af2882b42f7fffd9121bb875299fca159439f8d085fc0b72b",
+    "docs/feature-flags.md": "e655140f644e2aadc948c7c12eaf95abc81c2adc4d20cdc6c07b34bf620031a7",
+    "package-lock.appwrite.json": "d8c78e3cba6b9be1a7fe46413b01809fe246ea38cc6a694f3ad1e6e228e6ac0b",
+    "package-lock.authjs.json": "d6f4dd64cc0a3d04ff54014fb11c354e85ee03fa00616c8cf246ef2b942155b0",
+    "package-lock.clerk.json": "0e1551f10af8457cd257a6fe82a92c2e0239383d385db134b5cf0c8854333a42",
+    "package-lock.fumadocs.appwrite.json": "5425756f807a556b8916c23a51c2ee0f4f00ecb5ef28c0b89a56a9543e4dcebb",
+    "package-lock.fumadocs.authjs.json": "b709346842eba41b7acb536bc13a95d325a4948a85e7f703e05c9a11cc5c91c1",
+    "package-lock.fumadocs.clerk.json": "02c0572d384152cee35a027d81b671215d48e9b9b06e96d4107af272e54feb5d",
+    "package-lock.fumadocs.json": "b3208940e04a07f8d3f924449d68b8746435ea0a31763ef063b318507f810fbb",
+    "package-lock.fumadocs.supabase.json": "f0c99bdc63764818e2d69ecb81d5b9ba43ed5e8a0133d37052782d69ab8e3781",
+    "package-lock.json": "93eb357165615e9d50c3b3f844ce652ff842054f477482c05b9259da2d749cb2",
+    "package-lock.mintlify.appwrite.json": "d69a5a386e93effad05b6d985dc4e42e530759b2770ac5b5ce0f21191aba1736",
+    "package-lock.mintlify.authjs.json": "ad42fe44232a40a616b5123fd9571f9e1fb1eb0dd2ca8d67b387e9a851c139b8",
+    "package-lock.mintlify.clerk.json": "bbf462925ab30bbd8fe1d540410f62fc0b5efbdafab55af00e54d373f202ab6b",
+    "package-lock.mintlify.json": "9a5ae0687c971283df8035eda0a37b3491eb8f34c206a875b6308f8575281267",
+    "package-lock.mintlify.supabase.json": "ca4164835fe59c6cc567d04323bd80c973fca8f8f877abeac49a15d0d646aab6",
+    "package-lock.supabase.json": "31bccab26012163f8862fa1575e2e1accf32b649f7c0241a697e056462d2f50a",
+    "packages/feature-flags/index.ts": "8f17315048e706bae15aa37f6febdc35cc3b95127e9211080bf369bd36cbaddf",
+    "packages/feature-flags/package.json": "02c138dc61536be037caee3b5e24af4eaa1e607df485fe30b3e669522a3723fc",
+    "packages/feature-flags/tsconfig.json": "7fb21d91e0b708c839199b75150774f0dc0fcf44d00ff593ccafbc96f96aaf88"
+  },
   "mintlifyFiles": {
     "apps/docs/README.md": "7191fa4ceb61aa1f7a3e02a3b073de07c7cba5aa171903c8a8bbb78b32b800d5",
     "apps/docs/architecture.mdx": "b12b72558521cba6b2960d066f0ccc67351e2be2ca7188287cb53626793d8b6c",
@@ -192,7 +214,7 @@
     "apps/web/src/app/page.tsx": "c987b0e39f9b2aac1bd75f9385323dd1f0cc5d2f4ad12b8430ef62eb05a64f09",
     "apps/web/src/app/pricing/page.tsx": "362c7204d9dde9fa16dd11a2b2eca0426187a8eb1a38271067b8c5dd10902e17",
     "apps/web/tsconfig.json": "28856da8012749d973c7cd700882f271b1cd1f06d0caca3b37ef2eeeb258d342",
-    "biome.jsonc": "7041b66c6658445e191060aaca22bed8a18ddefbdc64111ac652babdc90143e5",
+    "biome.jsonc": "14f06e37079dc44e746d3a048ea8b4c239800e9edfc5188143c8d072f308ad29",
     "CHANGELOG.md": "19b97bb6e23b2db2bbde920b9ef4a2a5c4c2677c19ffa800deb80afc6aee0bf9",
     "docs/architecture.md": "bab8720dffca266fe4e4aeac88a677fcf4f3d346500b36beb99ed764595ad2e7",
     "docs/authentication.md": "be571e5875de019963150847f23f0753543e1115f82e6344c0bbf416464855bd",
@@ -200,7 +222,7 @@
     "docs/databases.md": "9455dfeb2d0149b84669e6afb1848245f4d26cad1863f2ed57b56bd930952a13",
     "docs/dependencies.md": "fa3ad1db72568fffc6e6d10ecf6d1196228f5e1a383eb9251faf7c70f104b261",
     "docs/maintenance.md": "2dd76bd782dd6c126e302bc22490a5b762db2aa86386f7aec57fe366c08116d3",
-    "docs/references.md": "c520cf8b5c18389ceeaa062a2bcc37694873d549f7963c1905c0518f8dc28ac7",
+    "docs/references.md": "7aabaf0a8c7491bc9bac7c32ee434884d99fa1554555b0bb81835f057bfbf0bf",
     "docs/releasing.md": "e4d33c87bb45a34df4c97bab188d53e9fe89f2c2b4f3b9602c64275c6f156cde",
     "docs/setup.md": "3a6ed7183fedd282f3f86b4de265402e4610fb3fe7fcbe3b521b9461be853f1f",
     "gitignore": "10384d11de849508f21300062767ae7b7032c47f6f1257a75e19835699ab3669",
@@ -255,5 +277,6 @@
     "turbo.json": "47f8c5db4280e0c7a285175484fe2abc89fc4fedbb1dd39b011a03b94de367d1"
   },
   "templateSha256": "b6882e83bc9e87bc00b756ee0a0ac742c70f168955d57f7d859bdf9485acc71e",
+  "templateSha256": "b1ea81bb072d2f43e7a4d8c2d6e0281ce375383d4a14a0115c610bf64b8b645a",
   "version": "0.1.0"
 }
