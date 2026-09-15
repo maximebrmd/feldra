@@ -78,8 +78,8 @@ function keyFromInput(input: string) {
   }
   return keyFromPathname(
     url.pathname
+      .replace(leadingSlash, "")
       .split("/")
-      .filter(Boolean)
       .map((part) => decodeURIComponent(part))
       .join("/")
   );

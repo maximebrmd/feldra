@@ -12,7 +12,7 @@
     "STORAGE.md": "115e69b753c907531b259504ccf62ce2d0a530a9d3b623769563f6b8cd45d69e",
     "package-lock.json": "b951954ce47fefcb596d9a056a25cc7e63c1edf93fa1959b6a47f763d37e95f7",
     "packages/storage/client.ts": "149ae5441634f9c37d24702892ed94962404b9850e75792c1b18582192d17690",
-    "packages/storage/index.ts": "75eef7ac23006d0231ad7c41d65d75698f6c385ad1b9232f52a7f1456461fb5b",
+    "packages/storage/index.ts": "1986980c65cb43f2dd6641d20c0fd16c9a799516a8545b03befdf07f133ed5fa",
     "packages/storage/keys.ts": "d926de991e32f389e8d1e0b563d6a50b42637577c8cc359435284280a8297325",
     "packages/storage/package.json": "0b71c57c9a2d6ba164df0de2348861954eeea78cd80a29295171799c90642da0",
     "packages/storage/tsconfig.json": "716d299ef0e71f9555b06529000c2db8cf7122bdd52350a29d451a75862c7861"

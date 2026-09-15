@@ -81,6 +81,7 @@ function omitFromTemplate(path, name) {
     (path === "tests" && name === "initializer") ||
     // Repository CI contract; generated projects do not receive GitHub workflows.
     (path === "tests" && name === "ci-required-checks.test.ts") ||
+    (path === "tests" && name === "storage-client.test.ts") ||
     (path === "packages" && name === "feldra")
   );
 }
