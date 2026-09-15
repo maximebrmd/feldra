@@ -28,7 +28,7 @@ The root workspace contains the initializer and product docs. For documentation 
 | `packages/feldra/variants/appwrite` | Appwrite Auth overlay and generated dependency lockfile |
 | `packages/feldra/variants/docs` | Generated Blume, Mintlify, and Fumadocs docs apps and overlay lockfiles |
 | `scripts/pack-initializer.mjs` | Template allowlist, manifests and npm tarball packaging |
-| `tests` | Unit, initializer and database integration tests |
+| `tests` | CI contract and initializer tests |
 
 This repository's Blume docs app, the `feldra` workspace, Changesets and GitHub workflows are maintainer tooling. Generated projects receive a chosen docs app from `packages/feldra/variants/docs` rather than this repository's `apps/docs` site. Do not edit generated `packages/feldra/template` (gitignored; produced by `npm run initializer:pack`), `.blume`, `.source`, `.next`, or `dist` output. Regenerate auth and docs overlay lockfiles through the pack script when those dependencies change.
 
