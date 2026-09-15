@@ -31,9 +31,9 @@ This validates the source and writes `feldra-VERSION.tgz` in the repository root
 npm exec --yes --package="./feldra-VERSION.tgz" -- feldra create my-new-saas
 ```
 
-Use the arrow keys and Enter to choose **Neon** or **Supabase**, then **Better Auth**, **Clerk**, **Auth.js**, or **Supabase Auth**, and **Blume**, **Mintlify**, or **Fumadocs**. The initializer installs dependencies, writes local environment files, and initializes a fresh Git repository. It refuses an existing destination, even if it is empty.
+Use the arrow keys and Enter to choose **Neon** or **Supabase**, then **Better Auth**, **Clerk**, **Auth.js**, or **Supabase Auth**, **Cloudflare R2** or **Vercel Blob** storage, and **Blume**, **Mintlify**, or **Fumadocs**. The initializer installs dependencies, writes local environment files, and initializes a fresh Git repository. It refuses an existing destination, even if it is empty.
 
-For a noninteractive run, append `--yes --database supabase --docs mintlify` after the project name. `--docs` defaults to `blume`. Both relative paths and quoted paths containing spaces work.
+For a noninteractive run, append `--yes --database supabase --storage blob --docs mintlify` after the project name. `--storage` defaults to Cloudflare R2; each generated project includes `STORAGE.md` with provider-specific setup and credential guidance. `--docs` defaults to `blume`. Both relative paths and quoted paths containing spaces work.
 
 ## Connect your providers
 

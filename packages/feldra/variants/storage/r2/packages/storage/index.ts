@@ -18,6 +18,7 @@ const jsonKey = /\.json$/iu;
 const leadingSlash = /^\/+/u;
 const trailingSlash = /\/+$/u;
 const periodSegment = /^(?:\.|\.\.)$/u;
+const urlLikeKey = /:\/\//u;
 
 export interface PutBlobResult {
   contentDisposition: string | undefined;
@@ -63,6 +64,9 @@ function keyFromPathname(pathname: string) {
   if (!key) {
     throw new Error("Storage object key cannot be empty.");
   }
+  if (urlLikeKey.test(key)) {
+    throw new Error("Storage object keys cannot contain URL-like values.");
+  }
   if (key.split("/").some((segment) => periodSegment.test(segment))) {
     throw new Error(
       'Storage object keys cannot contain "." or ".." path segments.'
@@ -71,20 +75,45 @@ function keyFromPathname(pathname: string) {
   return key;
 }
 
-function keyFromInput(input: string) {
+function publicUrlPrefix(base: URL) {
+  return base.pathname.replace(trailingSlash, "") || "/";
+}
+
+function keyFromInput(
+  input: string,
+  env: ReturnType<typeof storageEnv>
+) {
   if (!input.includes("://")) {
     return keyFromPathname(input);
   }
-  const env = storageEnv();
   const url = new URL(input);
-  if (!env.R2_PUBLIC_URL || url.origin !== new URL(env.R2_PUBLIC_URL).origin) {
+  if (!env.R2_PUBLIC_URL) {
     throw new Error(
       "R2 object URLs must use R2_PUBLIC_URL. Pass an object key when deleting a private object."
     );
   }
+  const publicBase = new URL(env.R2_PUBLIC_URL);
+  if (url.origin !== publicBase.origin) {
+    throw new Error(
+      "R2 object URLs must use R2_PUBLIC_URL. Pass an object key when deleting a private object."
+    );
+  }
+  const prefix = publicUrlPrefix(publicBase);
+  let relativePath: string | undefined;
+  if (prefix === "/") {
+    relativePath = url.pathname.replace(leadingSlash, "");
+  } else if (url.pathname === prefix) {
+    relativePath = "";
+  } else if (url.pathname.startsWith(prefix + "/")) {
+    relativePath = url.pathname.slice(prefix.length + 1);
+  }
+  if (relativePath === undefined) {
+    throw new Error(
+      "R2 object URLs must use the configured R2_PUBLIC_URL path."
+    );
+  }
   return keyFromPathname(
-    url.pathname
-      .replace(leadingSlash, "")
+    relativePath
       .split("/")
       .map((part) => decodeURIComponent(part))
       .join("/")
@@ -97,10 +126,14 @@ function publicUrl(base: string | undefined, key: string) {
       "R2_PUBLIC_URL is required for put(). Configure a public bucket URL or custom domain, or use getUploadUrl()/getDownloadUrl() for private objects."
     );
   }
-  return `${base.replace(trailingSlash, "")}/${key
+  const url = new URL(base);
+  const prefix = publicUrlPrefix(url);
+  const encodedKey = key
     .split("/")
     .map((part) => encodeURIComponent(part))
-    .join("/")}`;
+    .join("/");
+  url.pathname = (prefix === "/" ? "" : prefix) + "/" + encodedKey;
+  return url.toString();
 }
 
 function contentTypeFor(key: string, contentType: string | undefined) {
@@ -153,10 +186,11 @@ export async function put(
 
 export async function del(input: string) {
   const env = storageEnv();
+  const key = keyFromInput(input, env);
   await getClient().send(
     new DeleteObjectCommand({
       Bucket: env.R2_BUCKET_NAME,
-      Key: keyFromInput(input),
+      Key: key,
     })
   );
 }
@@ -166,21 +200,23 @@ export async function get(
   options: Omit<GetObjectCommandInput, "Bucket" | "Key"> = {}
 ) {
   const env = storageEnv();
+  const key = keyFromPathname(pathname);
   return await getClient().send(
     new GetObjectCommand({
       ...options,
       Bucket: env.R2_BUCKET_NAME,
-      Key: keyFromPathname(pathname),
+      Key: key,
     })
   );
 }
 
 export async function head(pathname: string) {
   const env = storageEnv();
+  const key = keyFromPathname(pathname);
   return await getClient().send(
     new HeadObjectCommand({
       Bucket: env.R2_BUCKET_NAME,
-      Key: keyFromPathname(pathname),
+      Key: key,
     })
   );
 }
@@ -200,12 +236,13 @@ export async function getUploadUrl(
   expiresIn = 900
 ) {
   const env = storageEnv();
+  const key = keyFromPathname(pathname);
   return await getSignedUrl(
     getClient(),
     new PutObjectCommand({
       Bucket: env.R2_BUCKET_NAME,
       ContentType: contentType,
-      Key: keyFromPathname(pathname),
+      Key: key,
     }),
     { expiresIn }
   );
@@ -213,11 +250,12 @@ export async function getUploadUrl(
 
 export async function getDownloadUrl(pathname: string, expiresIn = 900) {
   const env = storageEnv();
+  const key = keyFromPathname(pathname);
   return await getSignedUrl(
     getClient(),
     new GetObjectCommand({
       Bucket: env.R2_BUCKET_NAME,
-      Key: keyFromPathname(pathname),
+      Key: key,
     }),
     { expiresIn }
   );

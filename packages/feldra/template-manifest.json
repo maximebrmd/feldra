@@ -12,7 +12,7 @@
     "STORAGE.md": "115e69b753c907531b259504ccf62ce2d0a530a9d3b623769563f6b8cd45d69e",
     "package-lock.json": "b951954ce47fefcb596d9a056a25cc7e63c1edf93fa1959b6a47f763d37e95f7",
     "packages/storage/client.ts": "149ae5441634f9c37d24702892ed94962404b9850e75792c1b18582192d17690",
-    "packages/storage/index.ts": "148a775568749f5458db8a93592e8955e67496e4f182966e6a1bd28b7ffe0895",
+    "packages/storage/index.ts": "e8350fa39e771b8083779deda5a06d4a48ebd5cb0ebd10d337a73fe5768ba24f",
     "packages/storage/keys.ts": "d926de991e32f389e8d1e0b563d6a50b42637577c8cc359435284280a8297325",
     "packages/storage/package.json": "0b71c57c9a2d6ba164df0de2348861954eeea78cd80a29295171799c90642da0",
     "packages/storage/tsconfig.json": "716d299ef0e71f9555b06529000c2db8cf7122bdd52350a29d451a75862c7861"
@@ -289,11 +289,12 @@
     "tests/integration/database-access.test.ts": "458552177e85f924fc0eabc8d86308331b05a4fdf2e841a0c7f0f94424c9de69",
     "tests/integration/flows.test.ts": "f1fbce43c5e849d3979956794d5637649ef1debbf041a14e2a99ac6b46a2db3c",
     "tests/policy.test.ts": "98411d032ca22aaa40c942df2979a6a108883b81d21ccfe13cc37da9bff8f76c",
+    "tests/storage-r2.test.ts": "e6c0ccf2f58ada3f1536d8ce65547f717b48c0a3d5db00070e3568eafd572060",
     "THIRD_PARTY_NOTICES.md": "0c4409b5cf7f415d6810012fb68e14e86a74904bcf8ed5f259ec5f37ff807ec0",
     "tsconfig.base.json": "1aeff328884a9983ffd8531f28f6959f6d052c4074d345c6673d7dbf301f3d68",
     "tsconfig.json": "ff0eabcf9857d1a71847fe8ee7faa9a6b9d88ff3ee7d490f1c574bcb00cee21b",
     "turbo.json": "47f8c5db4280e0c7a285175484fe2abc89fc4fedbb1dd39b011a03b94de367d1"
   },
-  "templateSha256": "10dd04ac228dfcec31de7fafe694d3ffc9ec978db046ed76c7bcebd22a215d0c",
+  "templateSha256": "9ef08e9f9f925a4dd9a38f238be2673a22b9c793aabae7a6d5078176c9c1d103",
   "version": "0.1.0"
 }
