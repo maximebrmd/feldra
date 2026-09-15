@@ -9,7 +9,7 @@ export interface R2UploadOptions {
 export interface R2UploadResult {
   contentType: string;
   pathname: string;
-  url: string;
+  url?: string;
 }
 
 export async function upload(
@@ -30,6 +30,6 @@ export async function upload(
   return {
     contentType: options.contentType ?? "application/octet-stream",
     pathname,
-    url: options.url ?? options.uploadUrl.split("?", 1)[0],
+    ...(options.url ? { url: options.url } : {}),
   };
 }

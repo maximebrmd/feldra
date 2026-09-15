@@ -58,4 +58,6 @@ const blob = await upload("images/avatar.png", file, {
 });
 ```
 
+The client helper returns `pathname` and `contentType`. It includes `url` only when you pass a known public object URL through the `url` option; it never derives a readable URL from the presigned upload URL. Use `getDownloadUrl()` when the object is private.
+
 Configure the bucket's CORS policy for the exact application origins before using browser uploads. The initializer does not create buckets, tokens, CORS policies, or deployments.
