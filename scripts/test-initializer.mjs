@@ -129,10 +129,7 @@ assert.notDeepEqual(
   staleClerkLock.packages[clerkSharedDependencyPath]
 );
 staleClerkLock.packages[clerkSharedDependencyPath] = staleSharedDependency;
-await writeFile(
-  clerkLockfile,
-  `${JSON.stringify(staleClerkLock, null, 2)}\n`
-);
+await writeFile(clerkLockfile, `${JSON.stringify(staleClerkLock, null, 2)}\n`);
 try {
   run("npm", ["run", "initializer:pack"], root, {
     ...process.env,

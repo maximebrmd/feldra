@@ -171,7 +171,10 @@ async function resolveLockfile(apply, destFile) {
     const lockfile = JSON.parse(await readFile(lockfilePath, "utf8"));
     try {
       const overlayLockfile = JSON.parse(await readFile(destFile, "utf8"));
-      const packages = lockfile.packages ?? (lockfile.packages = {});
+      const packages = lockfile.packages ?? {};
+      if (lockfile.packages === undefined || lockfile.packages === null) {
+        lockfile.packages = packages;
+      }
       for (const [path, packageInfo] of Object.entries(
         overlayLockfile.packages ?? {}
       )) {
