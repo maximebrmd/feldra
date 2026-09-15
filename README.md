@@ -122,11 +122,11 @@ Generated apps are two Next.js deployments from one repository (`apps/web` and `
 
 ## Development
 
-This repository is a monorepo: the published package lives in `packages/feldra`, the SaaS template is the workspace apps and `@repo/*` packages, and `apps/docs` is the Feldra product documentation site built with Blume (`npm run docs:dev` → http://localhost:4321). Dual-maintaining Mintlify or Fumadocs for this in-repo site is out of scope; those frameworks are choices for generated projects.
+This repository is a small npm workspace: `packages/feldra` is the published initializer and `apps/docs` is the Feldra product documentation site built with Blume (`npm run docs:dev` → http://localhost:4321). The generated SaaS source is kept under `packages/feldra/template-source` and packed into the independent project template; it is not a root workspace. Dual-maintaining Mintlify or Fumadocs for this in-repo site is out of scope; those frameworks are choices for generated projects.
 
 ```sh
 npm ci
-npm run check              # Lint, workspace types, unit tests, both production builds
+npm run check              # Lint, root types/tests, and the docs build
 npm run docs:dev
 npm run docs:build
 npm run initializer:pack   # Write packages/feldra/template/ and feldra-VERSION.tgz
@@ -135,7 +135,7 @@ npm exec --workspace packages/feldra -- feldra create my-new-saas
 
 See [Quickstart](#quickstart) for the gitignored template and local create.
 
-Optional fixture tests need Docker: `npm run test:database`, `npm run test:browser`.
+`npm run initializer:test` also checks the generated project matrix, including its optional Docker fixtures.
 
 See [CONTRIBUTING](.github/CONTRIBUTING.md), [releasing](docs/releasing.md), and [CI/CD](docs/ci-cd.md). Generated projects do not include this repository's Changesets or GitHub workflows; they receive a product README and a chosen documentation app rather than this file.
 

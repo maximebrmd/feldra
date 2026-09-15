@@ -35,23 +35,29 @@ if (!templateOnly) {
 await rm(target, { force: true, recursive: true });
 await mkdir(target);
 const files = [
-  "apps/app",
-  "apps/web",
-  "packages",
-  "tests",
-  "docs",
-  "scripts/test-database.mjs",
-  "scripts/test-browser.mjs",
-  "package.json",
-  "package-lock.json",
-  "tsconfig.json",
-  "tsconfig.base.json",
-  "turbo.json",
-  "biome.jsonc",
-  ".env.example",
-  ".gitignore",
-  "LICENSE",
-  "THIRD_PARTY_NOTICES.md",
+  ["packages/feldra/template-source/apps/app", "apps/app"],
+  ["packages/feldra/template-source/apps/web", "apps/web"],
+  ["packages/feldra/template-source/packages", "packages"],
+  ["packages/feldra/template-source/tests", "tests"],
+  ["docs", "docs"],
+  [
+    "packages/feldra/template-source/scripts/test-database.mjs",
+    "scripts/test-database.mjs",
+  ],
+  [
+    "packages/feldra/template-source/scripts/test-browser.mjs",
+    "scripts/test-browser.mjs",
+  ],
+  ["packages/feldra/template-source/package.json", "package.json"],
+  ["packages/feldra/template-source/package-lock.json", "package-lock.json"],
+  ["packages/feldra/template-source/tsconfig.json", "tsconfig.json"],
+  ["tsconfig.base.json", "tsconfig.base.json"],
+  ["turbo.json", "turbo.json"],
+  ["biome.jsonc", "biome.jsonc"],
+  [".env.example", ".env.example"],
+  [".gitignore", ".gitignore"],
+  ["LICENSE", "LICENSE"],
+  ["THIRD_PARTY_NOTICES.md", "THIRD_PARTY_NOTICES.md"],
 ];
 function omitFromTemplate(path, name) {
   return (
@@ -61,8 +67,8 @@ function omitFromTemplate(path, name) {
     (path === "packages" && name === "feldra")
   );
 }
-async function copy(path) {
-  const entries = await readdir(join(root, path), {
+async function copy(sourcePath, destinationPath = sourcePath) {
+  const entries = await readdir(join(root, sourcePath), {
     withFileTypes: true,
   }).catch((error) => {
     if (error.code === "ENOTDIR") {
@@ -72,7 +78,7 @@ async function copy(path) {
   });
   if (entries) {
     for (const entry of entries) {
-      if (omitFromTemplate(path, entry.name)) {
+      if (omitFromTemplate(destinationPath, entry.name)) {
         continue;
       }
       if (
@@ -83,18 +89,22 @@ async function copy(path) {
         continue;
       }
       if (entry.isSymbolicLink()) {
-        throw new Error(`Symlink disallowed: ${path}/${entry.name}`);
+        throw new Error(`Symlink disallowed: ${sourcePath}/${entry.name}`);
       }
-      await copy(`${path}/${entry.name}`);
+      await copy(
+        `${sourcePath}/${entry.name}`,
+        `${destinationPath}/${entry.name}`
+      );
     }
   } else {
-    const dest = path === ".gitignore" ? "gitignore" : path;
+    const dest =
+      destinationPath === ".gitignore" ? "gitignore" : destinationPath;
     await mkdir(join(target, dest, ".."), { recursive: true });
-    await copyFile(join(root, path), join(target, dest));
+    await copyFile(join(root, sourcePath), join(target, dest));
   }
 }
-for (const path of files) {
-  await copy(path);
+for (const [sourcePath, destinationPath] of files) {
+  await copy(sourcePath, destinationPath);
 }
 await copyFile(join(release, "template-readme.md"), join(target, "README.md"));
 await copyFile(join(release, "CHANGELOG.md"), join(target, "CHANGELOG.md"));

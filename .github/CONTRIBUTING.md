@@ -6,31 +6,29 @@ Please follow the [code of conduct](CODE_OF_CONDUCT.md). Report vulnerabilities 
 
 ## Local setup
 
-Use Node.js 24 LTS and npm 11.19.1, matching CI. Docker is required for the database and production browser fixtures.
+Use Node.js 24 LTS and npm 11.19.1, matching CI. Docker is required for the generated-project database and production browser fixtures.
 
 ```sh
 npm ci
 cp .env.example .env.local
 ```
 
-Follow [provider setup](../docs/setup.md) to configure a local app, then run `npm run dev`. The marketing app uses port 3000 and the authenticated app uses port 3001. For documentation changes, run `npm run docs:dev` (port 4321).
+The root workspace contains the initializer and product docs. For documentation changes, run `npm run docs:dev` (port 4321). The generated-project app and fixture commands are exercised by `npm run initializer:test`.
 
 ## Repository layout
 
 | Path | Responsibility |
 | --- | --- |
-| `apps/web` | Next.js marketing and pricing pages |
-| `apps/app` | Next.js authentication, dashboard, APIs and billing webhooks |
 | `apps/docs` | Feldra's Blume/Astro product documentation website (not dual-maintained as Mintlify/Fumadocs) |
-| `packages` | Shared `@repo/*` packages; `packages/feldra` is the published `feldra` workspace |
 | `packages/feldra/bin` | `feldra` CLI (`npx feldra create`) and provider selection |
+| `packages/feldra/template-source` | Source tree for generated apps, shared packages, tests and fixture scripts; not a root workspace |
 | `packages/feldra/variants/clerk` | Clerk template overlay and generated dependency lockfile |
 | `packages/feldra/variants/authjs` | Auth.js template overlay and generated dependency lockfile |
 | `packages/feldra/variants/supabase` | Supabase Auth template overlay and generated dependency lockfile |
 | `packages/feldra/variants/appwrite` | Appwrite Auth overlay and generated dependency lockfile |
 | `packages/feldra/variants/docs` | Generated Blume, Mintlify, and Fumadocs docs apps and overlay lockfiles |
 | `scripts/pack-initializer.mjs` | Template allowlist, manifests and npm tarball packaging |
-| `tests` | Unit, initializer and database integration tests |
+| `tests` | CI contract and initializer tests |
 
 This repository's Blume docs app, the `feldra` workspace, Changesets and GitHub workflows are maintainer tooling. Generated projects receive a chosen docs app from `packages/feldra/variants/docs` rather than this repository's `apps/docs` site. Do not edit generated `packages/feldra/template` (gitignored; produced by `npm run initializer:pack`), `.blume`, `.source`, `.next`, or `dist` output. Regenerate auth and docs overlay lockfiles through the pack script when those dependencies change.
 
@@ -38,11 +36,9 @@ This repository's Blume docs app, the `feldra` workspace, Changesets and GitHub 
 
 ```sh
 npm run format             # Apply Ultracite/Biome formatting and fixes
-npm run check              # Lint, workspace types, unit tests and builds
+npm run check              # Lint, root types/tests and the docs build
 npm run test:coverage      # Same unit tests as `npm test`, with Node coverage
 npm run test:initializer   # CLI options and release-version tests
-npm run test:database      # Isolated Docker Postgres integration fixtures
-npm run test:browser       # Production app flows in Chromium; Docker required
 npm run initializer:test   # Pack and verify auth/database combinations plus Mintlify and Fumadocs docs builds
 ```
 
