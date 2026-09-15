@@ -16,6 +16,7 @@
       "!!skills-lock.json",
       "!!package-lock.json",
       "!!**/package-lock.*.json",
+      "!!packages/feldra/variants/flags/package-lock*.json",
       "!!test-results",
       "!!playwright-report",
       "!!**/.next",

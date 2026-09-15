@@ -1,13 +1,16 @@
-import { auth } from "@repo/auth/auth";
 import { authConfigured } from "@repo/auth/config";
 import type { NextFetchEvent, NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-const sessionProxy = auth((_request: NextRequest, _event: NextFetchEvent) =>
-  NextResponse.next()
-);
+const flagsDiscoveryPath = "/.well-known/vercel/flags";
 
-export default function proxy(request: NextRequest, event: NextFetchEvent) {
+export default async function proxy(
+  request: NextRequest,
+  event: NextFetchEvent
+) {
+  if (request.nextUrl.pathname === flagsDiscoveryPath) {
+    return NextResponse.next();
+  }
   if (!authConfigured()) {
     return NextResponse.json(
       {
@@ -17,6 +20,10 @@ export default function proxy(request: NextRequest, event: NextFetchEvent) {
       { status: 503 }
     );
   }
+  const { auth } = await import("@repo/auth/auth");
+  const sessionProxy = auth((_request: NextRequest, _event: NextFetchEvent) =>
+    NextResponse.next()
+  );
   return sessionProxy(request, event);
 }
 export const config = {

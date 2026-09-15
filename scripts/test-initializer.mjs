@@ -5,13 +5,102 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
-function run(command, args, cwd = root) {
-  const result = spawnSync(command, args, { cwd, stdio: "inherit" });
+function run(command, args, cwd = root, env = process.env) {
+  const result = spawnSync(command, args, { cwd, env, stdio: "inherit" });
   if (result.error || result.status !== 0) {
     throw new Error(`${command} ${args.join(" ")} failed (${result.status})`);
   }
 }
-run("npm", ["run", "initializer:pack"]);
+function assertFlagDecision(project, environmentValue, expected) {
+  const result = spawnSync(
+    process.execPath,
+    [
+      "--conditions=react-server",
+      "--import",
+      "tsx",
+      "--input-type=module",
+      "--eval",
+      'const { showBetaFeature } = await import("@repo/feature-flags"); process.stdout.write(String(await showBetaFeature.decide({})));',
+    ],
+    {
+      cwd: project,
+      encoding: "utf8",
+      env: { ...process.env, SHOW_BETA_FEATURE: environmentValue },
+    }
+  );
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stdout, String(expected));
+}
+const unconfiguredAuthEnv = {
+  appwrite: {
+    APPWRITE_API_KEY: "",
+    NEXT_PUBLIC_APPWRITE_ENDPOINT: "",
+    NEXT_PUBLIC_APPWRITE_PROJECT_ID: "",
+  },
+  authjs: {
+    AUTH_GITHUB_ID: "",
+    AUTH_GITHUB_SECRET: "",
+    AUTH_SECRET: "",
+  },
+  clerk: {
+    CLERK_SECRET_KEY: "",
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "",
+  },
+  supabase: {
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: "",
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "",
+    NEXT_PUBLIC_SUPABASE_URL: "",
+  },
+};
+function assertFlagsRuntime(project, auth) {
+  const result = spawnSync(
+    process.execPath,
+    [
+      "--conditions=react-server",
+      "--import",
+      "tsx",
+      "--input-type=module",
+      "--eval",
+      `const { NextRequest } = await import("next/server");
+const { default: proxy } = await import("./apps/app/src/proxy.ts");
+const { GET } = await import("./apps/app/src/app/.well-known/vercel/flags/route.ts");
+const { createAccessProof } = await import("flags");
+const flagsPath = "/.well-known/vercel/flags";
+const request = (path, authorization) => new NextRequest(\`http://localhost:3001\${path}\`, { headers: authorization ? { Authorization: authorization } : {} });
+const discover = (authorization) => GET(request(flagsPath, authorization));
+const absent = await discover();
+if (absent.status !== 401) throw new Error(\`Absent Flags authorization returned \${absent.status}\`);
+const invalid = await discover("Bearer invalid");
+if (invalid.status !== 401) throw new Error(\`Invalid Flags authorization returned \${invalid.status}\`);
+const proof = await createAccessProof(process.env.FLAGS_SECRET);
+const authorized = await discover(\`Bearer \${proof}\`);
+if (authorized.status !== 200) throw new Error(\`Valid Flags authorization returned \${authorized.status}\`);
+const data = await authorized.json();
+if (data.definitions?.["show-beta-feature"]?.defaultValue !== false) throw new Error("Flags discovery omitted the example definition");
+const discoveryProxy = await proxy(request(flagsPath));
+if (discoveryProxy.status !== 200) throw new Error(\`Flags discovery was blocked by the auth proxy with \${discoveryProxy.status}\`);
+const applicationProxy = await proxy(request("/dashboard"));
+if (applicationProxy.status !== 503) throw new Error(\`Application route lost provider protection: \${applicationProxy.status}\`);
+const nestedProxy = await proxy(request(\`\${flagsPath}/child\`));
+if (nestedProxy.status !== 503) throw new Error(\`Non-exact Flags path lost provider protection: \${nestedProxy.status}\`);`,
+    ],
+    {
+      cwd: project,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        FLAGS_SECRET: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        SHOW_BETA_FEATURE: "false",
+        ...unconfiguredAuthEnv[auth],
+      },
+    }
+  );
+  assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+}
+run("npm", ["run", "initializer:pack"], root, {
+  ...process.env,
+  FELDRA_INITIALIZER_TEST_PACK: "1",
+});
 const version = JSON.parse(
   await readFile(join(root, "packages/feldra/package.json"), "utf8")
 ).version;
@@ -43,7 +132,7 @@ assert.ok(
 assert.ok(
   !entries.includes("package/template/tests/ci-required-checks.test.ts")
 );
-for (const { database, auth } of [
+for (const { database, auth, flags } of [
   { auth: "better-auth", database: "neon" },
   { auth: "better-auth", database: "supabase" },
   { auth: "clerk", database: "neon" },
@@ -54,6 +143,11 @@ for (const { database, auth } of [
   { auth: "supabase", database: "supabase" },
   { auth: "appwrite", database: "neon" },
   { auth: "appwrite", database: "supabase" },
+  { auth: "better-auth", database: "neon", flags: "vercel" },
+  { auth: "clerk", database: "neon", flags: "vercel" },
+  { auth: "authjs", database: "neon", flags: "vercel" },
+  { auth: "supabase", database: "neon", flags: "vercel" },
+  { auth: "appwrite", database: "neon", flags: "vercel" },
 ]) {
   const temp = await mkdtemp(join(tmpdir(), "feldra packed test "));
   run(
@@ -72,6 +166,7 @@ for (const { database, auth } of [
       database,
       "--auth",
       auth,
+      ...(flags ? ["--flags", flags] : []),
       "--yes",
     ],
     temp
@@ -88,6 +183,7 @@ for (const { database, auth } of [
   assert.equal(origin.preset, database);
   assert.equal(origin.auth, auth);
   assert.equal(origin.docs, "blume");
+  assert.equal(origin.flags, flags ?? "none");
   assert.equal(
     Boolean(lock.packages["node_modules/@clerk/nextjs"]),
     auth === "clerk"
@@ -163,9 +259,48 @@ for (const { database, auth } of [
   assert.ok(!lock.packages["node_modules/mint"]);
   assert.ok(!lock.packages["node_modules/fumadocs-ui"]);
   assert.ok(!lock.packages["node_modules/feldra"]);
+  assert.equal(
+    Boolean(lock.packages["node_modules/flags"]),
+    flags === "vercel"
+  );
+  const appPackage = JSON.parse(
+    await readFile(join(project, "apps/app/package.json"), "utf8")
+  );
+  assert.equal(
+    Boolean(appPackage.dependencies?.["@repo/feature-flags"]),
+    flags === "vercel"
+  );
   assert.ok(!lock.packages["node_modules/@changesets/cli"]);
   assert.ok((await readdir(join(project, "node_modules"))).includes("next"));
   const local = await readFile(join(project, ".env.local"), "utf8");
+  if (flags === "vercel") {
+    assert.match(local, /FLAGS_SECRET=[A-Za-z0-9_-]{43}/u);
+    assert.match(local, /SHOW_BETA_FEATURE=false/u);
+    assertFlagDecision(project, "false", false);
+    assertFlagDecision(project, "true", true);
+    assert.ok(
+      (await readdir(join(project, "packages"))).includes("feature-flags")
+    );
+    assert.match(
+      await readFile(
+        join(project, "apps/app/src/app/.well-known/vercel/flags/route.ts"),
+        "utf8"
+      ),
+      /createFlagsDiscoveryEndpoint/u
+    );
+    assert.match(
+      await readFile(join(project, "docs/feature-flags.md"), "utf8"),
+      /provider-agnostic/u
+    );
+    if (auth !== "better-auth") {
+      assertFlagsRuntime(project, auth);
+    }
+  } else {
+    assert.doesNotMatch(local, /FLAGS_SECRET|SHOW_BETA_FEATURE/u);
+    assert.ok(
+      !(await readdir(join(project, "packages"))).includes("feature-flags")
+    );
+  }
   if (auth === "better-auth") {
     assert.match(local, /BETTER_AUTH_SECRET=[A-Za-z0-9_-]{43}/u);
   } else if (auth === "authjs") {
@@ -250,8 +385,9 @@ for (const { database, auth } of [
   );
 }
 // Auth×database already covers default Blume, including turbo docs build via
-// `npm run check`. Mintlify and Fumadocs are packed and built once each rather
-// than multiplying the auth/database/docs fixture matrix.
+// `npm run check`. Vercel Flags fixtures cover each auth with Neon, and
+// Mintlify and Fumadocs are packed and built once each rather than multiplying
+// the auth/database/docs/flags fixture matrix.
 for (const docs of ["mintlify", "fumadocs"]) {
   const temp = await mkdtemp(join(tmpdir(), `feldra ${docs} docs `));
   run(

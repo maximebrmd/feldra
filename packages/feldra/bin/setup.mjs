@@ -80,6 +80,20 @@ export const docsFrameworks = {
   },
 };
 
+export const featureFlags = {
+  none: {
+    hint: "No feature-flags package (default)",
+    instructions: "No feature-flags provider was selected.",
+    label: "No feature flags",
+  },
+  vercel: {
+    hint: "Provider-agnostic Vercel Flags SDK package",
+    instructions:
+      "Set the generated FLAGS_SECRET separately for development, preview, and production. See docs/feature-flags.md.",
+    label: "Vercel Flags SDK",
+  },
+};
+
 function requireChoice(value, table, message) {
   if (value && !Object.hasOwn(table, value)) {
     throw new Error(message);
@@ -135,6 +149,11 @@ export async function collectSetup(options, prompts) {
     docsFrameworks,
     "Choose --docs blume, --docs mintlify, or --docs fumadocs."
   );
+  let flags = requireChoice(
+    options.flags,
+    featureFlags,
+    "Choose --flags none or --flags vercel."
+  );
   let directory = options.directory;
   if (!directory && prompts) {
     directory = await prompts.text({
@@ -186,11 +205,17 @@ export async function collectSetup(options, prompts) {
     message: "Which documentation framework do you want to use?",
     order: ["blume", "mintlify", "fumadocs"],
   });
+  flags = await pickChoice(flags, prompts, {
+    choices: featureFlags,
+    fallback: "none",
+    message: "Which feature-flags package do you want to use?",
+    order: ["none", "vercel"],
+  });
   if (
     prompts &&
     !(await prompts.confirm({
       initialValue: true,
-      message: `Create ${name} with ${databases[database].label} + ${authentications[authentication].label} + ${docsFrameworks[docs].label}?`,
+      message: `Create ${name} with ${databases[database].label} + ${authentications[authentication].label} + ${docsFrameworks[docs].label} + ${featureFlags[flags].label}?`,
     }))
   ) {
     throw new Error("Canceled. No project files were created.");
@@ -199,6 +224,7 @@ export async function collectSetup(options, prompts) {
     auth: authentication,
     directory,
     docs,
+    flags,
     name,
     preset: database,
   };

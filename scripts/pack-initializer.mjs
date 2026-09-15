@@ -14,6 +14,10 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { authOverlays } from "../packages/feldra/bin/apply-auth.mjs";
 import { applyDocs } from "../packages/feldra/bin/apply-docs.mjs";
+import {
+  applyFlags,
+  flagsLockfileName,
+} from "../packages/feldra/bin/apply-flags.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const release = join(root, "packages/feldra");
@@ -28,7 +32,8 @@ function run(args, cwd) {
   }
 }
 const templateOnly = process.argv.includes("--template-only");
-if (!templateOnly) {
+const initializerTestPack = process.env.FELDRA_INITIALIZER_TEST_PACK === "1";
+if (!(templateOnly || initializerTestPack)) {
   run(["run", "check"], root);
   run(["run", "test:initializer"], root);
 }
@@ -182,6 +187,37 @@ for (const [name, apply] of Object.entries(authOverlays)) {
   );
   variantFiles[`${name}Files`] = await hashTree(variant);
 }
+const flagsVariant = join(release, "variants/flags");
+for (const authName of ["better-auth", ...Object.keys(authOverlays)]) {
+  for (const docsName of ["blume", "mintlify", "fumadocs"]) {
+    await resolveLockfile(
+      async (staging) => {
+        if (authName !== "better-auth") {
+          await authOverlays[authName](
+            staging,
+            join(release, "variants", authName),
+            { lockfile: false }
+          );
+        }
+        if (docsName !== "blume") {
+          await applyDocs(
+            staging,
+            join(release, "variants/docs", docsName),
+            docsName,
+            { auth: authName, lockfile: false }
+          );
+        }
+        await applyFlags(staging, flagsVariant, {
+          auth: authName,
+          docs: docsName,
+          lockfile: false,
+        });
+      },
+      join(flagsVariant, flagsLockfileName({ auth: authName, docs: docsName }))
+    );
+  }
+}
+variantFiles.flagsFiles = await hashTree(flagsVariant);
 for (const docsName of ["mintlify", "fumadocs"]) {
   const docsVariant = join(release, "variants/docs", docsName);
   await resolveLockfile(

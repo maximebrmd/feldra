@@ -26,11 +26,12 @@ The root workspace contains the initializer and product docs. For documentation 
 | `packages/feldra/variants/authjs` | Auth.js template overlay and generated dependency lockfile |
 | `packages/feldra/variants/supabase` | Supabase Auth template overlay and generated dependency lockfile |
 | `packages/feldra/variants/appwrite` | Appwrite Auth overlay and generated dependency lockfile |
+| `packages/feldra/variants/flags` | Optional Vercel Flags SDK overlay, generated setup guide and matrix lockfiles |
 | `packages/feldra/variants/docs` | Generated Blume, Mintlify, and Fumadocs docs apps and overlay lockfiles |
 | `scripts/pack-initializer.mjs` | Template allowlist, manifests and npm tarball packaging |
 | `tests` | CI contract and initializer tests |
 
-This repository's Blume docs app, the `feldra` workspace, Changesets and GitHub workflows are maintainer tooling. Generated projects receive a chosen docs app from `packages/feldra/variants/docs` rather than this repository's `apps/docs` site. Do not edit generated `packages/feldra/template` (gitignored; produced by `npm run initializer:pack`), `.blume`, `.source`, `.next`, or `dist` output. Regenerate auth and docs overlay lockfiles through the pack script when those dependencies change.
+This repository's Blume docs app, the `feldra` workspace, Changesets and GitHub workflows are maintainer tooling. Generated projects receive a chosen docs app from `packages/feldra/variants/docs` rather than this repository's `apps/docs` site. Do not edit generated `packages/feldra/template` (gitignored; produced by `npm run initializer:pack`), `.blume`, `.source`, `.next`, or `dist` output. Regenerate auth, flags, and docs overlay lockfiles through the pack script when those dependencies change.
 
 ## Checks
 
@@ -39,7 +40,7 @@ npm run format             # Apply Ultracite/Biome formatting and fixes
 npm run check              # Lint, root types/tests and the docs build
 npm run test:coverage      # Same unit tests as `npm test`, with Node coverage
 npm run test:initializer   # CLI options and release-version tests
-npm run initializer:test   # Pack and verify auth/database combinations plus Mintlify and Fumadocs docs builds
+npm run initializer:test   # Pack and verify auth/database combinations, flags fixtures, and docs builds
 ```
 
 For documentation browser checks, build with `npm run docs:build`, start `npm run preview --workspace docs`, install Chromium with `npx --no-install playwright install chromium`, and run `npm run test:docs` in another terminal. Linux may need `playwright install --with-deps chromium`.

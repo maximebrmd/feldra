@@ -45,7 +45,8 @@ jobs:
       - uses: ./.github/actions/setup-node
       - run: npx --no-install playwright install --with-deps chromium
       # Packs once, then checks all auth/database combinations with default
-      # Blume docs, plus one Mintlify and one Fumadocs docs build.
+      # Blume docs, Vercel Flags fixtures for each auth with Neon, plus one
+      # Mintlify and one Fumadocs docs build.
       - run: npm run initializer:test
       - name: Record artifact checksum
         run: sha256sum feldra-*.tgz > SHA256SUMS

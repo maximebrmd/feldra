@@ -15,11 +15,13 @@ import { parseArgs } from "node:util";
 import { confirm, isCancel, select, text } from "@clack/prompts";
 import { authOverlays } from "./apply-auth.mjs";
 import { applyDocs } from "./apply-docs.mjs";
+import { applyFlags } from "./apply-flags.mjs";
 import {
   authentications,
   collectSetup,
   databases,
   docsFrameworks,
+  featureFlags,
   stackSummary,
 } from "./setup.mjs";
 
@@ -142,6 +144,7 @@ try {
       auth: { type: "string" },
       database: { type: "string" },
       docs: { type: "string" },
+      flags: { type: "string" },
       help: { short: "h", type: "boolean" },
       "list-tools": { type: "boolean" },
       name: { type: "string" },
@@ -151,13 +154,13 @@ try {
   });
   if (values["list-tools"]) {
     console.log(
-      "Database: neon (default), supabase\nAuthentication: better-auth (default, Resend emails), clerk (managed auth and emails), authjs (Auth.js / NextAuth, GitHub OAuth), supabase (Supabase Auth; independent of --database), appwrite (managed auth and emails)\nDocumentation: blume (default, Astro), mintlify, fumadocs\nFixed: Next.js, TypeScript, Drizzle, Stripe, Tailwind/shadcn, Ultracite, npm, Turborepo.\nAuth and database combinations are generated at scaffold time with the selected docs app; no provider-switching layer is installed."
+      "Database: neon (default), supabase\nAuthentication: better-auth (default, Resend emails), clerk (managed auth and emails), authjs (Auth.js / NextAuth, GitHub OAuth), supabase (Supabase Auth; independent of --database), appwrite (managed auth and emails)\nDocumentation: blume (default, Astro), mintlify, fumadocs\nFeature flags: none (default), vercel (Vercel Flags SDK; provider-agnostic)\nFixed: Next.js, TypeScript, Drizzle, Stripe, Tailwind/shadcn, Ultracite, npm, Turborepo.\nAuth, database, docs, and feature-flags choices are generated at scaffold time; no provider-switching layer is installed."
     );
     process.exit(0);
   }
   if (values.help) {
     console.log(
-      "Usage: npx feldra@latest create [directory] [--yes] [--name package-name] [--database neon|supabase] [--auth better-auth|clerk|authjs|supabase|appwrite] [--docs blume|mintlify|fumadocs]\nEquivalent: npm exec feldra@latest -- create [directory] [--yes] [...]\nInteractive in a terminal; --yes or piped input is noninteractive. Choose a database, authentication tool, and documentation framework with arrow keys. --auth defaults to better-auth. --docs defaults to blume. --list-tools lists supported tools without creating files. --yes defaults to Neon, Better Auth, and Blume; use --database supabase to select Supabase. --preset is an alias for --database. Auth and database are independent; --auth supabase still needs a Supabase project URL and publishable key. Refuses existing destinations. Node >=22.12, npm and Git required."
+      "Usage: npx feldra@latest create [directory] [--yes] [--name package-name] [--database neon|supabase] [--auth better-auth|clerk|authjs|supabase|appwrite] [--docs blume|mintlify|fumadocs] [--flags none|vercel]\nEquivalent: npm exec feldra@latest -- create [directory] [--yes] [...]\nInteractive in a terminal; --yes or piped input is noninteractive. Choose a database, authentication tool, documentation framework, and optional feature-flags package with arrow keys. --auth defaults to better-auth. --docs defaults to blume. --flags defaults to none. --list-tools lists supported tools without creating files. --yes defaults to Neon, Better Auth, Blume, and no feature-flags package; use --database supabase to select Supabase. --preset is an alias for --database. Auth and database are independent; --auth supabase still needs a Supabase project URL and publishable key. Refuses existing destinations. Node >=22.12, npm and Git required."
     );
     process.exit(0);
   }
@@ -187,6 +190,7 @@ try {
       database: values.database,
       directory: positionals[0],
       docs: values.docs,
+      flags: values.flags,
       name: values.name,
       preset: values.preset,
     },
@@ -231,6 +235,7 @@ try {
       variant
     );
   }
+  await verifyVariant(manifest.flagsFiles, "variants/flags", "feature flags");
   await verifyVariant(
     manifest.mintlifyFiles,
     "variants/docs/mintlify",
@@ -287,7 +292,7 @@ try {
   const applyOverlay = authOverlays[setup.auth];
   if (applyOverlay) {
     await applyOverlay(destination, join(source, "variants", setup.auth), {
-      lockfile: setup.docs === "blume",
+      lockfile: setup.flags === "none" && setup.docs === "blume",
     });
     await writePackageName();
   }
@@ -296,12 +301,20 @@ try {
       destination,
       join(source, "variants/docs", setup.docs),
       setup.docs,
-      { auth: setup.auth }
+      { auth: setup.auth, lockfile: setup.flags === "none" }
     );
+    await writePackageName();
+  }
+  if (setup.flags !== "none") {
+    await applyFlags(destination, join(source, "variants/flags"), {
+      auth: setup.auth,
+      docs: setup.docs,
+    });
     await writePackageName();
   }
   const authentication = authentications[setup.auth];
   const docs = docsFrameworks[setup.docs];
+  const flags = featureFlags[setup.flags];
   const provider = databases[setup.preset];
   const examplePath = join(destination, ".env.example");
   const example = `# Database: ${provider.label} (Postgres + Drizzle + ${authentication.label})\n# ${provider.instructions}\n${await readFile(examplePath, "utf8")}`;
@@ -316,9 +329,15 @@ try {
     `# ${authentication.label}\n\n${authentication.instructions}\n\nSee docs/authentication.md for implementation details and verification limits.\n`
   );
   const secret = randomBytes(32).toString("base64url");
+  const flagsSecret =
+    setup.flags === "none" ? undefined : randomBytes(32).toString("base64url");
   const env = example
     .replace("BETTER_AUTH_SECRET=", `BETTER_AUTH_SECRET=${secret}`)
-    .replace("AUTH_SECRET=", `AUTH_SECRET=${secret}`);
+    .replace("AUTH_SECRET=", `AUTH_SECRET=${secret}`)
+    .replace(
+      "FLAGS_SECRET=",
+      flagsSecret ? `FLAGS_SECRET=${flagsSecret}` : "FLAGS_SECRET="
+    );
   await writeFile(join(destination, ".env.local"), env, {
     flag: "wx",
     mode: 0o600,
@@ -326,11 +345,11 @@ try {
   await chmod(join(destination, ".env.local"), 0o600);
   await writeFile(
     join(destination, "template-origin.json"),
-    `${JSON.stringify({ auth: setup.auth, docs: setup.docs, package: "feldra", preset: setup.preset, templateSha256: manifest.templateSha256, version: manifest.version }, null, 2)}\n`,
+    `${JSON.stringify({ auth: setup.auth, docs: setup.docs, flags: setup.flags, package: "feldra", preset: setup.preset, templateSha256: manifest.templateSha256, version: manifest.version }, null, 2)}\n`,
     { flag: "wx" }
   );
   npm(["ci", "--include=dev", "--no-fund"], destination);
-  if (applyOverlay) {
+  if (applyOverlay || setup.flags !== "none") {
     npm(
       [
         "exec",
@@ -353,7 +372,7 @@ try {
   run("git", ["init", "--initial-branch=main", "--template="], destination);
   const quotedPath = `'${destination.replaceAll("'", "'\"'\"'")}'`;
   console.log(
-    `\nCreated ${name} from feldra ${manifest.version}. Dependencies installed.\nProvider services are NOT configured yet. Next:\n\ncd ${quotedPath}\n\n1. Edit .env.local: ${provider.instructions}\n2. Set APP_URL=http://localhost:3001 and WEB_URL=http://localhost:3000 locally; use separate HTTPS origins in production. Authentication: ${authentication.label}. Documentation: ${docs.label}.\n3. ${authentication.instructions}\n4. ${docs.instructions}\n5. In a separate Stripe sandbox create a Pro product with a USD 12/month recurring price (or match packages/config/index.ts). Set STRIPE_SECRET_KEY, STRIPE_PRO_PRICE_ID and STRIPE_LIVE_MODE=false. Enable the customer portal.\n6. Run: stripe listen --events customer.subscription.created,customer.subscription.updated,customer.subscription.deleted,customer.subscription.paused,customer.subscription.resumed,checkout.session.completed,checkout.session.async_payment_succeeded,checkout.session.async_payment_failed,invoice.paid,invoice.payment_failed,invoice.payment_action_required --forward-to localhost:3001/api/webhooks/stripe\n   Copy its signing secret to STRIPE_WEBHOOK_SECRET.\n\nnpm run db:migrate\nnpm run check\nnpm run dev\n\nMarketing: http://localhost:3000 · Application: http://localhost:3001 · Docs: http://localhost:4321\n\nOptional full local fixture tests (Docker required): npm run test:database\nSee docs/setup.md for restricted key permissions, production configuration and live verification. No providers were provisioned and nothing was published.`
+    `\nCreated ${name} from feldra ${manifest.version}. Dependencies installed.\nProvider services are NOT configured yet. Next:\n\ncd ${quotedPath}\n\n1. Edit .env.local: ${provider.instructions}\n2. Set APP_URL=http://localhost:3001 and WEB_URL=http://localhost:3000 locally; use separate HTTPS origins in production. Authentication: ${authentication.label}. Documentation: ${docs.label}. Feature flags: ${flags.label}.\n3. ${authentication.instructions}\n4. ${docs.instructions}\n5. ${flags.instructions}\n6. In a separate Stripe sandbox create a Pro product with a USD 12/month recurring price (or match packages/config/index.ts). Set STRIPE_SECRET_KEY, STRIPE_PRO_PRICE_ID and STRIPE_LIVE_MODE=false. Enable the customer portal.\n7. Run: stripe listen --events customer.subscription.created,customer.subscription.updated,customer.subscription.deleted,customer.subscription.paused,customer.subscription.resumed,checkout.session.completed,checkout.session.async_payment_succeeded,checkout.session.async_payment_failed,invoice.paid,invoice.payment_failed,invoice.payment_action_required --forward-to localhost:3001/api/webhooks/stripe\n   Copy its signing secret to STRIPE_WEBHOOK_SECRET.\n\nnpm run db:migrate\nnpm run check\nnpm run dev\n\nMarketing: http://localhost:3000 · Application: http://localhost:3001 · Docs: http://localhost:4321\n\nOptional full local fixture tests (Docker required): npm run test:database\nSee docs/setup.md for restricted key permissions, production configuration and live verification. No providers were provisioned and nothing was published.`
   );
 } catch (error) {
   console.error(

@@ -1,7 +1,12 @@
 import { appwriteConfigured } from "@repo/auth/config";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-export default function proxy(_request: NextRequest) {
+
+const flagsDiscoveryPath = "/.well-known/vercel/flags";
+export default function proxy(request: NextRequest) {
+  if (request.nextUrl.pathname === flagsDiscoveryPath) {
+    return NextResponse.next();
+  }
   if (!appwriteConfigured()) {
     return NextResponse.json(
       {

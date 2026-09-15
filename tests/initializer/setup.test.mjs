@@ -9,6 +9,7 @@ test("noninteractive defaults to Neon and derives a valid name from spaces", asy
       auth: "better-auth",
       directory: "./a project with spaces",
       docs: "blume",
+      flags: "none",
       name: "a-project-with-spaces",
       preset: "neon",
     }
@@ -39,6 +40,14 @@ test("interactive selector offers both databases and preserves Supabase selectio
           assert.equal(prompt.initialValue, "blume");
           return "blume";
         }
+        if (prompt.message.includes("feature-flags")) {
+          assert.deepEqual(
+            prompt.options.map((option) => option.value),
+            ["none", "vercel"]
+          );
+          assert.equal(prompt.initialValue, "none");
+          return "none";
+        }
         assert.deepEqual(
           prompt.options.map((option) => option.value),
           ["neon", "supabase"]
@@ -53,6 +62,7 @@ test("interactive selector offers both databases and preserves Supabase selectio
     auth: "better-auth",
     directory: "./my SaaS",
     docs: "blume",
+    flags: "none",
     name: "custom-saas",
     preset: "supabase",
   });
@@ -73,6 +83,7 @@ test("interactive cancellation stops setup", async () => {
         database: "neon",
         directory: "new",
         docs: "blume",
+        flags: "none",
         name: "new",
       },
       { confirm: async () => false }
@@ -119,6 +130,9 @@ test("Auth.js is explicit and remains selectable beside Better Auth and Clerk", 
       select: (prompt) => {
         if (prompt.message.includes("documentation")) {
           return "blume";
+        }
+        if (prompt.message.includes("feature-flags")) {
+          return "none";
         }
         const values = prompt.options.map((option) => option.value);
         assert.ok(values.includes("better-auth"));
@@ -169,6 +183,14 @@ test("interactive selector offers Better Auth, Clerk, Auth.js, Supabase Auth and
         if (prompt.message.includes("documentation")) {
           return "blume";
         }
+        if (prompt.message.includes("feature-flags")) {
+          assert.deepEqual(
+            prompt.options.map((option) => option.value),
+            ["none", "vercel"]
+          );
+          assert.equal(prompt.initialValue, "none");
+          return "none";
+        }
         assert.deepEqual(
           prompt.options.map((option) => option.value),
           ["better-auth", "clerk", "authjs", "supabase", "appwrite"]
@@ -197,6 +219,18 @@ test("docs defaults to Blume and unknown documentation choices fail before creat
   );
 });
 
+test("feature flags default to none and can be selected explicitly", async () => {
+  assert.equal((await collectSetup({ directory: "new" })).flags, "none");
+  assert.equal(
+    (await collectSetup({ directory: "new", flags: "vercel" })).flags,
+    "vercel"
+  );
+  await assert.rejects(
+    collectSetup({ directory: "new", flags: "unknown" }),
+    /Choose --flags/u
+  );
+});
+
 test("interactive selector offers documentation frameworks and preserves Fumadocs", async () => {
   const setup = await collectSetup(
     { auth: "better-auth", database: "neon", directory: "new", name: "new" },
@@ -206,6 +240,9 @@ test("interactive selector offers documentation frameworks and preserves Fumadoc
         return true;
       },
       select: (prompt) => {
+        if (prompt.message.includes("feature-flags")) {
+          return "none";
+        }
         assert.match(prompt.message, /documentation/u);
         assert.deepEqual(
           prompt.options.map((option) => option.value),

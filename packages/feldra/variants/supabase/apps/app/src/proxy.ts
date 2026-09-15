@@ -6,7 +6,12 @@ import {
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
+const flagsDiscoveryPath = "/.well-known/vercel/flags";
+
 export default async function proxy(request: NextRequest) {
+  if (request.nextUrl.pathname === flagsDiscoveryPath) {
+    return NextResponse.next();
+  }
   if (!supabaseConfigured()) {
     return NextResponse.json(
       {
