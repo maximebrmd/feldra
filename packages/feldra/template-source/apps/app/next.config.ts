@@ -17,6 +17,7 @@ const config: NextConfig = {
     "@repo/database",
     "@repo/email",
     "@repo/payments",
+    "@repo/storage",
   ],
 };
 export default config;

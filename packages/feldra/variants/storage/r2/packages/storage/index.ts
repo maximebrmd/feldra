@@ -17,6 +17,7 @@ const imageKey = /\.(?:jpe?g|png|gif|webp|svg)$/iu;
 const jsonKey = /\.json$/iu;
 const leadingSlash = /^\/+/u;
 const trailingSlash = /\/+$/u;
+const periodSegment = /^(?:\.|\.\.)$/u;
 
 export interface PutBlobResult {
   contentDisposition: string | undefined;
@@ -61,6 +62,11 @@ function keyFromPathname(pathname: string) {
   const key = pathname.replace(leadingSlash, "");
   if (!key) {
     throw new Error("Storage object key cannot be empty.");
+  }
+  if (key.split("/").some((segment) => periodSegment.test(segment))) {
+    throw new Error(
+      'Storage object keys cannot contain "." or ".." path segments.'
+    );
   }
   return key;
 }
