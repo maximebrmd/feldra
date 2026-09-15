@@ -1,6 +1,6 @@
 {
   "name": "feldra",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Create a Feldra SaaS monorepo with Neon or Supabase, Better Auth, Clerk, Auth.js, Supabase Auth, or Appwrite, Stripe, optional Vercel Flags SDK, and Blume, Mintlify, or Fumadocs docs.",
   "keywords": [
     "create",
