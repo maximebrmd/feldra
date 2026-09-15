@@ -97,7 +97,7 @@
   },
   "flagsFiles": {
     "apps/app/src/app/.well-known/vercel/flags/route.ts": "21101af56515129af2882b42f7fffd9121bb875299fca159439f8d085fc0b72b",
-    "docs/feature-flags.md": "e655140f644e2aadc948c7c12eaf95abc81c2adc4d20cdc6c07b34bf620031a7",
+    "docs/feature-flags.md": "ddae5bad79ef20107165be05c83319516232b49c46f7952a9a7e58f2868fccd5",
     "package-lock.appwrite.json": "d8c78e3cba6b9be1a7fe46413b01809fe246ea38cc6a694f3ad1e6e228e6ac0b",
     "package-lock.authjs.json": "d6f4dd64cc0a3d04ff54014fb11c354e85ee03fa00616c8cf246ef2b942155b0",
     "package-lock.clerk.json": "0e1551f10af8457cd257a6fe82a92c2e0239383d385db134b5cf0c8854333a42",
@@ -218,12 +218,12 @@
     "CHANGELOG.md": "19b97bb6e23b2db2bbde920b9ef4a2a5c4c2677c19ffa800deb80afc6aee0bf9",
     "docs/architecture.md": "bab8720dffca266fe4e4aeac88a677fcf4f3d346500b36beb99ed764595ad2e7",
     "docs/authentication.md": "be571e5875de019963150847f23f0753543e1115f82e6344c0bbf416464855bd",
-    "docs/ci-cd.md": "f94753986d65a773b946dc772ec0c81fc96f802a72708585c5b2c3aac8c1dc9f",
+    "docs/ci-cd.md": "ed119f83916bb29259e3dc777b3b3e72cd045fb4dd0c91fe44d6939469900d25",
     "docs/databases.md": "9455dfeb2d0149b84669e6afb1848245f4d26cad1863f2ed57b56bd930952a13",
     "docs/dependencies.md": "fa3ad1db72568fffc6e6d10ecf6d1196228f5e1a383eb9251faf7c70f104b261",
     "docs/maintenance.md": "2dd76bd782dd6c126e302bc22490a5b762db2aa86386f7aec57fe366c08116d3",
     "docs/references.md": "7aabaf0a8c7491bc9bac7c32ee434884d99fa1554555b0bb81835f057bfbf0bf",
-    "docs/releasing.md": "e4d33c87bb45a34df4c97bab188d53e9fe89f2c2b4f3b9602c64275c6f156cde",
+    "docs/releasing.md": "99732878f9d067307f33bec7b318f026d3e7b92a1dcb73264ba0c96e158860c5",
     "docs/setup.md": "3a6ed7183fedd282f3f86b4de265402e4610fb3fe7fcbe3b521b9461be853f1f",
     "gitignore": "10384d11de849508f21300062767ae7b7032c47f6f1257a75e19835699ab3669",
     "LICENSE": "b16335a31310aa3f1e645ba18bc8d4bd4e8b2aeb9ee79f36f61b46a209ed45b0",
@@ -276,7 +276,6 @@
     "tsconfig.json": "ff0eabcf9857d1a71847fe8ee7faa9a6b9d88ff3ee7d490f1c574bcb00cee21b",
     "turbo.json": "47f8c5db4280e0c7a285175484fe2abc89fc4fedbb1dd39b011a03b94de367d1"
   },
-  "templateSha256": "b6882e83bc9e87bc00b756ee0a0ac742c70f168955d57f7d859bdf9485acc71e",
-  "templateSha256": "b1ea81bb072d2f43e7a4d8c2d6e0281ce375383d4a14a0115c610bf64b8b645a",
+  "templateSha256": "704c1ec0e8dbd54a318b441ed7e2d6ea05b40703419cec77930425e861b9c897",
   "version": "0.1.0"
 }

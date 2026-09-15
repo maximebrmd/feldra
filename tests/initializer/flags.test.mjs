@@ -10,10 +10,21 @@ import {
 
 const root = resolve(import.meta.dirname, "../..");
 const release = join(root, "packages/feldra");
+const templateSource = join(release, "template-source");
 
 async function copy(destination, path) {
   await mkdir(join(destination, dirname(path)), { recursive: true });
-  await copyFile(join(root, path), join(destination, path));
+  let source = join(root, path);
+  if (path === "README.md") {
+    source = join(release, "template-readme.md");
+  } else if (
+    path.startsWith("apps/") ||
+    path.startsWith("packages/") ||
+    path.startsWith("scripts/")
+  ) {
+    source = join(templateSource, path);
+  }
+  await copyFile(source, join(destination, path));
 }
 
 test("the flags overlay adds selected package wiring and setup files", async () => {
