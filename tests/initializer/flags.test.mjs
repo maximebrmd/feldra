@@ -1,5 +1,12 @@
 import assert from "node:assert/strict";
-import { copyFile, mkdir, mkdtemp, readFile, rm } from "node:fs/promises";
+import {
+  copyFile,
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { test } from "node:test";
@@ -77,6 +84,39 @@ test("the flags overlay adds selected package wiring and setup files", async () 
     assert.match(
       await readFile(join(destination, "docs/feature-flags.md"), "utf8"),
       /FLAGS_SECRET/u
+    );
+    assert.match(
+      await readFile(join(destination, "README.md"), "utf8"),
+      /^> Generated feature flags: \*\*Vercel Flags SDK\*\*/u
+    );
+  } finally {
+    await rm(destination, { force: true, recursive: true });
+  }
+});
+
+test("the flags banner follows existing generated README banners", async () => {
+  const destination = await mkdtemp(join(tmpdir(), "feldra-flags-readme-"));
+  try {
+    for (const path of [
+      ".env.example",
+      "apps/app/next.config.ts",
+      "apps/app/package.json",
+      "turbo.json",
+    ]) {
+      await copy(destination, path);
+    }
+    await writeFile(
+      join(destination, "README.md"),
+      "> Generated authentication: **Clerk**. Start with [Clerk setup](docs/authentication.md).\n\n# Feldra\n"
+    );
+    await applyFlags(destination, join(release, "variants/flags"), {
+      lockfile: false,
+    });
+
+    const readme = await readFile(join(destination, "README.md"), "utf8");
+    assert.match(
+      readme,
+      /^> Generated authentication: \*\*Clerk\*\*[^\n]*\n\n> Generated feature flags: \*\*Vercel Flags SDK\*\*/u
     );
   } finally {
     await rm(destination, { force: true, recursive: true });

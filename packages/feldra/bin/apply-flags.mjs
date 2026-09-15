@@ -37,11 +37,14 @@ async function json(destination, path, update) {
   await writeFile(file, `${JSON.stringify(data, null, 2)}\n`);
 }
 
-async function prependReadme(destination) {
+async function addReadmeBanner(destination) {
   const readme = join(destination, "README.md");
+  const content = await readFile(readme, "utf8");
+  const leadingBanners =
+    content.match(/^(?:> Generated [^\n]+\n\n)*/u)?.[0] ?? "";
   await writeFile(
     readme,
-    `> Generated feature flags: **Vercel Flags SDK**. Start with [feature flags setup](docs/feature-flags.md). The package is provider-agnostic and no external flag provider was provisioned.\n\n${await readFile(readme, "utf8")}`
+    `${leadingBanners}> Generated feature flags: **Vercel Flags SDK**. Start with [feature flags setup](docs/feature-flags.md). The package is provider-agnostic and no external flag provider was provisioned.\n\n${content.slice(leadingBanners.length)}`
   );
 }
 
@@ -92,5 +95,5 @@ export async function applyFlags(
       `${example.trimEnd()}\n# Separate Vercel Flags SDK secret per environment.\nFLAGS_SECRET=\nSHOW_BETA_FEATURE=false\n`
     );
   }
-  await prependReadme(destination);
+  await addReadmeBanner(destination);
 }
