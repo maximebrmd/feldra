@@ -35,8 +35,8 @@ Test verification links, password reset, session revocation, private-record auth
 Feldra’s product docs are a separate static Astro app in this repository. From the template repository root:
 
 ```sh
-npm run build --workspace docs
-npm run preview --workspace docs
+bun run --filter docs build
+bun run --filter docs preview
 ```
 
 The output is `apps/docs/dist`. It can be served by a static host with directory-index routing and the generated `404.html`. No server adapter or provider credentials are required. This in-repo site is not copied into generated SaaS projects; those receive their own `apps/docs` app. Nothing is deployed automatically.

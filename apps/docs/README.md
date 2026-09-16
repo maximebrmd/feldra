@@ -3,10 +3,10 @@
 Feldra uses Blume 1.6.5, the Astro documentation framework used by Blume and Ultracite themselves. This is Blume's real layout and theme, with its homepage components adapted to Feldra's content.
 
 ```sh
-npm ci
-npm run docs:dev
-npm run docs:build
-npm run typecheck --workspace docs
+bun install
+bun run docs:dev
+bun run docs:build
+bun run --filter docs typecheck
 ```
 
 Open http://localhost:4321. The build produces static files in `apps/docs/dist`. The GitHub Actions deploy workflow sends the tested output to Cloudflare Workers Static Assets once enabled; see [CI/CD setup](../../docs/ci-cd.md). Set `deployment.site` in `blume.config.ts` when a domain is chosen to enable canonical URLs and a sitemap.
@@ -28,9 +28,9 @@ After publication, users run `npx feldra create`. npm publication has not happen
 English content stays in `content/docs`. German (`de`), Hindi (`hi`), Japanese (`ja`) and Brazilian Portuguese (`pt`) use matching `content/<locale>/docs` directories. Locale names, tone guidance, tab labels and localized redirects are configured in `blume.config.ts`, following Blume's own docs site.
 
 ```sh
-npm run docs:translate -- --codex --concurrency 1
-npm run docs:translate -- --claude --locale de
-npm run docs:translations:check
+bun run docs:translate -- --codex --concurrency 1
+bun run docs:translate -- --claude --locale de
+bun run docs:translations:check
 ```
 
 Run generation from the repository root with an authenticated local Codex or Claude CLI. It translates Markdown guides and maintains `blume.translations.json`; commit that ledger with the translations. Review translations for terminology and accuracy. Code samples, URLs and source heading anchors should remain stable across languages. The check command reports missing or stale translations without running a model or writing files.
@@ -41,7 +41,7 @@ CI checks freshness on release PRs, and npm publishing repeats the check. Regula
 
 ## Verify
 
-Build, run `npm run preview --workspace docs`, then run `npm run test:docs` from the repository root. The browser test checks all guides, internal links and anchors, search results and empty state, copying commands, mobile navigation, overflow and the 404 page. Screenshots go to `test-results/docs`. Use `DOCS_TEST_URL` to change the preview address.
+Build, run `bun run --filter docs preview`, then run `bun run test:docs` from the repository root. The browser test checks all guides, internal links and anchors, search results and empty state, copying commands, mobile navigation, overflow and the 404 page. Screenshots go to `test-results/docs`. Use `DOCS_TEST_URL` to change the preview address.
 
 ## Attribution
 

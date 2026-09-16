@@ -1,6 +1,6 @@
 # CI/CD
 
-The GitHub Actions setup follows [Blume's workflows](https://github.com/haydenbleasel/blume/tree/main/.github/workflows), adapted to npm workspaces and Feldra's tested initializer tarball.
+The GitHub Actions setup follows [Blume's workflows](https://github.com/haydenbleasel/blume/tree/main/.github/workflows), adapted to Feldra's Bun workspace and tested npm initializer tarball.
 
 ## Repository tooling
 
@@ -8,19 +8,19 @@ The rest of [Blume's `.github` directory](https://github.com/haydenbleasel/blume
 
 | Blume configuration | Feldra equivalent |
 | --- | --- |
-| Contribution guide | `.github/CONTRIBUTING.md`, with npm workspace commands and initializer boundaries |
+| Contribution guide | `.github/CONTRIBUTING.md`, with Bun root commands, npm generated-project commands and initializer boundaries |
 | Contributor Covenant | `.github/CODE_OF_CONDUCT.md`, with Maxime's contact and retained attribution |
 | Security policy | `.github/SECURITY.md`, covering private disclosure and existing generated projects |
 | Bug and feature templates | `.github/ISSUE_TEMPLATE`, with Feldra version and provider information |
 | Pull request template | `.github/pull_request_template.md`, with validation, changesets and documentation |
 | Funding | `.github/FUNDING.yml`, disabled until a funding destination is available |
-| Dependabot | Monthly npm and GitHub Actions updates; minor/patch npm updates are grouped |
+| Dependabot | Monthly Bun and GitHub Actions updates; minor/patch dependency updates are grouped |
 | Build, lint, test, coverage and typecheck workflows | Separate jobs within `ci.yml`, preserving a shared release/deployment gate |
 | Release and deploy workflows | `release.yml` and `deploy.yml`, using tested artifacts |
 | Benchmark workflow | Not enabled: Feldra has no benchmark runner or performance baseline |
 | Translation workflow | `translations.yml` checks translation freshness on release PRs and manual runs |
 
-Dependabot uses the root workspace lockfile. Packaging regenerates auth, flags, and docs overlay lockfiles, and distribution tests validate each authentication implementation. Major npm updates remain separate PRs. Updates require review and passing CI; there is no automatic merge workflow.
+Dependabot uses the root Bun workspace lockfile. Packaging regenerates npm auth overlay lockfiles, and distribution tests validate each authentication implementation. Major dependency updates remain separate PRs. Updates require review and passing CI; there is no automatic merge workflow.
 
 GitHub reported no Sponsors listing for `maximebrmd` when this configuration was added. Activate the listing and uncomment the account in `FUNDING.yml`, or configure a real custom funding URL. An X profile is a contact channel, not a funding destination.
 
@@ -30,13 +30,13 @@ Maintainers can also enable GitHub private vulnerability reporting in repository
 
 English is the source language; German, Hindi, Japanese and Brazilian Portuguese follow Blume's locale configuration. Translated guides live under `apps/docs/content/{de,hi,ja,pt}/docs`. English URLs keep `/docs/...`; translated guides use `/<locale>/docs/...`. Navigation labels are localized in `blume.config.ts`. The custom Astro homepage and 404 page remain English: Blume translates Markdown content, not custom Astro components.
 
-Run `npm run docs:translate -- --codex` (or `--claude`) with an installed, authenticated local CLI. Use `--locale de` for one language and `--concurrency 1` for sequential translation. Blume updates only missing or stale files and records source hashes in `apps/docs/blume.translations.json`. Review and commit the translated files and ledger together. Avoid `--force` unless you intend to replace existing translations.
+Run `bun run docs:translate -- --codex` (or `--claude`) with an installed, authenticated local CLI. Use `--locale de` for one language and `--concurrency 1` for sequential translation. Blume updates only missing or stale files and records source hashes in `apps/docs/blume.translations.json`. Review and commit the translated files and ledger together. Avoid `--force` unless you intend to replace existing translations.
 
-`npm run docs:translations:check` is read-only and needs no model credentials. The Translations workflow runs it on `changeset-release/main` PRs, matching Blume, and can be dispatched on any branch. Regular source PRs may leave translations stale until release preparation. Refresh translations locally and include them in the release PR before merging. If a bot-created release PR has no workflow run, dispatch Translations on its branch or close and reopen the PR as a maintainer. The publishing job repeats the check before npm publication, so merging without a PR run cannot bypass it. Translation generation is not part of the automated Changesets version command and never consumes model credentials in CI.
+`bun run docs:translations:check` is read-only and needs no model credentials. The Translations workflow runs it on `changeset-release/main` PRs, matching Blume, and can be dispatched on any branch. Regular source PRs may leave translations stale until release preparation. Refresh translations locally and include them in the release PR before merging. If a bot-created release PR has no workflow run, dispatch Translations on its branch or close and reopen the PR as a maintainer. The publishing job repeats the check before npm publication, so merging without a PR run cannot bypass it. Translation generation is not part of the automated Changesets version command and never consumes model credentials in CI.
 
 ## Pull requests and main
 
-`ci.yml` runs on pull requests, pushes to `main`, and manual dispatch. Node 24 and npm 11.19.1 install the committed lockfile with `npm ci`. Independent jobs check lint, types, unit tests, coverage, and initializer tests. The distribution job builds and packs the initializer, scaffolds all auth/database combinations with the default Blume docs app, and runs their existing checks and isolated Docker database fixtures. It also scaffolds the provider-agnostic Vercel Flags overlay for each authentication variant with Neon, checks the flag decision in every flags fixture, and exercises discovery authorization plus provider-proxy bypass for Clerk, Auth.js, Supabase Auth, and Appwrite. Better Auth variants also run production browser tests; Clerk, Auth.js, Supabase Auth, and Appwrite use their existing fixtures without live credentials. The same packed tarball also scaffolds Mintlify and Fumadocs once each and builds those docs apps. A full auth/database/docs/flags fixture matrix is not run.
+`ci.yml` runs on pull requests, pushes to `main`, and manual dispatch. Node 24 and Bun 1.4.0 install the committed `bun.lock` with `bun install --frozen-lockfile`. Independent jobs check lint, types, unit tests, coverage, and initializer tests. The distribution job builds and packs the initializer, scaffolds all auth/database combinations with the default Blume docs app, and runs their existing checks and isolated Docker database fixtures. It also scaffolds the provider-agnostic Vercel Flags overlay for each authentication variant with Neon, checks the flag decision in every flags fixture, and exercises discovery authorization plus provider-proxy bypass for Clerk, Auth.js, Supabase Auth, and Appwrite. Better Auth variants also run production browser tests; Clerk, Auth.js, Supabase Auth, and Appwrite use their existing fixtures without live credentials. The same packed tarball also scaffolds Mintlify and Fumadocs once each and builds those docs apps. A full auth/database/docs/flags fixture matrix is not run. Generated projects continue to install with npm and their generated `package-lock.json` files.
 
 The `build-docs` job builds the static site and tests it in Chromium. Successful runs upload `docs` and `initializer` artifacts, including the tarball's SHA-256 checksum, for 14 days. Docs screenshots are uploaded even when a later browser assertion fails. Generated projects do not receive these repository workflows.
 
@@ -44,7 +44,7 @@ All CI jobs must succeed before release or deployment. Pull requests never publi
 
 ## Release setup
 
-1. In GitHub Settings → Actions → General, allow GitHub Actions to create pull requests. Changesets opens or updates a version PR after successful pushes to main. Its `release:version` command synchronizes the initializer, root version, and lockfile.
+1. In GitHub Settings → Actions → General, allow GitHub Actions to create pull requests. Changesets opens or updates a version PR after successful pushes to main. Its `release:version` command synchronizes the initializer, root version, and Bun lockfile.
 2. Publish the first `feldra` version from the downloaded, tested CI tarball using your npm account, if the package does not yet exist. Confirm package ownership before publishing. This bootstrap is needed before configuring an npm trusted publisher.
 3. In the npm package's trusted publisher settings, select GitHub Actions: owner `maximebrmd`, repository `feldra`, workflow filename **`ci.yml`**, no environment, and allow `npm publish`. npm validates the calling workflow identity; `ci.yml` calls the reusable `release.yml`. See [npm trusted publishing](https://docs.npmjs.com/trusted-publishers).
 4. Set the GitHub repository Actions variable `NPM_PUBLISH_ENABLED` to `true` to activate automated publication. No `NPM_TOKEN` is used; the workflow grants OIDC permission and publishes with provenance.

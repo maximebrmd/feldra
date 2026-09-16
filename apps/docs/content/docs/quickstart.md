@@ -7,14 +7,14 @@ sidebar:
 
 ## Prerequisites
 
-Use Node.js 24 LTS, npm, and Git. Docker is needed only for local database and browser fixtures. You do not need provider credentials to build the template or run those fixtures.
+Use Node.js 24 LTS, Bun 1.4.0, and Git. Docker is needed only for local database and browser fixtures. You do not need provider credentials to build the template or run those fixtures.
 
 ## Get the source
 
 ```sh
 git clone https://github.com/maximebrmd/feldra.git feldra
 cd feldra
-npm ci
+bun install
 ```
 
 ## Create your project
@@ -22,7 +22,7 @@ npm ci
 The initializer has not been published to npm. Build the versioned local package first:
 
 ```sh
-npm run initializer:pack
+bun run initializer:pack
 ```
 
 This validates the source and writes `feldra-VERSION.tgz` in the repository root. Replace VERSION below with the version in `packages/feldra/package.json`:

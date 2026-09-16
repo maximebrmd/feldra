@@ -103,7 +103,7 @@ test("GitHub check names match the Blume-style required set without a Windows do
   assert.equal(coverage.name, "coverage");
   assert.equal(coverage.runsOn, "ubuntu-latest");
   assert.equal(
-    coverage.runCommands.some((command) => command === "npm run test:coverage"),
+    coverage.runCommands.some((command) => command === "bun run test:coverage"),
     true
   );
 
@@ -156,7 +156,7 @@ test("release job is quiet when the changeset queue is empty and npm publish is 
     (step.uses ?? "").startsWith("changesets/action")
   );
   assert.ok(changesets);
-  assert.equal(changesets.with?.["version-script"], "npm run release:version");
+  assert.equal(changesets.with?.["version-script"], "bun run release:version");
   assert.equal(changesets.with?.publish, undefined);
 
   const publishGuard =

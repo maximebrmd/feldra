@@ -27,7 +27,7 @@ async function copyCliWithoutTemplate(temp) {
     join(pkg, "template-manifest.json")
   );
   await copyFile(join(release, "package.json"), join(pkg, "package.json"));
-  await symlink(join(root, "node_modules"), join(pkg, "node_modules"));
+  await symlink(join(release, "node_modules"), join(pkg, "node_modules"));
   return pkg;
 }
 
@@ -45,7 +45,7 @@ function createWithMissingTemplate(pkg, dest) {
 function assertMissingTemplateError(result) {
   assert.notEqual(result.status, 0, `${result.stdout}\n${result.stderr}`);
   assert.match(result.stderr, /missing or stale/iu);
-  assert.match(result.stderr, /npm run initializer:pack/u);
+  assert.match(result.stderr, /bun run initializer:pack/u);
   assert.doesNotMatch(result.stderr, /^feldra: ENOENT:/mu);
 }
 

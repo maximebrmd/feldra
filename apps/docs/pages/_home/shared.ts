@@ -13,7 +13,7 @@ import { resolveIcon } from "blume/theme/icons.ts";
 // the mock-browser chrome) instead of hand-inlining SVG paths.
 export const glyph = (name: string): string => resolveIcon(name)?.body ?? "";
 
-export const installCommand = "npm run initializer:pack";
+export const installCommand = "bun run initializer:pack";
 // Copy-to-clipboard for the install boxes; briefly swaps the glyph for a check.
 // One delegated handler covers every box on a page. Inlined by each landing
 // page that renders an <InstallBox> (home and /cli) — page-specific, since the

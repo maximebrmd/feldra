@@ -26,7 +26,7 @@ Include a minimal reproduction or sanitized logs if possible.
 - Source checkout or generated project:
 - Database: Neon / Supabase
 - Authentication: Better Auth / Clerk / Auth.js / Supabase Auth
-- Node.js and npm versions:
+- Node.js and package manager versions (Bun for the source checkout; npm for generated projects):
 - Operating system:
 - Browser (for UI issues):
 - Docker version (for fixture failures):

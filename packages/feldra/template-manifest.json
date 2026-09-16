@@ -66,7 +66,7 @@
     "apps/app/src/proxy.ts": "9c5a244a0f33cfcba2abe9c687d89aa2ea4271a20f2d3dc0c2912d912ffc5452",
     "docs/authentication.md": "9fe9168156a9e042571ddf0d2410e52ac5bad42c3a013928ab2de524d95dd509",
     "docs/setup.md": "6c668079b232dcd257b9487ea6535ff873bad020a3df5417e45a30f835757434",
-    "package-lock.json": "4cba859153dfb3e0015ece48ee58346241452b3eabe182687fa95f2518a97d64",
+    "package-lock.json": "a12e7b9fbfde6e640957da7ed620ddd7834efc1fd9cf09e23fd3ee36bae99d94",
     "packages/auth/config.ts": "696667b4e69585851acb92df902ba429b106161fc6b3de902ce8be7e571de311",
     "packages/auth/identity.ts": "1d67383de346d2a24f92f3c11cdd7af33649362bdbb0830b0f57bcb7f2ba38f6",
     "packages/auth/server.ts": "882a11a2653bce647dcf05ef16b12e20e205fb03fb8006804a3013e38e5ecd46",
@@ -127,8 +127,8 @@
     "apps/docs/setup.mdx": "dc3e6f80c89a8c3dfabb6a1834b39215d73db116dbea950b06b5ccabae9451d3",
     "package-lock.appwrite.json": "1eb1457ccbe8cc2b06ed496ccfea82f782f616fc4d041417aa39063e1af8247a",
     "package-lock.authjs.json": "2cd075ac10064210d27c1010b55c2856b2c4e202016d91b275b23bca2187e93e",
-    "package-lock.clerk.json": "7d65d016cd3c8c1a0c735fe8c6648e19f0c353235dc458330d27060520fd3999",
-    "package-lock.json": "b9e949fa2abb4cd293e1e39cbb66a42abfd35c872fcebf4a8bbe4a0e9c1d934e",
+    "package-lock.clerk.json": "cef41e96f4a949c2199a374373a97c9778e23b6a28027c1b60934531b095d319",
+    "package-lock.json": "9a8b028f895e4631d05bde3fdc388c9c3fe28677086e33f909c3219af1222ece",
     "package-lock.supabase.json": "543a31b2a5296319410eb4fcd0f58322c010a2451ca1052cc8adcf38e141da49"
   },
   "fumadocsFiles": {
@@ -218,12 +218,12 @@
     "CHANGELOG.md": "19b97bb6e23b2db2bbde920b9ef4a2a5c4c2677c19ffa800deb80afc6aee0bf9",
     "docs/architecture.md": "bab8720dffca266fe4e4aeac88a677fcf4f3d346500b36beb99ed764595ad2e7",
     "docs/authentication.md": "be571e5875de019963150847f23f0753543e1115f82e6344c0bbf416464855bd",
-    "docs/ci-cd.md": "ed119f83916bb29259e3dc777b3b3e72cd045fb4dd0c91fe44d6939469900d25",
+    "docs/ci-cd.md": "12910e7cd422bea5ae7e964f0ce96e3147d87a8498100f4adf931d7b84568a9c",
     "docs/databases.md": "9455dfeb2d0149b84669e6afb1848245f4d26cad1863f2ed57b56bd930952a13",
     "docs/dependencies.md": "fa3ad1db72568fffc6e6d10ecf6d1196228f5e1a383eb9251faf7c70f104b261",
-    "docs/maintenance.md": "2dd76bd782dd6c126e302bc22490a5b762db2aa86386f7aec57fe366c08116d3",
+    "docs/maintenance.md": "9e3d0f2ff451f6a693b61468e9c0f3c797bf7dae4cc70a5705bba9dcae96011f",
     "docs/references.md": "7aabaf0a8c7491bc9bac7c32ee434884d99fa1554555b0bb81835f057bfbf0bf",
-    "docs/releasing.md": "99732878f9d067307f33bec7b318f026d3e7b92a1dcb73264ba0c96e158860c5",
+    "docs/releasing.md": "5c50035ecf36cad24f56e3a1c8ff1d4267d71f11e3a450d0001db99406132f41",
     "docs/setup.md": "3a6ed7183fedd282f3f86b4de265402e4610fb3fe7fcbe3b521b9461be853f1f",
     "gitignore": "10384d11de849508f21300062767ae7b7032c47f6f1257a75e19835699ab3669",
     "LICENSE": "b16335a31310aa3f1e645ba18bc8d4bd4e8b2aeb9ee79f36f61b46a209ed45b0",
@@ -276,6 +276,6 @@
     "tsconfig.json": "ff0eabcf9857d1a71847fe8ee7faa9a6b9d88ff3ee7d490f1c574bcb00cee21b",
     "turbo.json": "47f8c5db4280e0c7a285175484fe2abc89fc4fedbb1dd39b011a03b94de367d1"
   },
-  "templateSha256": "704c1ec0e8dbd54a318b441ed7e2d6ea05b40703419cec77930425e861b9c897",
+  "templateSha256": "bec558f1064477388508907f393646f27dda619e07846fe032b8170314025134",
   "version": "0.1.0"
 }

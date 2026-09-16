@@ -7,7 +7,7 @@ This file is the project's committed home for project-intrinsic agent knowledge:
 - Auth overlays live in `packages/feldra/variants/{clerk,authjs,supabase}` and are applied through `authOverlays` in `packages/feldra/bin/apply-auth.mjs`. `scripts/pack-initializer.mjs` hashes each as `{name}Files` in `template-manifest.json`. `--auth` and `--database` are independent; Supabase Auth still needs a project URL and publishable key.
 - Generated projects choose a docs framework at create time (`--docs blume|mintlify|fumadocs`, default `blume`). This monorepo `apps/docs` stays Blume and is not dual-maintained. Overlay sources live in `packages/feldra/variants/docs`.
 - Root workspaces are limited to `apps/docs` and `packages/feldra`; generated app/package sources live under `packages/feldra/template-source` and `scripts/pack-initializer.mjs` maps them into the generated project.
-- After clone/`npm ci`, `packages/feldra/template/` is gitignored until `npm run initializer:pack`. Local `feldra create` auto-packs a missing template from this checkout; published packages already include it.
+- After clone/`bun install`, `packages/feldra/template/` is gitignored until `bun run initializer:pack`. Local `feldra create` auto-packs a missing template from this checkout; published packages already include it.
 
 ## Maintaining this file
 

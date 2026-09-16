@@ -46,7 +46,7 @@ try {
     .click();
   assert.equal(
     await page.evaluate(() => navigator.clipboard.readText()),
-    "npm run initializer:pack"
+    "bun run initializer:pack"
   );
   assert.equal(
     await page

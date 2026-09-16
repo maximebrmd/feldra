@@ -6,7 +6,7 @@ Changesets manages the initializer version and `packages/feldra/CHANGELOG.md`. T
 
 Stay on **0.1.0** until an explicit order to publish `feldra` to npm. Do not carry a stacked pre-publish version (0.2.0, 0.3.0, 0.4.0, …). Do not merge Changesets version PRs that bump past 0.1.0 while the package is unpublished. The first `npm publish` is **0.1.0**.
 
-Record user-facing work with `npm run changeset` as usual, but leave those files unconsumed until publication is authorized. Running `npm run release:version` or merging a Release PR now would bump above 0.1.0. A version PR that would bump past 0.1.0 should be closed, not merged.
+Record user-facing work with `bun run changeset` as usual, but leave those files unconsumed until publication is authorized. Running `bun run release:version` or merging a Release PR now would bump above 0.1.0. A version PR that would bump past 0.1.0 should be closed, not merged.
 
 The first publish requires an empty `.changeset/` queue (only `README.md` and `config.json`) so CI publishes 0.1.0 instead of opening a bump PR. After 0.1.0 is on npm, Changesets can version later releases as usual.
 
@@ -14,11 +14,11 @@ CI still runs Changesets on main. With an empty changeset queue and `NPM_PUBLISH
 
 ## Record a change
 
-Install the root lockfile with `npm ci`, then:
+Install the root lockfile with `bun install`, then:
 
 ```sh
-npm run changeset
-npm run changeset:status
+bun run changeset
+bun run changeset:status
 ```
 
 Select `feldra`, choose patch/minor/major, and write a user-facing summary. This applies to changes in the bundled apps/packages as well as the initializer itself. Commit the file in `.changeset/` alongside the implementation. Documentation-only changes that do not need a release can omit a changeset. The CLI uses the standard workflow in the [Changesets guide](https://changesets.dev/guide/getting-started).
@@ -26,15 +26,15 @@ Select `feldra`, choose patch/minor/major, and write a user-facing summary. This
 ## Prepare a version
 
 ```sh
-npm run release:version
+bun run release:version
 ```
 
-This consumes pending changesets, updates `packages/feldra/package.json`, generates its changelog, synchronizes the private root package version, and refreshes the root npm lockfile. Internal private workspace versions remain unchanged. Review and commit these changes; the command does not commit, tag, push or publish. If lockfile refresh fails, fix the failure and run `npm run release:sync` to finish synchronization. Changesets v3 exits nonzero when no pending changesets remain, so do not rerun `release:version` for that recovery.
+This consumes pending changesets, updates `packages/feldra/package.json`, generates its changelog, synchronizes the private root package version, and refreshes the root Bun lockfile. Internal private workspace versions remain unchanged. Review and commit these changes; the command does not commit, tag, push or publish. If lockfile refresh fails, fix the failure and run `bun run release:sync` to finish synchronization. Changesets v3 exits nonzero when no pending changesets remain, so do not rerun `release:version` for that recovery.
 
 Update version-specific examples in README files and validation reports before packaging. Run:
 
 ```sh
-npm run initializer:test
+bun run initializer:test
 ```
 
 Run the repository's `npm run check` separately, then `npm run initializer:test` packs a strict allowlist with `npm pack` without repeating the repository preflight checks and scaffolds all auth/database combinations from that tarball in temporary paths containing spaces. It covers those combinations with the default Blume docs, also scaffolds the provider-agnostic Vercel Flags overlay for each authentication variant with Neon, then scaffolds Mintlify and Fumadocs once each and builds those docs apps. It verifies npm installation, naming, Git, environment files, overwrite refusal and exclusion of release tooling, then runs generated-project checks and isolated Docker database fixtures. Better Auth variants also run production browser tests. Docker is required; browser tests install Chromium if missing.

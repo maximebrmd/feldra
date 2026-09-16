@@ -12,9 +12,9 @@ Feldra is the project’s new brand. The initializer package is `feldra` and has
 ## Release workflow
 
 ```sh
-npm run changeset
-npm run changeset:status
-npm run release:version
+bun run changeset
+bun run changeset:status
+bun run release:version
 ```
 
 The version command consumes pending notes, generates `packages/feldra/CHANGELOG.md`, updates the initializer and root versions, and refreshes the lockfile. It does not publish. Leave pending changesets unconsumed until 0.1.0 is authorized for npm. Test the packed artifact before an explicitly authorized npm publication. See [the repository release guide](https://github.com/maximebrmd/feldra/blob/main/docs/releasing.md).
