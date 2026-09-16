@@ -26,7 +26,7 @@ For private storage, set `access: "private"` and deliver files through an authen
 
 ## Client uploads
 
-Client uploads require an authenticated server route that uses Vercel Blob's `handleUpload()` flow. Add the route under `apps/app/src/app/api/upload/route.ts`; every selected authentication overlay provides the server-only `requireUser(request)` helper at `@/lib/session`. Keep the token in that server route and pass only the route URL to the browser.
+Client uploads require a server route that uses Vercel Blob's `handleUpload()` flow. Add the route under `apps/app/src/app/api/upload/route.ts`; every selected authentication overlay provides the server-only `requireUser(request)` helper at `@/lib/session`. Authenticate inside `onBeforeGenerateToken` so anonymous callers cannot obtain upload tokens. Keep the provider completion callback inside `handleUpload`: it does not carry the user's browser session, so do not put blanket session authentication in front of `handleUpload()`. Keep the token in that server route and pass only the route URL to the browser.
 
 ```ts
 import { handleUpload, type HandleUploadBody } from "@repo/storage/server";

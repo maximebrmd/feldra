@@ -5,11 +5,11 @@ sidebar:
   order: 1
 ---
 
-Create a separate Neon or Supabase project, auth secret or Clerk application, Resend sender (Better Auth), and Stripe sandbox per derived SaaS. Never copy credentials from another project. None are provisioned by the initializer.
+Create a separate Neon or Supabase project, R2 bucket or Blob store, authentication provider, and Stripe sandbox per derived SaaS. Never copy credentials or storage from another project. None are provisioned by the initializer.
 
 ## Environment
 
-Fill `.env.local` from `.env.example`. Both Next app configs load the root environment file; migrations read the same file. See `docs/setup.md` in this repository for the full variable table, restricted Stripe key permissions, and live verification limits.
+Fill `.env.local` from `.env.example`. Both Next app configs load the root environment file; migrations read the same file. Follow the generated `STORAGE.md` for the selected provider. See `docs/setup.md` in this repository for the full variable table, restricted Stripe key permissions, and live verification limits.
 
 | Variable | Purpose |
 | --- | --- |

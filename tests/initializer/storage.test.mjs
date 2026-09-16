@@ -37,10 +37,7 @@ async function loadBlobRoute(destination, dependencies) {
   const section = markdown.slice(markdown.indexOf("## Client uploads"));
   const routeSource = section.match(/```ts\n([\s\S]*?)\n```/u)?.[1];
   assert.ok(routeSource);
-  const routePath = join(
-    destination,
-    "apps/app/src/app/api/upload/route.ts"
-  );
+  const routePath = join(destination, "apps/app/src/app/api/upload/route.ts");
   await mkdir(resolve(routePath, ".."), { recursive: true });
   await writeFile(routePath, `${routeSource}\n`);
   const javascript = routeSource
@@ -171,9 +168,8 @@ test("Blob client route authenticates token generation and keeps completion hand
       handleUpload: async (options) => {
         handleUploadCalls.push(options);
         if (options.body.type === "blob.generate-client-token") {
-          const token = await options.onBeforeGenerateToken(
-            "images/avatar.png"
-          );
+          const token =
+            await options.onBeforeGenerateToken("images/avatar.png");
           issuedTokens.push(token);
           return { token, type: options.body.type };
         }

@@ -31,7 +31,7 @@ This validates the source and writes `feldra-VERSION.tgz` in the repository root
 npm exec --yes --package="./feldra-VERSION.tgz" -- feldra create my-new-saas
 ```
 
-Use the arrow keys and Enter to choose **Neon** or **Supabase**, then **Better Auth**, **Clerk**, **Auth.js**, or **Supabase Auth**, **Cloudflare R2** or **Vercel Blob** storage, and **Blume**, **Mintlify**, or **Fumadocs**. The initializer installs dependencies, writes local environment files, and initializes a fresh Git repository. It refuses an existing destination, even if it is empty.
+Use the arrow keys and Enter to choose **Neon** or **Supabase**, then **Better Auth**, **Clerk**, **Auth.js**, **Supabase Auth**, or **Appwrite**, **Cloudflare R2** or **Vercel Blob** storage, and **Blume**, **Mintlify**, or **Fumadocs**. The initializer installs dependencies, writes local environment files, and initializes a fresh Git repository. It refuses an existing destination, even if it is empty.
 
 For a noninteractive run, append `--yes --database supabase --storage blob --docs mintlify` after the project name. `--storage` defaults to Cloudflare R2; each generated project includes `STORAGE.md` with provider-specific setup and credential guidance. `--docs` defaults to `blume`. Both relative paths and quoted paths containing spaces work.
 
@@ -41,7 +41,7 @@ For a noninteractive run, append `--yes --database supabase --storage blob --doc
 cd my-new-saas
 ```
 
-Fill in `.env.local` using the generated `DATABASE.md` and the [environment guide](/docs/environment/). A fresh local Better Auth or Auth.js secret is already generated, or Clerk / Supabase Auth keys are left blank; remaining provider credentials must be configured separately.
+Fill in `.env.local` using the generated `DATABASE.md`, `AUTHENTICATION.md`, `STORAGE.md`, and the [environment guide](/docs/environment/). A fresh local Better Auth or Auth.js secret is already generated; credentials for Clerk, Supabase Auth, Appwrite, and the remaining providers must be configured separately.
 
 ```sh
 npm run db:migrate

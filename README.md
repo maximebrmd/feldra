@@ -37,7 +37,7 @@ Then connect your own providers and run:
 
 ```sh
 cd my-new-saas
-# Fill `.env.local` using generated DATABASE.md, AUTHENTICATION.md, and docs/setup.md
+# Fill `.env.local` using generated DATABASE.md, AUTHENTICATION.md, STORAGE.md, and docs/setup.md
 npm run db:migrate
 npm run dev
 ```
