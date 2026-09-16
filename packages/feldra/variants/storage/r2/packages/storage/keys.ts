@@ -4,7 +4,7 @@ import { z } from "zod";
 const required = z.string().min(1);
 const optionalUrl = z.preprocess(
   (value) => (value === "" ? undefined : value),
-  z.url().optional()
+  z.url({ protocol: /^https?$/u }).optional()
 );
 
 const schema = z.object({
