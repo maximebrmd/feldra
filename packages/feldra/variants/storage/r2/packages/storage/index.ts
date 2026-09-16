@@ -13,8 +13,6 @@ import {
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { storageEnv } from "./keys";
 
-const imageKey = /\.(?:jpe?g|png|gif|webp|svg)$/iu;
-const jsonKey = /\.json$/iu;
 const leadingSlash = /^\/+/u;
 const trailingSlash = /\/+$/u;
 const periodSegment = /^(?:\.|\.\.)$/u;
@@ -143,19 +141,6 @@ function publicUrl(base: string | undefined, key: string) {
   return url.toString();
 }
 
-function contentTypeFor(key: string, contentType: string | undefined) {
-  if (contentType) {
-    return contentType;
-  }
-  if (jsonKey.test(key)) {
-    return "application/json";
-  }
-  if (imageKey.test(key)) {
-    return "image/*";
-  }
-  return "application/octet-stream";
-}
-
 export async function put(
   pathname: string,
   body: StorageBody,
@@ -168,7 +153,7 @@ export async function put(
   }
   const env = storageEnv();
   const key = keyFromPathname(pathname);
-  const contentType = contentTypeFor(key, options.contentType);
+  const contentType = options.contentType ?? "application/octet-stream";
   const url = publicUrl(env.R2_PUBLIC_URL, key);
   const result = await getClient().send(
     new PutObjectCommand({

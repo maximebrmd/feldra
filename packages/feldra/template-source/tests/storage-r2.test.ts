@@ -35,16 +35,41 @@ test("R2 public URLs preserve prefixes and reject invalid keys before deletion",
   try {
     const blob = await put("images/avatar.png", new Uint8Array([1]));
     assert.equal(blob.url, "https://cdn.example.test/assets/images/avatar.png");
+    assert.equal(blob.contentType, "application/octet-stream");
+    const explicitBlob = await put("data/profile.json", new Uint8Array([2]), {
+      contentType: "application/vnd.example.profile+json",
+    });
+    assert.equal(
+      explicitBlob.contentType,
+      "application/vnd.example.profile+json"
+    );
     await del(blob.url);
     const keyFromCall = (call: { arguments: readonly unknown[] }) =>
       (
         call.arguments[0] as {
-          input: { Key?: string };
+          input: { ContentType?: string; Key?: string };
         }
-      ).input.Key;
+      ).input;
     assert.deepEqual(send.mock.calls.map(keyFromCall), [
-      "images/avatar.png",
-      "images/avatar.png",
+      {
+        Body: new Uint8Array([1]),
+        Bucket: "bucket",
+        CacheControl: undefined,
+        ContentDisposition: undefined,
+        ContentType: "application/octet-stream",
+        Key: "images/avatar.png",
+        Metadata: undefined,
+      },
+      {
+        Body: new Uint8Array([2]),
+        Bucket: "bucket",
+        CacheControl: undefined,
+        ContentDisposition: undefined,
+        ContentType: "application/vnd.example.profile+json",
+        Key: "data/profile.json",
+        Metadata: undefined,
+      },
+      { Bucket: "bucket", Key: "images/avatar.png" },
     ]);
     const validCallCount = send.mock.callCount();
 
