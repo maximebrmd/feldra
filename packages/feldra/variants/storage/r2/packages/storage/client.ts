@@ -17,18 +17,17 @@ export async function upload(
   body: BodyInit,
   options: R2UploadOptions
 ): Promise<R2UploadResult> {
+  const contentType = options.contentType ?? "application/octet-stream";
   const response = await fetch(options.uploadUrl, {
     body,
-    headers: options.contentType
-      ? { "Content-Type": options.contentType }
-      : undefined,
+    headers: { "Content-Type": contentType },
     method: "PUT",
   });
   if (!response.ok) {
     throw new Error(`R2 upload failed (${response.status}).`);
   }
   return {
-    contentType: options.contentType ?? "application/octet-stream",
+    contentType,
     pathname,
     ...(options.url ? { url: options.url } : {}),
   };
