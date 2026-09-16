@@ -27,7 +27,7 @@ async function copyCliWithoutTemplate(temp) {
     join(pkg, "template-manifest.json")
   );
   await copyFile(join(release, "package.json"), join(pkg, "package.json"));
-  await symlink(join(root, "node_modules"), join(pkg, "node_modules"));
+  await symlink(join(release, "node_modules"), join(pkg, "node_modules"));
   return pkg;
 }
 
