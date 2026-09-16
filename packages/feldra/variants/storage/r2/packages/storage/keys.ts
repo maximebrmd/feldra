@@ -11,7 +11,6 @@ const schema = z.object({
   R2_ACCESS_KEY_ID: required,
   R2_ACCOUNT_ID: required,
   R2_BUCKET_NAME: required,
-  R2_ENDPOINT: optionalUrl,
   R2_PUBLIC_URL: optionalUrl,
   R2_SECRET_ACCESS_KEY: required,
 });

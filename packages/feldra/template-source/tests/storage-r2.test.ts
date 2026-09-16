@@ -15,7 +15,6 @@ test("R2 public URLs preserve prefixes and reject invalid keys before deletion",
     "R2_ACCESS_KEY_ID",
     "R2_ACCOUNT_ID",
     "R2_BUCKET_NAME",
-    "R2_ENDPOINT",
     "R2_PUBLIC_URL",
     "R2_SECRET_ACCESS_KEY",
   ];
@@ -88,15 +87,6 @@ test("R2 public URLs preserve prefixes and reject invalid keys before deletion",
     assert.equal(send.mock.callCount(), validCallCount);
 
     process.env.R2_PUBLIC_URL = "https://cdn.example.test/assets/";
-    process.env.R2_ENDPOINT = "ftp://account.r2.cloudflarestorage.com";
-    await assert.rejects(
-      () => put("images/invalid-endpoint.png", new Uint8Array([1])),
-      /configuration required: R2_ENDPOINT/u
-    );
-    assert.equal(send.mock.callCount(), validCallCount);
-
-    process.env.R2_PUBLIC_URL = "https://cdn.example.test/assets/";
-    delete process.env.R2_ENDPOINT;
     await assert.rejects(
       () => put("https://cdn.example.test/a", new Uint8Array([1])),
       /URL-like/u

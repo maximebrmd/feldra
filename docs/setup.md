@@ -19,7 +19,7 @@ Every variable in `.env.example` is consumed; there are no browser-exposed secre
 | EMAIL_FROM | Bare email address on your verified sender domain, e.g. `accounts@your-domain.com`. |
 | R2_ACCOUNT_ID / R2_BUCKET_NAME | Cloudflare account and bucket selected for this generated project. |
 | R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY | Bucket-scoped R2 Object Read & Write credentials; server-only, never `NEXT_PUBLIC_`. |
-| R2_ENDPOINT / R2_PUBLIC_URL | Optional R2 S3 endpoint override and public/custom object URL. See `STORAGE.md`. |
+| R2_PUBLIC_URL | Optional public/custom R2 object URL. See `STORAGE.md`. |
 | BLOB_READ_WRITE_TOKEN | Server-only Vercel Blob token when `--storage blob` was selected. |
 | STRIPE_SECRET_KEY | Prefer a dedicated restricted `rk_test_…` / `rk_live_…` key; SDK also accepts `sk_…`. |
 | STRIPE_PRO_PRICE_ID | Recurring price ID for this project's Pro product. |

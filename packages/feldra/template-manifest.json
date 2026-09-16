@@ -10,11 +10,11 @@
     "packages/storage/tsconfig.json": "716d299ef0e71f9555b06529000c2db8cf7122bdd52350a29d451a75862c7861"
   },
   "storageR2Files": {
-    "STORAGE.md": "115e69b753c907531b259504ccf62ce2d0a530a9d3b623769563f6b8cd45d69e",
+    "STORAGE.md": "fa050ff11b03f5cf8e88abf782aa21db28e2f1e2539e0a39036ee97e1716bef3",
     "package-lock.json": "b951954ce47fefcb596d9a056a25cc7e63c1edf93fa1959b6a47f763d37e95f7",
     "packages/storage/client.ts": "6493730c285e6fd090bc1d3a0810722cb24015ffcb99afce62bb7572e538e850",
-    "packages/storage/index.ts": "063f903f0e37214776e5c6ccf84db034f67729a99aa6c2a0767f99f0a86afc47",
-    "packages/storage/keys.ts": "46d094698656aa4de00528189fce43dd11241ef0f34c9121b0d79a875dc867ff",
+    "packages/storage/index.ts": "96756c8b452a785a390431c9c5cc5d8c4b29304d09cf6bf4f4d02536667d6a7d",
+    "packages/storage/keys.ts": "4509a3d6a6ca0b4cf7d0d9bd149e357e41d95e0b8719e31cea4d887305e979df",
     "packages/storage/package.json": "0b71c57c9a2d6ba164df0de2348861954eeea78cd80a29295171799c90642da0",
     "packages/storage/tsconfig.json": "716d299ef0e71f9555b06529000c2db8cf7122bdd52350a29d451a75862c7861"
   },
@@ -223,7 +223,7 @@
     "apps/docs/README.md": "54484ccb5bf0e785ceadd4508120ce1fa05fa3c8510b4937a05d32e1207f83ae",
     "apps/docs/tsconfig.json": "054c6970db633e6a069ae190f6367153ede00eb7e0d44a4339a9dc019e6aa5dd",
     "apps/web/next-env.d.ts": "879741880b6ab48da99dcc06dcc674d381c9826137b0496bf7bb368f302de9fc",
-    "apps/web/next.config.ts": "01a9d94fbd06b529f0a20c2d2b1e9a7d75898350982ed647a6a09c56a0a10923",
+    "apps/web/next.config.ts": "d7f8f987fbfee02ff96781fc2d1c1224e3de1af3c1dacd21fdc9f6b7f9fbc953",
     "apps/web/package.json": "c1cdf4629fd581325b093c03b401618ddb3417183781088ccd1a741bedbb3d05",
     "apps/web/postcss.config.mjs": "a1a188221f064d964dd9958c3d48b0c23252fabbeb6099d95ee8e15c764718b0",
     "apps/web/src/app/error.tsx": "3aeddb9da0b5c9e323338790daf16d3b6d8aa85864dac77f56c7e0aa0611918a",
@@ -243,7 +243,7 @@
     "docs/maintenance.md": "9e3d0f2ff451f6a693b61468e9c0f3c797bf7dae4cc70a5705bba9dcae96011f",
     "docs/references.md": "7aabaf0a8c7491bc9bac7c32ee434884d99fa1554555b0bb81835f057bfbf0bf",
     "docs/releasing.md": "5c50035ecf36cad24f56e3a1c8ff1d4267d71f11e3a450d0001db99406132f41",
-    "docs/setup.md": "1cb94f5f647741cca73cae17b3ae1a5199493f9fa3485785bb526463f3e204a1",
+    "docs/setup.md": "83dd3c95d44615cf68bcbb39237183a983295afc39c8246394d7207693d4e06b",
     "gitignore": "10384d11de849508f21300062767ae7b7032c47f6f1257a75e19835699ab3669",
     "LICENSE": "b16335a31310aa3f1e645ba18bc8d4bd4e8b2aeb9ee79f36f61b46a209ed45b0",
     "package-lock.json": "af84402ed23ea16b48974cbdcd6f3bc442475e475f056db307bcb5a4f75be832",
@@ -290,12 +290,12 @@
     "tests/integration/database-access.test.ts": "458552177e85f924fc0eabc8d86308331b05a4fdf2e841a0c7f0f94424c9de69",
     "tests/integration/flows.test.ts": "f1fbce43c5e849d3979956794d5637649ef1debbf041a14e2a99ac6b46a2db3c",
     "tests/policy.test.ts": "98411d032ca22aaa40c942df2979a6a108883b81d21ccfe13cc37da9bff8f76c",
-    "tests/storage-r2.test.ts": "5eb968c9a2ca03a7dda81a1abb3d72b3a122288fd940539e617d8f8ab4fa1e6a",
+    "tests/storage-r2.test.ts": "3504d75b48aa6b28612c84f7549f3b6feeb838470e5267551c678904f1caca79",
     "THIRD_PARTY_NOTICES.md": "0c4409b5cf7f415d6810012fb68e14e86a74904bcf8ed5f259ec5f37ff807ec0",
     "tsconfig.base.json": "1aeff328884a9983ffd8531f28f6959f6d052c4074d345c6673d7dbf301f3d68",
     "tsconfig.json": "ff0eabcf9857d1a71847fe8ee7faa9a6b9d88ff3ee7d490f1c574bcb00cee21b",
     "turbo.json": "47f8c5db4280e0c7a285175484fe2abc89fc4fedbb1dd39b011a03b94de367d1"
   },
-  "templateSha256": "3b49e599d0de4a245d17f6618437160eb316f6068c11e3eb781c3e6dfa12c746",
+  "templateSha256": "1ae742c56062e4491285049499534823592da03b49766493e4c5b4654130d1f9",
   "version": "0.1.0"
 }

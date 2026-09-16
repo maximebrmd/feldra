@@ -86,11 +86,11 @@ test("R2 generation adds the package, server env, setup guide, and no public sec
       "R2_ACCESS_KEY_ID",
       "R2_SECRET_ACCESS_KEY",
       "R2_BUCKET_NAME",
-      "R2_ENDPOINT",
       "R2_PUBLIC_URL",
     ]) {
       assert.match(env, new RegExp(`^${key}=`, "mu"));
     }
+    assert.doesNotMatch(env, /^R2_ENDPOINT=/mu);
     assert.doesNotMatch(env, /^NEXT_PUBLIC_R2_/mu);
     assert.match(
       await readFile(join(destination, "STORAGE.md"), "utf8"),
@@ -108,6 +108,7 @@ test("R2 generation adds the package, server env, setup guide, and no public sec
       await readFile(join(destination, "turbo.json"), "utf8")
     );
     assert.ok(turbo.globalEnv.includes("R2_SECRET_ACCESS_KEY"));
+    assert.ok(!turbo.globalEnv.includes("R2_ENDPOINT"));
     assert.match(
       await readFile(join(destination, "README.md"), "utf8"),
       /^> Generated storage: \*\*Cloudflare R2\*\*/u

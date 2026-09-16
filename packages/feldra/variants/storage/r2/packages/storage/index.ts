@@ -50,9 +50,7 @@ function getClient() {
       accessKeyId: env.R2_ACCESS_KEY_ID,
       secretAccessKey: env.R2_SECRET_ACCESS_KEY,
     },
-    endpoint:
-      env.R2_ENDPOINT ??
-      `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    endpoint: `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
     region: "auto",
   });
   return client;

@@ -18,7 +18,7 @@ See [R2's S3 API documentation](https://developers.cloudflare.com/r2/api/s3/) an
    R2_PUBLIC_URL=
    ```
 
-   `R2_PUBLIC_URL` should be the bucket's public custom domain or `r2.dev` URL when objects returned by `put()` are meant to be public. Leave it empty when using only signed URLs and server-side reads. `R2_ENDPOINT` is optional; the package derives `https://<account-id>.r2.cloudflarestorage.com` by default.
+   `R2_PUBLIC_URL` should be the bucket's public custom domain or `r2.dev` URL when objects returned by `put()` are meant to be public. Leave it empty when using only signed URLs and server-side reads. The package derives `https://<account-id>.r2.cloudflarestorage.com` from `R2_ACCOUNT_ID`.
 
 The access key and secret are server credentials. Keep them in the application host's environment, never add them to a `NEXT_PUBLIC_` variable, client code, browser requests, or source control. `.env.local` is ignored and created with restrictive permissions.
 

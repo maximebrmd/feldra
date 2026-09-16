@@ -49,12 +49,11 @@ export async function applyR2(destination, variant) {
     "R2_ACCESS_KEY_ID",
     "R2_SECRET_ACCESS_KEY",
     "R2_BUCKET_NAME",
-    "R2_ENDPOINT",
     "R2_PUBLIC_URL",
   ]);
   await appendEnvExample(
     destination,
-    "\n# Storage: Cloudflare R2. R2 credentials are server-only; use a public/custom URL only for public objects.\nR2_ACCOUNT_ID=\nR2_ACCESS_KEY_ID=\nR2_SECRET_ACCESS_KEY=\nR2_BUCKET_NAME=\n# Optional S3 endpoint override; the package derives the standard R2 endpoint.\nR2_ENDPOINT=\nR2_PUBLIC_URL=\n"
+    "\n# Storage: Cloudflare R2. R2 credentials are server-only; use a public/custom URL only for public objects.\nR2_ACCOUNT_ID=\nR2_ACCESS_KEY_ID=\nR2_SECRET_ACCESS_KEY=\nR2_BUCKET_NAME=\nR2_PUBLIC_URL=\n"
   );
   await prependReadme(
     destination,
