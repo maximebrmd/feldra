@@ -27,14 +27,6 @@ const generatedScriptFiles = new Set([
   "packages/feldra/template-source/scripts/test-browser.mjs",
   "packages/feldra/template-source/scripts/test-database.mjs",
 ]);
-function npmScript(command) {
-  return command
-    .replace(
-      /^bun run --filter ([^ ]+) ([^ ]+)/u,
-      "npm run $2 --workspace $1"
-    )
-    .replaceAll("bun run", "npm run");
-}
 function run(command, args, cwd) {
   const env = { ...process.env };
   delete env.npm_config_allow_scripts;
@@ -153,12 +145,6 @@ delete pkg.scripts["docs:translate"];
 delete pkg.scripts["docs:translations:check"];
 delete pkg.scripts["test:docs"];
 delete pkg.devDependencies["@changesets/cli"];
-pkg.scripts = Object.fromEntries(
-  Object.entries(pkg.scripts).map(([name, command]) => [
-    name,
-    npmScript(command),
-  ])
-);
 await writeFile(
   join(target, "package.json"),
   `${JSON.stringify(pkg, null, 2)}\n`

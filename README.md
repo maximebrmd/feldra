@@ -52,7 +52,7 @@ Open marketing at `http://localhost:3000` and the app at `http://localhost:3001`
 - **Documentation you choose** — Blume (default), Mintlify, or Fumadocs. This repository's product docs stay on Blume.
 - **Optional feature flags** — `--flags vercel` adds a provider-agnostic `@repo/feature-flags` package, Flags Explorer route, and setup guide; the default has no flags package.
 - **Stripe billing** — Checkout, customer portal, signed webhooks, and a server-side paid-access gate. Individual accounts and user-level billing.
-- **Shared packages** — auth, database, design-system (used shadcn Button/Input and Tailwind), email, payments, and config, coordinated with Turborepo and Bun workspaces.
+- **Shared packages** — auth, database, design-system (used shadcn Button/Input and Tailwind), email, payments, and config, coordinated with Turborepo and npm workspaces.
 - **Hashed template** — the CLI copies a versioned, integrity-checked bundle. It never downloads a moving GitHub branch.
 - **No provider provisioning** — you create Neon/Supabase, Resend, Clerk, GitHub OAuth, Supabase Auth, or Appwrite, and Stripe resources yourself. The CLI prints exact next steps.
 - **Independent projects** — a fresh Git repository, locked npm dependencies, and no leftover dependency on the initializer.
