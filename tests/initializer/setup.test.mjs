@@ -86,21 +86,18 @@ test("explicit Supabase works without prompting; legacy preset remains supported
   }
 });
 
-test("storage defaults to R2 and accepts the Blob choice and provider aliases", async () => {
+test("storage defaults to R2 and accepts only documented choices", async () => {
   assert.equal((await collectSetup({ directory: "new" })).storage, "r2");
   assert.equal(
     (await collectSetup({ directory: "new", storage: "blob" })).storage,
     "blob"
   );
-  assert.equal(
-    (await collectSetup({ directory: "new", storage: "vercel-blob" })).storage,
-    "blob"
-  );
-  assert.equal(
-    (await collectSetup({ directory: "new", storage: "cloudflare-r2" }))
-      .storage,
-    "r2"
-  );
+  for (const storage of ["vercel-blob", "cloudflare-r2"]) {
+    await assert.rejects(
+      collectSetup({ directory: "new", storage }),
+      /Choose --storage r2 or --storage blob/u
+    );
+  }
 });
 test("interactive cancellation stops setup", async () => {
   await assert.rejects(

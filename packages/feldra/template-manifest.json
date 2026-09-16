@@ -1,6 +1,6 @@
 {
   "storageBlobFiles": {
-    "STORAGE.md": "e887bebd57335aafe4fe0cd5dee832c45ea2a84e3ab3e9bfd0c4a32fcfc96f10",
+    "STORAGE.md": "aea30d868c07f78c3a365811176397b0bd4de7155ace717e90a5c56881544a25",
     "package-lock.json": "e61003feb5a7546808901e5ed1ad12ce3012087a89138f2eca3a300741fd644b",
     "packages/storage/client.ts": "7fefe6ff5c9b8fe7ad199659a69a32fb7e9e824db8c98a247024fbd52a71bea3",
     "packages/storage/index.ts": "5c3fa7a54e7872067e37e9fe5efef88e64dd415f80b91f0bcb28c8b12fac6d53",

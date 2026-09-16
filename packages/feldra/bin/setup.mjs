@@ -116,15 +116,6 @@ function requireChoice(value, table, message) {
   return value;
 }
 
-const storageAliases = {
-  "cloudflare-r2": "r2",
-  "vercel-blob": "blob",
-};
-
-function normalizeStorage(value) {
-  return storageAliases[value] ?? value;
-}
-
 async function pickChoice(
   value,
   prompts,
@@ -168,9 +159,8 @@ export async function collectSetup(options, prompts) {
     databases,
     "Choose --database neon or --database supabase."
   );
-  let storage = normalizeStorage(options.storage);
-  storage = requireChoice(
-    storage,
+  let storage = requireChoice(
+    options.storage,
     storageProviders,
     "Choose --storage r2 or --storage blob."
   );

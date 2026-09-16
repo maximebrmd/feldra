@@ -3,6 +3,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { test } from "node:test";
+import { Script } from "node:vm";
 import {
   applyBlob,
   applyR2,
@@ -29,6 +30,34 @@ async function createFixture(prefix) {
     `${JSON.stringify({ name: "fixture", private: true }, null, 2)}\n`
   );
   return destination;
+}
+
+function loadBlobRoute(markdown, dependencies) {
+  const section = markdown.slice(markdown.indexOf("## Client uploads"));
+  const routeSource = section.match(/```ts\n([\s\S]*?)\n```/u)?.[1];
+  assert.ok(routeSource);
+  const javascript = routeSource
+    .replace(
+      'import { handleUpload, type HandleUploadBody } from "@repo/storage/server";',
+      "const { handleUpload } = dependencies;"
+    )
+    .replace(
+      'import { NextResponse } from "next/server";',
+      "const { NextResponse } = dependencies;"
+    )
+    .replace(
+      'import { requireUser } from "@/lib/session";',
+      "const { requireUser } = dependencies;"
+    )
+    .replace(" as HandleUploadBody", "")
+    .replace(
+      "export async function POST(request: Request)",
+      "async function POST(request)"
+    );
+  return new Script(
+    `(async () => {${javascript}\nreturn POST;})()`,
+    { filename: "STORAGE.md" }
+  ).runInNewContext({ dependencies });
 }
 
 test("storage overlays expose independent R2 and Blob provider choices", () => {
@@ -122,4 +151,58 @@ test("Blob generation selects only the Vercel SDK and protects its token", async
   } finally {
     await rm(destination, { force: true, recursive: true });
   }
+});
+
+test("Blob client route authenticates token generation and keeps completion handling", async () => {
+  const markdown = await readFile(
+    join(release, "variants/storage/blob/STORAGE.md"),
+    "utf8"
+  );
+  let authenticated = false;
+  const requests = [];
+  const handleUploadCalls = [];
+  const completions = [];
+  const route = await loadBlobRoute(markdown, {
+    NextResponse: {
+      json(value) {
+        return value;
+      },
+    },
+    handleUpload: async (options) => {
+      handleUploadCalls.push(options);
+      const token = await options.onBeforeGenerateToken("images/avatar.png");
+      await options.onUploadCompleted({
+        blob: { url: "https://blob.example.test/images/avatar.png" },
+        tokenPayload: token.tokenPayload,
+      });
+      completions.push(token);
+      return { type: "blob.generate-client-token", token };
+    },
+    requireUser: async (request) => {
+      requests.push(request);
+      if (!authenticated) {
+        throw new Error("Sign in required");
+      }
+      return { id: "user_1" };
+    },
+  });
+  const request = {
+    json: async () => ({ type: "blob.generate-client-token" }),
+  };
+
+  await assert.rejects(route(request), /Sign in required/u);
+  assert.equal(handleUploadCalls.length, 1);
+  assert.equal(completions.length, 0);
+
+  authenticated = true;
+  const response = await route(request);
+  assert.equal(handleUploadCalls.length, 2);
+  assert.deepEqual(requests, [request, request]);
+  assert.equal(completions.length, 1);
+  assert.deepEqual(JSON.parse(JSON.stringify(response)), {
+    type: "blob.generate-client-token",
+    token: {
+      allowedContentTypes: ["image/jpeg", "image/png", "image/webp"],
+    },
+  });
 });
