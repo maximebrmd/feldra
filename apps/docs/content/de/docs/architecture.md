@@ -10,18 +10,20 @@ sidebar:
 apps/
   web/                  Marketing and pricing · port 3000
   app/                  Authenticated UI, APIs, webhooks · port 3001
+  docs/                 Documentation · port 4321
 packages/
-  auth/                 Better Auth server and client
+  auth/                 Better Auth, Clerk, Auth.js, Supabase Auth, or Appwrite
   config/               App name, URLs, plans, environment validation
   database/             Drizzle schema and migrations
   design-system/        Used shadcn components and shared styles
   email/                Resend authentication emails
   payments/             Stripe state and paid-access rules
+  storage/              Cloudflare R2 or Vercel Blob
 turbo.json
 package.json
 ```
 
-Das Vorlagen-Repository enthält auch diese Astro-Dokumentations-App unter `apps/docs`. Sie wird separat bereitgestellt und ist nicht in generierten SaaS-Projekten enthalten.
+Generierte Projekte enthalten `apps/docs` – standardmäßig Blume oder, falls ausgewählt, Mintlify oder Fumadocs. Diese Feldra-Produktwebsite ist eine separate Blume-App in diesem Repository und nicht die App, die in generierte Projekte kopiert wird.
 
 ## Grenzen zwischen den bereitstellbaren Apps [#deployable-boundaries]
 

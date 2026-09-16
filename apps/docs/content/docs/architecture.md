@@ -13,12 +13,13 @@ apps/
   app/                  Authenticated UI, APIs, webhooks · port 3001
   docs/                 Documentation · port 4321
 packages/
-  auth/                 Better Auth, Clerk, or Supabase Auth
+  auth/                 Better Auth, Clerk, Auth.js, Supabase Auth, or Appwrite
   config/               App name, URLs, plans, environment validation
   database/             Drizzle schema and migrations
   design-system/        Used shadcn components and shared styles
   email/                Resend authentication emails
   payments/             Stripe state and paid-access rules
+  storage/              Cloudflare R2 or Vercel Blob
 turbo.json
 package.json
 ```
