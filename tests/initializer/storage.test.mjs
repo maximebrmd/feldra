@@ -32,10 +32,17 @@ async function createFixture(prefix) {
   return destination;
 }
 
-function loadBlobRoute(markdown, dependencies) {
+async function loadBlobRoute(destination, dependencies) {
+  const markdown = await readFile(join(destination, "STORAGE.md"), "utf8");
   const section = markdown.slice(markdown.indexOf("## Client uploads"));
   const routeSource = section.match(/```ts\n([\s\S]*?)\n```/u)?.[1];
   assert.ok(routeSource);
+  const routePath = join(
+    destination,
+    "apps/app/src/app/api/upload/route.ts"
+  );
+  await mkdir(resolve(routePath, ".."), { recursive: true });
+  await writeFile(routePath, `${routeSource}\n`);
   const javascript = routeSource
     .replace(
       'import { handleUpload, type HandleUploadBody } from "@repo/storage/server";',
@@ -55,7 +62,7 @@ function loadBlobRoute(markdown, dependencies) {
       "async function POST(request)"
     );
   return new Script(`(async () => {${javascript}\nreturn POST;})()`, {
-    filename: "STORAGE.md",
+    filename: routePath,
   }).runInNewContext({ dependencies });
 }
 
@@ -153,53 +160,76 @@ test("Blob generation selects only the Vercel SDK and protects its token", async
 });
 
 test("Blob client route authenticates token generation and keeps completion handling", async () => {
-  const markdown = await readFile(
-    join(release, "variants/storage/blob/STORAGE.md"),
-    "utf8"
-  );
+  const destination = await createFixture("feldra-storage-blob-route-");
   const requests = [];
   const handleUploadCalls = [];
+  const issuedTokens = [];
   const completions = [];
-  const route = await loadBlobRoute(markdown, {
-    handleUpload: async (options) => {
-      handleUploadCalls.push(options);
-      const token = await options.onBeforeGenerateToken("images/avatar.png");
-      await options.onUploadCompleted({
-        blob: { url: "https://blob.example.test/images/avatar.png" },
-        tokenPayload: token.tokenPayload,
-      });
-      completions.push(token);
-      return { token, type: "blob.generate-client-token" };
-    },
-    NextResponse: {
-      json(value) {
-        return value;
+  try {
+    await applyBlob(destination, join(release, "variants/storage/blob"));
+    const route = await loadBlobRoute(destination, {
+      handleUpload: async (options) => {
+        handleUploadCalls.push(options);
+        if (options.body.type === "blob.generate-client-token") {
+          const token = await options.onBeforeGenerateToken(
+            "images/avatar.png"
+          );
+          issuedTokens.push(token);
+          return { token, type: options.body.type };
+        }
+        await options.onUploadCompleted({
+          blob: { url: "https://blob.example.test/images/avatar.png" },
+          tokenPayload: undefined,
+        });
+        completions.push(options.body);
+        return { type: options.body.type };
       },
-    },
-    requireUser: (incomingRequest) => {
-      requests.push(incomingRequest);
-      if (requests.length === 1) {
-        throw new Error("Sign in required");
-      }
-      return { id: "user_1" };
-    },
-  });
-  const request = {
-    json: async () => ({ type: "blob.generate-client-token" }),
-  };
+      NextResponse: {
+        json(value) {
+          return value;
+        },
+      },
+      requireUser: (incomingRequest) => {
+        requests.push(incomingRequest);
+        if (requests.length === 1) {
+          throw new Error("Sign in required");
+        }
+        return { id: "user_1" };
+      },
+    });
+    const anonymousRequest = {
+      json: async () => ({ type: "blob.generate-client-token" }),
+    };
 
-  await assert.rejects(route(request), /Sign in required/u);
-  assert.equal(handleUploadCalls.length, 1);
-  assert.equal(completions.length, 0);
+    await assert.rejects(route(anonymousRequest), /Sign in required/u);
+    assert.equal(handleUploadCalls.length, 1);
+    assert.equal(issuedTokens.length, 0);
+    assert.equal(completions.length, 0);
 
-  const response = await route(request);
-  assert.equal(handleUploadCalls.length, 2);
-  assert.deepEqual(requests, [request, request]);
-  assert.equal(completions.length, 1);
-  assert.deepEqual(JSON.parse(JSON.stringify(response)), {
-    token: {
-      allowedContentTypes: ["image/jpeg", "image/png", "image/webp"],
-    },
-    type: "blob.generate-client-token",
-  });
+    const authenticatedRequest = {
+      json: async () => ({ type: "blob.generate-client-token" }),
+    };
+    const response = await route(authenticatedRequest);
+    assert.equal(handleUploadCalls.length, 2);
+    assert.deepEqual(requests, [anonymousRequest, authenticatedRequest]);
+    assert.equal(issuedTokens.length, 1);
+    assert.equal(completions.length, 0);
+    assert.deepEqual(JSON.parse(JSON.stringify(response)), {
+      token: {
+        allowedContentTypes: ["image/jpeg", "image/png", "image/webp"],
+      },
+      type: "blob.generate-client-token",
+    });
+
+    const completionRequest = {
+      json: async () => ({ type: "blob.upload-completed" }),
+    };
+    const completionResponse = await route(completionRequest);
+    assert.deepEqual(requests, [anonymousRequest, authenticatedRequest]);
+    assert.equal(issuedTokens.length, 1);
+    assert.deepEqual(completions, [{ type: "blob.upload-completed" }]);
+    assert.deepEqual(completionResponse, { type: "blob.upload-completed" });
+  } finally {
+    await rm(destination, { force: true, recursive: true });
+  }
 });
