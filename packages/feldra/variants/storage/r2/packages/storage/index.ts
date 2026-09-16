@@ -19,8 +19,7 @@ const leadingSlash = /^\/+/u;
 const trailingSlash = /\/+$/u;
 const periodSegment = /^(?:\.|\.\.)$/u;
 const urlLikeKey = /:\/\//u;
-const absoluteUrl =
-  /^[A-Za-z][A-Za-z\d+.-]*:\/\/[^/?#]*(\/[^?#]*)?(?:[?#]|$)/u;
+const absoluteUrl = /^[A-Za-z][A-Za-z\d+.-]*:\/\/[^/?#]*(\/[^?#]*)?(?:[?#]|$)/u;
 
 export interface PutBlobResult {
   contentDisposition: string | undefined;
@@ -89,10 +88,7 @@ function rawUrlPathname(input: string) {
   return match[1] ?? "/";
 }
 
-function keyFromInput(
-  input: string,
-  env: ReturnType<typeof storageEnv>
-) {
+function keyFromInput(input: string, env: ReturnType<typeof storageEnv>) {
   if (!input.includes("://")) {
     return keyFromPathname(input);
   }
@@ -115,7 +111,7 @@ function keyFromInput(
     relativePath = rawPathname.replace(leadingSlash, "");
   } else if (rawPathname === prefix) {
     relativePath = "";
-  } else if (rawPathname.startsWith(prefix + "/")) {
+  } else if (rawPathname.startsWith(`${prefix}/`)) {
     relativePath = rawPathname.slice(prefix.length + 1);
   }
   if (relativePath === undefined) {
@@ -143,7 +139,7 @@ function publicUrl(base: string | undefined, key: string) {
     .split("/")
     .map((part) => encodeURIComponent(part))
     .join("/");
-  url.pathname = (prefix === "/" ? "" : prefix) + "/" + encodedKey;
+  url.pathname = `${prefix === "/" ? "" : prefix}/${encodedKey}`;
   return url.toString();
 }
 
@@ -173,6 +169,7 @@ export async function put(
   const env = storageEnv();
   const key = keyFromPathname(pathname);
   const contentType = contentTypeFor(key, options.contentType);
+  const url = publicUrl(env.R2_PUBLIC_URL, key);
   const result = await getClient().send(
     new PutObjectCommand({
       Body: body,
@@ -184,7 +181,6 @@ export async function put(
       Metadata: options.metadata,
     })
   );
-  const url = publicUrl(env.R2_PUBLIC_URL, key);
   return {
     contentDisposition: options.contentDisposition,
     contentType,

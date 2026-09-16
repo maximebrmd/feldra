@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { mock, test } from "node:test";
 import {
-  upload,
   type R2UploadResult,
+  upload,
 } from "../packages/feldra/variants/storage/r2/packages/storage/client";
 
 test("R2 client upload omits a readable URL without one configured", async () => {

@@ -54,10 +54,9 @@ function loadBlobRoute(markdown, dependencies) {
       "export async function POST(request: Request)",
       "async function POST(request)"
     );
-  return new Script(
-    `(async () => {${javascript}\nreturn POST;})()`,
-    { filename: "STORAGE.md" }
-  ).runInNewContext({ dependencies });
+  return new Script(`(async () => {${javascript}\nreturn POST;})()`, {
+    filename: "STORAGE.md",
+  }).runInNewContext({ dependencies });
 }
 
 test("storage overlays expose independent R2 and Blob provider choices", () => {
@@ -158,16 +157,10 @@ test("Blob client route authenticates token generation and keeps completion hand
     join(release, "variants/storage/blob/STORAGE.md"),
     "utf8"
   );
-  let authenticated = false;
   const requests = [];
   const handleUploadCalls = [];
   const completions = [];
   const route = await loadBlobRoute(markdown, {
-    NextResponse: {
-      json(value) {
-        return value;
-      },
-    },
     handleUpload: async (options) => {
       handleUploadCalls.push(options);
       const token = await options.onBeforeGenerateToken("images/avatar.png");
@@ -176,11 +169,16 @@ test("Blob client route authenticates token generation and keeps completion hand
         tokenPayload: token.tokenPayload,
       });
       completions.push(token);
-      return { type: "blob.generate-client-token", token };
+      return { token, type: "blob.generate-client-token" };
     },
-    requireUser: async (request) => {
-      requests.push(request);
-      if (!authenticated) {
+    NextResponse: {
+      json(value) {
+        return value;
+      },
+    },
+    requireUser: (incomingRequest) => {
+      requests.push(incomingRequest);
+      if (requests.length === 1) {
         throw new Error("Sign in required");
       }
       return { id: "user_1" };
@@ -194,15 +192,14 @@ test("Blob client route authenticates token generation and keeps completion hand
   assert.equal(handleUploadCalls.length, 1);
   assert.equal(completions.length, 0);
 
-  authenticated = true;
   const response = await route(request);
   assert.equal(handleUploadCalls.length, 2);
   assert.deepEqual(requests, [request, request]);
   assert.equal(completions.length, 1);
   assert.deepEqual(JSON.parse(JSON.stringify(response)), {
-    type: "blob.generate-client-token",
     token: {
       allowedContentTypes: ["image/jpeg", "image/png", "image/webp"],
     },
+    type: "blob.generate-client-token",
   });
 });
