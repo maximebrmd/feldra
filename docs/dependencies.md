@@ -1,6 +1,6 @@
 # Direct dependencies
 
-Each workspace declares what it imports. Internal `@repo/*` dependencies link to the generated project’s own packages. All external versions are pinned and installed from the root lockfile. The initializer alone uses `@clack/prompts` for accessible terminal text prompts, arrow-key database selection and confirmation. Generated projects have no dependency on the initializer and no direct dependency on its prompt library (Ultracite also uses Clack transitively). Both database choices use `pg` and Drizzle; Supabase does not require another runtime dependency.
+Each workspace declares what it imports. Internal `@repo/*` dependencies link to the generated project’s own packages. All external versions are pinned and installed from the root lockfile. The initializer alone uses `@clack/prompts` for accessible terminal text prompts, arrow-key provider selection and confirmation. Generated projects have no dependency on the initializer and no direct dependency on its prompt library (Ultracite also uses Clack transitively). Both database choices use `pg` and Drizzle; Supabase does not require another runtime dependency.
 
 | Workspace | Runtime dependencies | Purpose |
 | --- | --- | --- |
@@ -12,6 +12,7 @@ Each workspace declares what it imports. Internal `@repo/*` dependencies link to
 | `@repo/design-system` | `@radix-ui/react-slot`, `class-variance-authority`, `clsx`, `react`, `tailwind-merge` | Used shadcn components and class utilities. |
 | `@repo/email` | `@repo/config`, `resend`, `server-only` | Resend authentication email delivery. |
 | `@repo/payments` | `@repo/config`, `@repo/database`, `drizzle-orm`, `server-only`, `stripe` | Stripe subscriptions and transactional reconciliation. |
+| `@repo/storage` | R2: `@aws-sdk/client-s3`, `@aws-sdk/s3-request-presigner`, `server-only`, `zod`; Blob: `@vercel/blob`, `server-only` | Generated object-storage package for the provider selected at scaffold time. |
 
 ## Development tooling
 

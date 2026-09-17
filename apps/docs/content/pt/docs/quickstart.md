@@ -6,14 +6,14 @@ sidebar:
 ---
 ## Pré-requisitos [#prerequisites]
 
-Use Node.js 24 LTS, npm e Git. O Docker só é necessário para as fixtures locais de banco de dados e navegador. Você não precisa de credenciais de provedores para compilar o template ou executar essas fixtures.
+Use Node.js 24 LTS, Bun 1.4.0 e Git. O Docker só é necessário para as fixtures locais de banco de dados e navegador. Você não precisa de credenciais de provedores para compilar o template ou executar essas fixtures.
 
 ## Obtenha o código-fonte [#get-the-source]
 
 ```sh
 git clone https://github.com/maximebrmd/feldra.git feldra
 cd feldra
-npm ci
+bun install
 ```
 
 ## Crie seu projeto [#create-your-project]
@@ -21,7 +21,7 @@ npm ci
 O inicializador ainda não foi publicado no npm. Primeiro, compile o pacote local versionado:
 
 ```sh
-npm run initializer:pack
+bun run initializer:pack
 ```
 
 Isso valida o código-fonte e grava `feldra-VERSION.tgz` na raiz do repositório. Substitua VERSION abaixo pela versão em `packages/feldra/package.json`:
@@ -30,9 +30,9 @@ Isso valida o código-fonte e grava `feldra-VERSION.tgz` na raiz do repositório
 npm exec --yes --package="./feldra-VERSION.tgz" -- feldra create my-new-saas
 ```
 
-Use as teclas de seta e Enter para escolher **Neon** ou **Supabase** e, em seguida, **Better Auth**, **Clerk** ou **Auth.js**. O inicializador instala as dependências, grava os arquivos de ambiente locais e inicializa um novo repositório Git. Ele recusa um destino existente, mesmo que esteja vazio.
+Use as teclas de seta e Enter para escolher **Neon** ou **Supabase**, depois **Better Auth**, **Clerk**, **Auth.js**, **Supabase Auth** ou **Appwrite**, armazenamento **Cloudflare R2** ou **Vercel Blob**, e **Blume**, **Mintlify** ou **Fumadocs**. O inicializador instala as dependências, grava os arquivos de ambiente locais e inicializa um novo repositório Git. Ele recusa um destino existente, mesmo que esteja vazio.
 
-Para executar sem interação, acrescente `--yes --database supabase` após o nome do projeto. Tanto caminhos relativos quanto caminhos entre aspas contendo espaços funcionam.
+Para executar sem interação, acrescente `--yes --database supabase --storage blob --docs mintlify` após o nome do projeto. `--storage` usa Cloudflare R2 por padrão; cada projeto gerado inclui um arquivo `STORAGE.md` com instruções específicas do provedor para configuração e credenciais. `--docs` usa `blume` por padrão. Tanto caminhos relativos quanto caminhos entre aspas contendo espaços funcionam.
 
 ## Conecte seus provedores [#connect-your-providers]
 
@@ -40,7 +40,7 @@ Para executar sem interação, acrescente `--yes --database supabase` após o no
 cd my-new-saas
 ```
 
-Preencha `.env.local` usando o arquivo `DATABASE.md` gerado e o [guia de ambiente](/docs/environment/). Um novo segredo local do Better Auth ou do Auth.js já foi gerado, ou as chaves do Clerk ficam em branco; as credenciais restantes dos provedores precisam ser configuradas separadamente.
+Preencha `.env.local` usando os arquivos gerados `DATABASE.md`, `AUTHENTICATION.md`, `STORAGE.md` e o [guia de ambiente](/docs/environment/). Um novo segredo local do Better Auth ou do Auth.js já foi gerado; as credenciais do Clerk, Supabase Auth, Appwrite e dos demais provedores precisam ser configuradas separadamente.
 
 ```sh
 npm run db:migrate
@@ -58,10 +58,10 @@ Quando o pacote atual for publicado, a criação de projetos passa a ser:
 npx feldra@latest create my-new-saas
 ```
 
-Não use o comando público até que o pacote seja explicitamente publicado. Um único comando cria a estrutura do projeto e instala as dependências; ele não cria contas em provedores nem configura credenciais.
+Equivalente: `npm exec feldra@latest -- create my-new-saas`. Não use o comando público até que o pacote seja explicitamente publicado. Um único comando cria a estrutura do projeto e instala as dependências; ele não cria contas em provedores nem configura credenciais.
 
 ## Escolha a autenticação [#choose-authentication]
 
-Após selecionar um banco de dados, escolha **Better Auth** (padrão), **Clerk** ou **Auth.js**. O Better Auth usa o Resend para enviar e-mails de verificação e redefinição de senha. O Clerk usa seus componentes gerenciados e seu serviço de envio de e-mails. O Auth.js usa o GitHub OAuth. Os projetos com Clerk e Auth.js não incluem Better Auth nem Resend.
+Após selecionar um banco de dados, escolha **Better Auth** (padrão), **Clerk**, **Auth.js**, **Supabase Auth** ou **Appwrite**. O Better Auth usa o Resend para enviar e-mails de verificação e redefinição de senha. O Clerk usa seus componentes gerenciados e seu serviço de envio de e-mails. O Auth.js usa o GitHub OAuth. O Supabase Auth usa a API do Supabase Auth e é independente da escolha do banco de dados. O Appwrite usa identidade gerenciada e e-mails de autenticação. Os projetos com Clerk, Auth.js, Supabase Auth e Appwrite não incluem Better Auth nem Resend.
 
-Para CI, adicione `--auth better-auth`, `--auth clerk` ou `--auth authjs` ao comando do inicializador local. Combine qualquer uma dessas opções com `--database neon` ou `--database supabase`. `--list-tools` lista as opções disponíveis sem criar arquivos. Siga as instruções do arquivo `AUTHENTICATION.md` gerado antes de testar a autenticação real. Essas opções criam projetos independentes; elas não migram usuários existentes entre serviços.
+Para CI, adicione `--auth better-auth`, `--auth clerk`, `--auth authjs`, `--auth supabase` ou `--auth appwrite` ao comando do inicializador local. Combine qualquer uma dessas opções com `--database neon` ou `--database supabase` e `--docs blume`, `--docs mintlify` ou `--docs fumadocs`. `--list-tools` lista as opções disponíveis sem criar arquivos. Siga as instruções do arquivo `AUTHENTICATION.md` gerado antes de testar a autenticação real. Essas opções criam projetos independentes; elas não migram usuários existentes entre serviços. A documentação do produto deste repositório continua usando Blume.

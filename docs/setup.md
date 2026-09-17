@@ -2,7 +2,7 @@
 
 ## Isolation for every derived project
 
-Create a separate Neon or Supabase project/database, Better Auth secret, Resend key/sender configuration, and Stripe sandbox (and later separate live product/prices/webhook) per SaaS. Never copy this project's credentials, databases or Stripe resource IDs into another project. Separate local/test/production resources; previews must not use production data. None are provisioned by the initializer.
+Create a separate Neon or Supabase project/database, R2 bucket or Blob store, Better Auth secret, Resend key/sender configuration, and Stripe sandbox (and later separate live product/prices/webhook) per SaaS. Never copy this project's credentials, storage, databases, or Stripe resource IDs into another project. Separate local/test/production resources; previews must not use production data. None are provisioned by the initializer.
 
 ## Environment
 
@@ -17,12 +17,20 @@ Every variable in `.env.example` is consumed; there are no browser-exposed secre
 | DATABASE_URL_UNPOOLED | Direct Postgres URL for migrations (Supabase session pooler on IPv4-only networks). |
 | RESEND_API_KEY | Dedicated Resend `re_…` key with permission to send from your domain. |
 | EMAIL_FROM | Bare email address on your verified sender domain, e.g. `accounts@your-domain.com`. |
+| R2_ACCOUNT_ID / R2_BUCKET_NAME | Cloudflare account and bucket selected for this generated project. |
+| R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY | Bucket-scoped R2 Object Read & Write credentials; server-only, never `NEXT_PUBLIC_`. |
+| R2_PUBLIC_URL | Optional public/custom R2 object URL. See `STORAGE.md`. |
+| BLOB_READ_WRITE_TOKEN | Server-only Vercel Blob token when `--storage blob` was selected. |
 | STRIPE_SECRET_KEY | Prefer a dedicated restricted `rk_test_…` / `rk_live_…` key; SDK also accepts `sk_…`. |
 | STRIPE_PRO_PRICE_ID | Recurring price ID for this project's Pro product. |
 | STRIPE_WEBHOOK_SECRET | Signing secret for this exact endpoint; local CLI and production secrets differ. |
 | STRIPE_LIVE_MODE | `false` in sandbox, `true` only in live mode. Signed event mode must match. |
 
 Better Auth uses APP_URL directly, so there is no second independent BETTER_AUTH_URL to drift. Rate limiting persists in Postgres. The trusted client IP header is `x-vercel-forwarded-for`, which Vercel supplies. For another host, change `advanced.ipAddress` in `packages/auth/server.ts` to that host's documented, sanitized header/trusted proxies. Never trust a header that clients can spoof. If no trusted IP is available, Better Auth uses a shared conservative per-path bucket; configure the proxy before launch.
+
+## Object storage
+
+Every generated project includes `@repo/storage` with one provider selected at scaffold time: Cloudflare R2 by default or Vercel Blob with `--storage blob`. Read the generated `STORAGE.md` for the selected provider's bucket, token, public URL, private-file, and client-upload setup. Storage credentials are server-only; browser uploads use Vercel's token route or R2 presigned URLs. The initializer never provisions a bucket, token, CORS policy, or deployment.
 
 ## Database and authentication
 
@@ -62,7 +70,7 @@ No deployment has been performed. Create **two Vercel projects from the same der
 
 Enable inclusion of source files outside the root directory so each build can resolve the shared packages. Use the Next.js preset and a supported Node runtime (24 LTS). Install the **root npm lockfile and all workspaces**, not an isolated app copy. For explicit commands from the project directory, install with `cd ../.. && npm ci`; build marketing with `cd ../.. && npx turbo run build --filter=web` and the application with `cd ../.. && npx turbo run build --filter=app`. Each project's output remains its own `.next` directory. Hosting remains unverified until deployment.
 
-Set APP_URL and WEB_URL on both projects to their exact production HTTPS origins. Marketing needs only these origins; set database, auth, Resend and Stripe credentials **only on the application project**. Use a fresh production auth secret, production Postgres database, verified Resend sender, and matching Stripe live key/price/mode. Authentication cookies belong to the application origin; cross-subdomain cookies and permissive CORS are not needed. Marketing links navigate to the app for signup, login and subscription actions.
+Set APP_URL and WEB_URL on both projects to their exact production HTTPS origins. Marketing needs only these origins; set database, auth, storage, Resend, and Stripe credentials **only on the application project**. Use a fresh production auth secret, production Postgres database, isolated production storage, verified Resend sender, and matching Stripe live key/price/mode. Authentication cookies belong to the application origin; cross-subdomain cookies and permissive CORS are not needed. Marketing links navigate to the app for signup, login and subscription actions.
 
 Apply migrations once as a release step using the direct database URL before app traffic moves to the new version. From the monorepo root, run `npm run db:migrate` with production environment variables in a trusted shell. Builds do not migrate automatically. Test migrations on a disposable branch and back up production first.
 
@@ -72,4 +80,4 @@ For another Node host, build from the repository root and run `npm run start --w
 
 ## Tested versus live
 
-Fixture tests use real local Postgres, Better Auth hashing/sessions/email tokens and application route handlers. Resend sending and Stripe SDK methods are replaced only inside tests. Signed payloads use Stripe's real signature utility. Browser tests run both production Next servers with local Postgres and a preverified fixture user. They do not claim successful live delivery or payments. Live Neon/Supabase connectivity, Resend inbox delivery, Stripe hosted Checkout/portal and hosting need your project credentials and the manual verification above.
+Fixture tests use real local Postgres, Better Auth hashing/sessions/email tokens and application route handlers. Resend, Stripe, R2, and Vercel Blob network boundaries are replaced only inside tests. Signed Stripe payloads use Stripe's real signature utility. Browser tests run both production Next servers with local Postgres and a preverified fixture user. They do not claim successful live delivery, payments, or object storage. Live Neon/Supabase connectivity, R2 or Blob operations, Resend inbox delivery, Stripe hosted Checkout/portal, and hosting need your project credentials and manual verification.

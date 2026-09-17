@@ -10,18 +10,20 @@ sidebar:
 apps/
   web/                  Marketing and pricing · port 3000
   app/                  Authenticated UI, APIs, webhooks · port 3001
+  docs/                 Documentation · port 4321
 packages/
-  auth/                 Better Auth server and client
+  auth/                 Better Auth, Clerk, Auth.js, Supabase Auth, or Appwrite
   config/               App name, URLs, plans, environment validation
   database/             Drizzle schema and migrations
   design-system/        Used shadcn components and shared styles
   email/                Resend authentication emails
   payments/             Stripe state and paid-access rules
+  storage/              Cloudflare R2 or Vercel Blob
 turbo.json
 package.json
 ```
 
-टेम्पलेट रिपॉज़िटरी में यह Astro दस्तावेज़ीकरण ऐप भी `apps/docs` पर मौजूद है। यह दस्तावेज़ीकरण के लिए अलग डिप्लॉयमेंट है और जनरेट किए गए SaaS प्रोजेक्ट्स में शामिल नहीं होता है।
+जनरेट किए गए प्रोजेक्ट में `apps/docs` शामिल होता है—डिफ़ॉल्ट रूप से Blume, या चुने जाने पर Mintlify अथवा Fumadocs। इस रिपॉज़िटरी में मौजूद Feldra की यह उत्पाद साइट एक अलग Blume ऐप है; इसे जनरेट किए गए प्रोजेक्ट में कॉपी नहीं किया जाता।
 
 ## डिप्लॉयमेंट की सीमाएँ [#deployable-boundaries]
 

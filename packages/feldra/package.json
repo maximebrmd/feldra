@@ -1,7 +1,7 @@
 {
   "name": "feldra",
   "version": "0.1.0",
-  "description": "Create a Feldra SaaS monorepo with Neon or Supabase, Better Auth, Clerk, Auth.js, Supabase Auth, or Appwrite, Stripe, optional Vercel Flags SDK, and Blume, Mintlify, or Fumadocs docs.",
+  "description": "Create a Feldra SaaS monorepo with Neon or Supabase, Better Auth, Clerk, Auth.js, Supabase Auth, or Appwrite, Cloudflare R2 or Vercel Blob storage, Stripe, optional Vercel Flags SDK, and Blume, Mintlify, or Fumadocs docs.",
   "keywords": [
     "create",
     "nextjs",
@@ -16,7 +16,11 @@
     "next-forge",
     "supabase",
     "feature-flags",
-    "vercel-flags"
+    "vercel-flags",
+    "cloudflare",
+    "r2",
+    "storage",
+    "vercel-blob"
   ],
   "repository": {
     "type": "git",

@@ -5,7 +5,7 @@ description: "Two Next.js apps, shared packages, and security boundaries."
 
 Two deployable Next.js apps share workspace packages. `apps/web` is marketing; `apps/app` is auth, the dashboard, APIs, and webhooks. This `apps/docs` app is the documentation site. Turborepo runs builds and type checks.
 
-Database, authentication, payment, and email modules are server-only. Protected layouts handle navigation, but every page and route independently authenticates. Email verification is required for app access. Onboarding is a UX step, not a paid-access gate.
+Database, authentication, payment, email, and storage server modules are server-only; browser storage uploads use the explicit client entry point. Protected layouts handle navigation, but every page and route independently authenticates. Email verification is required for app access. Onboarding is a UX step, not a paid-access gate.
 
 All note mutations use strict Zod schemas. Owner IDs come from the verified session. Updates and deletes include both ID and owner in the SQL predicate.
 

@@ -175,6 +175,14 @@ assert.ok(entries.includes("package/template/.env.example"));
 assert.ok(entries.includes("package/template/package-lock.json"));
 assert.ok(entries.includes("package/template/apps/docs/package.json"));
 assert.ok(
+  entries.includes("package/variants/storage/r2/packages/storage/package.json")
+);
+assert.ok(
+  entries.includes(
+    "package/variants/storage/blob/packages/storage/package.json"
+  )
+);
+assert.ok(
   entries.includes("package/variants/docs/mintlify/apps/docs/docs.json")
 );
 assert.ok(
@@ -235,6 +243,7 @@ for (const { database, auth, flags } of [
   assert.equal(origin.auth, auth);
   assert.equal(origin.docs, "blume");
   assert.equal(origin.flags, flags ?? "none");
+  assert.equal(origin.storage, "r2");
   assert.equal(
     Boolean(lock.packages["node_modules/@clerk/nextjs"]),
     auth === "clerk"
@@ -306,6 +315,9 @@ for (const { database, auth, flags } of [
   assert.ok(lock.packages["apps/docs"]);
   assert.ok(lock.packages["node_modules/astro"]);
   assert.ok(lock.packages["node_modules/blume"]);
+  assert.ok(lock.packages["node_modules/@aws-sdk/client-s3"]);
+  assert.ok(lock.packages["node_modules/@aws-sdk/s3-request-presigner"]);
+  assert.ok(!lock.packages["node_modules/@vercel/blob"]);
   assert.equal(pkg.scripts["docs:dev"], "npm run dev --workspace docs");
   assert.ok(!lock.packages["node_modules/mint"]);
   assert.ok(!lock.packages["node_modules/fumadocs-ui"]);
@@ -435,6 +447,53 @@ for (const { database, auth, flags } of [
     `Packed distribution passed (${entries.length} entries). Generated test project preserved at ${project}`
   );
 }
+const blobTemp = await mkdtemp(join(tmpdir(), "feldra blob storage "));
+run(
+  "npm",
+  [
+    "exec",
+    "--yes",
+    `--package=${tarball}`,
+    "--",
+    "feldra",
+    "create",
+    "./blob-project",
+    "--name",
+    "packed-blob-storage",
+    "--storage",
+    "blob",
+    "--yes",
+  ],
+  blobTemp
+);
+const blobProject = join(blobTemp, "blob-project");
+const blobOrigin = JSON.parse(
+  await readFile(join(blobProject, "template-origin.json"), "utf8")
+);
+assert.equal(blobOrigin.storage, "blob");
+const blobPackage = JSON.parse(
+  await readFile(join(blobProject, "packages/storage/package.json"), "utf8")
+);
+assert.equal(blobPackage.dependencies["@vercel/blob"], "2.8.0");
+const blobLock = JSON.parse(
+  await readFile(join(blobProject, "package-lock.json"), "utf8")
+);
+assert.ok(blobLock.packages["node_modules/@vercel/blob"]);
+assert.ok(!blobLock.packages["node_modules/@aws-sdk/client-s3"]);
+assert.match(
+  await readFile(join(blobProject, ".env.local"), "utf8"),
+  /BLOB_READ_WRITE_TOKEN=\n/u
+);
+assert.doesNotMatch(
+  await readFile(join(blobProject, ".env.local"), "utf8"),
+  /R2_SECRET_ACCESS_KEY/u
+);
+assert.match(
+  await readFile(join(blobProject, "README.md"), "utf8"),
+  /^> Generated storage: \*\*Vercel Blob\*\*/u
+);
+run("npm", ["run", "check"], blobProject);
+console.log(`Packed Blob storage project checked at ${blobProject}`);
 // Auth×database already covers default Blume, including turbo docs build via
 // `npm run check`. Vercel Flags fixtures cover each auth with Neon, and
 // Mintlify and Fumadocs are packed and built once each rather than multiplying

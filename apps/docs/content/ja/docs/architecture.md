@@ -10,18 +10,20 @@ sidebar:
 apps/
   web/                  Marketing and pricing · port 3000
   app/                  Authenticated UI, APIs, webhooks · port 3001
+  docs/                 Documentation · port 4321
 packages/
-  auth/                 Better Auth server and client
+  auth/                 Better Auth, Clerk, Auth.js, Supabase Auth, or Appwrite
   config/               App name, URLs, plans, environment validation
   database/             Drizzle schema and migrations
   design-system/        Used shadcn components and shared styles
   email/                Resend authentication emails
   payments/             Stripe state and paid-access rules
+  storage/              Cloudflare R2 or Vercel Blob
 turbo.json
 package.json
 ```
 
-テンプレートリポジトリには、`apps/docs` にこの Astro ドキュメントアプリも含まれています。このアプリはドキュメント用に個別にデプロイされ、生成される SaaS プロジェクトには含まれません。
+生成されるプロジェクトには `apps/docs` が含まれます。デフォルトは Blume で、選択に応じて Mintlify または Fumadocs になります。このリポジトリにある Feldra のプロダクトサイトは別の Blume アプリであり、生成されるプロジェクトにコピーされるアプリではありません。
 
 ## デプロイ単位の境界 [#deployable-boundaries]
 
